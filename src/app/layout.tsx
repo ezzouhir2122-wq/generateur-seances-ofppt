@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { auth, signOut } from "@/auth";
 import Link from "next/link";
+import Image from "next/image";
 import Providers from "@/components/ui/Providers";
 import "./globals.css";
 
@@ -26,9 +27,13 @@ export default async function RootLayout({
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-ofppt-gold rounded-full flex items-center justify-center font-bold text-ofppt-green text-sm">
-                  O
-                </div>
+                <Image
+                  src="/logo-ofppt.jpg"
+                  alt="Logo OFPPT"
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                />
                 <span className="font-semibold text-lg">Générateur Séances OFPPT</span>
               </div>
               {session?.user && (
