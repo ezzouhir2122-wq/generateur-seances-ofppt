@@ -9,8 +9,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Générateur Séances OFPPT",
-  description: "Générez des séances pédagogiques OFPPT en quelques secondes",
+  title: "Competencia IA",
+  description: "Générez des séances pédagogiques OFPPT en quelques secondes avec l'IA",
 };
 
 export default async function RootLayout({
@@ -34,7 +34,7 @@ export default async function RootLayout({
                   height={40}
                   className="rounded-full object-cover"
                 />
-                <span className="font-semibold text-lg">Générateur Séances OFPPT</span>
+                <span className="font-semibold text-lg">Competencia IA</span>
               </div>
               {session?.user && (
                 <nav className="flex gap-1">

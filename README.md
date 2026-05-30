@@ -1,4 +1,4 @@
-# Générateur de Séances Pédagogiques OFPPT
+# Competencia IA
 
 Application web permettant aux formateurs OFPPT de générer automatiquement des séances pédagogiques complètes via l'IA (Claude + GPT).
 

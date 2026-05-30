@@ -22,7 +22,7 @@ export default async function LoginPage({
               className="object-cover w-full h-full"
             />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Connexion</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Competencia IA</h1>
           <p className="text-gray-500 text-sm mt-1">
             Générateur de Séances Pédagogiques OFPPT
           </p>
