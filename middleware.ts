@@ -1,19 +1,8 @@
-import { auth } from "@/auth";
-import { NextResponse } from "next/server";
+import NextAuth from "next-auth";
+import { authConfig } from "@/auth.config";
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isLoginPage = req.nextUrl.pathname.startsWith("/login");
-  const isApiAuth = req.nextUrl.pathname.startsWith("/api/auth");
-
-  if (!isLoggedIn && !isLoginPage && !isApiAuth) {
-    return NextResponse.redirect(new URL("/login", req.url));
-  }
-
-  if (isLoggedIn && isLoginPage) {
-    return NextResponse.redirect(new URL("/", req.url));
-  }
-});
+// Middleware Edge Runtime — utilise uniquement authConfig sans Prisma
+export const { auth: middleware } = NextAuth(authConfig);
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],

@@ -1,11 +1,12 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/db";
+import { authConfig } from "./auth.config";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+  session: { strategy: "jwt" },
   providers: [
     Credentials({
       credentials: {
@@ -13,32 +14,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
+        const email = typeof credentials?.email === "string" ? credentials.email : undefined;
+        const password = typeof credentials?.password === "string" ? credentials.password : undefined;
 
-        try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string },
-          });
+        if (!email || !password) return null;
 
-          if (!user) return null;
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) return null;
 
-          const valid = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          );
-          if (!valid) return null;
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) return null;
 
-          return { id: user.id, email: user.email, name: user.name };
-        } catch {
-          return null;
-        }
+        return { id: user.id, email: user.email, name: user.name };
       },
     }),
   ],
-  pages: {
-    signIn: "/login",
-  },
-  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -48,10 +38,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.name = token.name as string;
-      }
+      session.user.id = token.id as string;
+      session.user.name = token.name as string;
       return session;
     },
   },

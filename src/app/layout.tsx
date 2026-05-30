@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { auth, signOut } from "@/auth";
 import Link from "next/link";
+import Providers from "@/components/ui/Providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -70,7 +71,9 @@ export default async function RootLayout({
             )}
           </div>
         </header>
-        <main className="min-h-screen">{children}</main>
+        <Providers>
+          <main className="min-h-screen">{children}</main>
+        </Providers>
       </body>
     </html>
   );
