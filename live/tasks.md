@@ -1,35 +1,63 @@
-# Tasks — Générateur Séances OFPPT
+# Tasks — Competencia IA
 
-## Phase 1 — Setup & MVP
-- [ ] Initialiser Next.js avec TypeScript + Tailwind + App Router
-- [ ] Installer dépendances : `@anthropic-ai/sdk openai prisma @prisma/client next-auth`
-- [ ] Configurer les variables d'environnement
-- [ ] Créer schéma Prisma (User, Seance)
-- [ ] Première migration base de données
+## ✅ Complétées
 
-## Phase 2 — Génération IA
-- [ ] Créer `src/lib/claude.ts` — client Claude API
-- [ ] Créer `src/lib/openai.ts` — client OpenAI
-- [ ] Créer `src/app/api/generate/route.ts` — endpoint génération
-- [ ] Construire le formulaire de génération (filière, module, durée, objectifs)
-- [ ] Afficher la séance générée
+### Phase 1 — Setup & MVP
+- [x] Initialiser Next.js avec TypeScript + Tailwind + App Router
+- [x] Installer dépendances : `@anthropic-ai/sdk openai prisma @prisma/client next-auth bcryptjs`
+- [x] Configurer les variables d'environnement (`.env`)
+- [x] Créer schéma Prisma (User, Seance)
+- [x] Première migration base de données
 
-## Phase 3 — Auth & Sauvegarde
-- [ ] Configurer NextAuth.js
-- [ ] Page de login formateur
-- [ ] Sauvegarder les séances en base de données
-- [ ] Page historique des séances
+### Phase 2 — Génération IA
+- [x] Créer `src/lib/claude.ts` — client Claude API
+- [x] Créer `src/lib/openai.ts` — client OpenAI
+- [x] Créer `src/app/api/generate/route.ts` — endpoint génération (Claude → GPT fallback)
+- [x] Construire le formulaire de génération
+- [x] Afficher la séance générée (react-markdown)
 
-## Phase 4 — Export
-- [ ] Export PDF avec jsPDF
-- [ ] Export Word avec docx
-- [ ] Boutons d'export dans l'interface
+### Phase 3 — Auth & Sauvegarde
+- [x] Configurer NextAuth.js v5 (credentials + JWT)
+- [x] Page de login avec logo OFPPT
+- [x] Middleware de protection des routes (Edge/Node split)
+- [x] Fix bcryptjs (serverExternalPackages dans next.config.ts)
+- [x] Sauvegarder les séances en base de données
+- [x] Page historique des séances
+- [x] Page détail séance
 
-## Phase 5 — Polish
-- [ ] Interface d'édition de la séance avant export
-- [ ] Design final (shadcn/ui)
-- [ ] Tests utilisateurs avec formateurs
-- [ ] Déploiement
+### Phase 4 — Export
+- [x] Export PDF avec jsPDF
+- [x] Export Word avec docx
 
-## Complétées
-_Aucune pour l'instant_
+### Phase 5 — UI & Branding
+- [x] Logo OFPPT dans header et login
+- [x] Renommer app en "Competencia IA"
+- [x] Push sur GitHub (privé)
+
+### Phase 6 — Sidebar Dashboard (v2)
+- [x] Installer xlsx (SheetJS) + sonner (toasts)
+- [x] Modèle Prisma UserModule + migration
+- [x] API `/api/modules` (GET/POST/DELETE)
+- [x] API `/api/stats` (GET)
+- [x] Composant Sidebar.tsx (slide-over droite)
+- [x] Composant AppShell.tsx (toggle + Toaster)
+- [x] Intégration layout.tsx
+- [x] SeanceForm.tsx — dropdowns intelligents si Excel importé
+
+---
+
+## 🔄 En cours / À faire
+
+### Phase 7 — Test & Production
+- [ ] Configurer clés API Claude/OpenAI réelles dans `.env`
+- [ ] Tester génération complète avec l'IA
+- [ ] Tester import Excel (EtatXLS.xlsx depuis Desktop)
+- [ ] Tester flux complet : login → import → générer → exporter
+
+### Phase 8 — Améliorations (optionnel)
+- [ ] Améliorer prompt IA avec MH.G pour calibrer la durée
+- [ ] Ajouter édition de séance avant export
+- [ ] Déploiement Vercel + Supabase
+- [ ] Gestion multi-formateurs (admin)
+- [ ] Génération de séquences pédagogiques complètes
+- [ ] Templates personnalisés par filière

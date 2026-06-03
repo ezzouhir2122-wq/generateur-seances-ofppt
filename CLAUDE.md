@@ -4,7 +4,7 @@
 Application web pour générer automatiquement des séances pédagogiques destinées aux formateurs OFPPT.
 
 ## Stack
-- **Frontend** : Next.js 14 (App Router) + Tailwind CSS
+- **Frontend** : Next.js 16 (App Router) + Tailwind CSS
 - **Backend** : Next.js API Routes
 - **IA** : Claude API (Anthropic) + OpenAI GPT
 - **Base de données** : PostgreSQL via Prisma ORM
@@ -25,12 +25,29 @@ npx prisma migrate dev --name [nom] # Nouvelle migration
 3. Vérifier `.env` (clés API configurées ?)
 
 ## Architecture clé
-- `src/app/api/generate/` — Route de génération IA
-- `src/app/dashboard/` — Interface principale formateur
+- `src/app/api/generate/` — Route de génération IA (Claude → OpenAI fallback)
+- `src/app/api/modules/` — CRUD modules importés (Excel)
+- `src/app/api/stats/` — Statistiques formateur
+- `src/app/historique/` — Historique des séances
 - `src/lib/claude.ts` — Client Claude API
 - `src/lib/openai.ts` — Client OpenAI
-- `src/lib/db.ts` — Client Prisma
-- `src/components/forms/` — Formulaire de génération
+- `src/lib/db.ts` — Client Prisma (singleton)
+- `src/lib/export.ts` — Export PDF + Word
+- `src/components/ui/Sidebar.tsx` — Dashboard slide-over (⚙)
+- `src/components/ui/AppShell.tsx` — Wrapper client (sidebar + toasts)
+- `src/components/forms/SeanceForm.tsx` — Formulaire avec dropdowns intelligents
+- `src/auth.ts` — NextAuth v5 config (Node.js)
+- `src/auth.config.ts` — NextAuth config Edge (middleware)
+
+## Compte formateur (dev)
+- Email : `ezzouhir2122@gmail.com`
+- Mot de passe : `ofppt2024`
+- ⚠️ Pour créer un nouveau compte : utiliser l'endpoint PUT `/api/debug-auth` ou `equipment/create-formateur.ts` + recréer le hash via Next.js
+
+## Points critiques
+- `bcryptjs` doit être dans `serverExternalPackages` (next.config.ts) — sinon l'auth échoue avec Turbopack
+- Le hash du mot de passe DOIT être créé dans le contexte Next.js (pas via `tsx` seul)
+- `src/auth.ts` utilise Prisma → NE PAS importer dans middleware (Edge Runtime)
 
 ## Variables d'environnement requises
 Voir `.env.example` — ne jamais commiter `.env`
