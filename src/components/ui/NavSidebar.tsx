@@ -12,7 +12,7 @@ interface NavSidebarProps {
 const navItems = [
   { section: "OUTILS", items: [
     { href: "/", label: "Séances", icon: "📝", exact: true },
-    { href: "/fiches", label: "Fiches pédag.", icon: "📋", exact: false },
+    { href: "/fiches", label: "Fiches pédag.", icon: "📋", exact: true },
     { href: "/assistant", label: "Assistant IA", icon: "🤖", exact: false },
   ]},
   { section: "HISTORIQUE", items: [
