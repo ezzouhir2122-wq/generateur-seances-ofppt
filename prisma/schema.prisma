@@ -64,8 +64,8 @@ model Fiche {
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
   userId               String
-  user                 User     @relation(fields: [userId], references: [id])
-  seanceId             String?
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  seanceSourceId       String?   // loose ref to source Seance — no FK constraint intentional
 }
 
 model ChatSession {
@@ -73,7 +73,7 @@ model ChatSession {
   domaine   String
   createdAt DateTime      @default(now())
   userId    String
-  user      User          @relation(fields: [userId], references: [id])
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages  ChatMessage[]
 }
 
