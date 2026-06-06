@@ -8,13 +8,15 @@ datasource db {
 }
 
 model User {
-  id        String       @id @default(cuid())
-  email     String       @unique
-  name      String
-  password  String
-  createdAt DateTime     @default(now())
-  seances   Seance[]
-  modules   UserModule[]
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String
+  password     String
+  createdAt    DateTime      @default(now())
+  seances      Seance[]
+  modules      UserModule[]
+  fiches       Fiche[]
+  chatSessions ChatSession[]
 }
 
 model UserModule {
@@ -30,17 +32,56 @@ model UserModule {
 }
 
 model Seance {
-  id         String   @id @default(cuid())
-  title      String
-  filiere    String
-  module     String
-  duree      String
-  niveau     String
-  type       String
-  objectifs  String
-  contenu    String   @db.Text
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  userId     String
-  user       User     @relation(fields: [userId], references: [id])
+  id        String   @id @default(cuid())
+  title     String
+  filiere   String
+  module    String
+  duree     String
+  niveau    String
+  type      String
+  objectifs String
+  contenu   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Fiche {
+  id                   String   @id @default(cuid())
+  titre                String
+  filiere              String
+  module               String
+  formateur            String
+  duree                String
+  niveau               String
+  type                 String
+  objectifsSavoir      String
+  objectifsSavoirFaire String
+  objectifsSavoirEtre  String
+  prerequis            String
+  contenu              String   @db.Text
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id])
+  seanceId             String?
+}
+
+model ChatSession {
+  id        String        @id @default(cuid())
+  domaine   String
+  createdAt DateTime      @default(now())
+  userId    String
+  user      User          @relation(fields: [userId], references: [id])
+  messages  ChatMessage[]
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  role      String
+  content   String      @db.Text
+  createdAt DateTime    @default(now())
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
