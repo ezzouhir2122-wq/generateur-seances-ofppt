@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 import { exportToPDF, exportToWord } from "@/lib/export";
 
 interface Seance {
@@ -61,6 +62,12 @@ export default function SeanceDetailClient({ seance }: { seance: Seance }) {
           >
             Word
           </button>
+          <Link
+            href={`/fiches?from=${seance.id}`}
+            className="text-sm border border-[#006633] text-[#006633] hover:bg-[#006633] hover:text-white px-3 py-1.5 rounded-lg transition-colors"
+          >
+            📋 Créer une fiche
+          </Link>
         </div>
       </div>
 

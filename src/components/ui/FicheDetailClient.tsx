@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { exportToPDF, exportToWord } from "@/lib/export";
+import { exportFichePDF, exportFicheWord } from "@/lib/export";
 
 interface Fiche {
   id: string;
@@ -32,11 +32,11 @@ export default function FicheDetailClient({ fiche }: { fiche: Fiche }) {
   }
 
   function handlePDF() {
-    exportToPDF(fiche.contenu, fiche.titre);
+    exportFichePDF(fiche.contenu, fiche.titre);
   }
 
   function handleWord() {
-    exportToWord(fiche.contenu, fiche.titre);
+    exportFicheWord(fiche.contenu, fiche.titre);
   }
 
   return (

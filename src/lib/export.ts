@@ -48,3 +48,45 @@ export async function exportToWord(contenu: string, titre: string) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+export function exportFichePDF(contenu: string, titre: string): void {
+  import("jspdf").then(({ default: jsPDF }) => {
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const lines = contenu.replace(/#{1,6} /g, "").split("\n").filter(Boolean);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("Competencia IA — OFPPT", 20, 20);
+    doc.setFontSize(12);
+    doc.text(titre, 20, 30);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    let y = 42;
+    for (const line of lines) {
+      const wrapped = doc.splitTextToSize(line, 170);
+      if (y + wrapped.length * 5 > 280) { doc.addPage(); y = 20; }
+      doc.text(wrapped, 20, y);
+      y += wrapped.length * 5 + 2;
+    }
+    doc.save(`${titre.replace(/\s+/g, "-")}.pdf`);
+  });
+}
+
+export async function exportFicheWord(contenu: string, titre: string): Promise<void> {
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
+  const lines = contenu.split("\n").filter(Boolean);
+  const children = lines.map((line) => {
+    if (line.startsWith("### ")) return new Paragraph({ text: line.replace("### ", ""), heading: HeadingLevel.HEADING_3 });
+    if (line.startsWith("## ")) return new Paragraph({ text: line.replace("## ", ""), heading: HeadingLevel.HEADING_2 });
+    if (line.startsWith("# ")) return new Paragraph({ text: line.replace("# ", ""), heading: HeadingLevel.HEADING_1 });
+    return new Paragraph({ children: [new TextRun({ text: line.replace(/\*\*(.*?)\*\*/g, "$1"), size: 22 })] });
+  });
+  const doc = new Document({ sections: [{ children }] });
+  const buffer = await Packer.toBuffer(doc);
+  const blob = new Blob([buffer.buffer as ArrayBuffer], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${titre.replace(/\s+/g, "-")}.docx`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
