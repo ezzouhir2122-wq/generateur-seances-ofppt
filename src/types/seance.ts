@@ -25,3 +25,17 @@ export const FILIERES_OFPPT = [
   "Industrie",
   "Agriculture",
 ];
+
+export interface FicheFormData {
+  filiere: string;
+  module: string;
+  intitule: string;
+  formateur: string;
+  duree: string;
+  type: string;
+  niveau: string;
+  objectifsSavoir: string;
+  objectifsSavoirFaire: string;
+  objectifsSavoirEtre: string;
+  prerequis: string;
+}
