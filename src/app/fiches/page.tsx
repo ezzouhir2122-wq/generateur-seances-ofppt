@@ -1,0 +1,100 @@
+"use client";
+
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import FicheForm from "@/components/forms/FicheForm";
+import ReactMarkdown from "react-markdown";
+import type { FicheFormData } from "@/types/seance";
+import { toast } from "sonner";
+
+function FichesContent() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [contenu, setContenu] = useState("");
+  const [ficheId, setFicheId] = useState("");
+  const [defaultValues, setDefaultValues] = useState<Partial<FicheFormData>>({});
+
+  useEffect(() => {
+    const from = searchParams.get("from");
+    if (!from) return;
+    fetch(`/api/historique/${from}`)
+      .then(r => r.json())
+      .then(seance => {
+        if (seance) {
+          setDefaultValues({
+            filiere: seance.filiere,
+            module: seance.module,
+            duree: seance.duree,
+            niveau: seance.niveau,
+            type: seance.type,
+          });
+        }
+      })
+      .catch(() => {});
+  }, [searchParams]);
+
+  async function handleGenerate(data: FicheFormData) {
+    setIsLoading(true);
+    setContenu("");
+    try {
+      const from = searchParams.get("from");
+      const res = await fetch("/api/fiches/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...data, seanceSourceId: from ?? undefined }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      setContenu(json.contenu);
+      setFicheId(json.id);
+      toast.success("Fiche générée et sauvegardée !");
+    } catch (err) {
+      toast.error((err as Error).message ?? "Erreur lors de la génération");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Fiches pédagogiques</h1>
+        <p className="text-gray-500 text-sm mt-1">Générez une fiche pédagogique complète au format OFPPT</p>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <FicheForm onGenerate={handleGenerate} isLoading={isLoading} defaultValues={defaultValues} />
+        <div className="card">
+          <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
+            <h2 className="text-xl font-bold text-ofppt-green">Fiche générée</h2>
+            {ficheId && (
+              <button
+                onClick={() => router.push(`/fiches/${ficheId}`)}
+                className="text-sm text-[#006633] hover:underline"
+              >
+                Voir le détail →
+              </button>
+            )}
+          </div>
+          {contenu ? (
+            <div className="prose prose-sm max-w-none">
+              <ReactMarkdown>{contenu}</ReactMarkdown>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+              {isLoading ? "Génération en cours…" : "La fiche apparaîtra ici"}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function FichesPage() {
+  return (
+    <Suspense>
+      <FichesContent />
+    </Suspense>
+  );
+}
