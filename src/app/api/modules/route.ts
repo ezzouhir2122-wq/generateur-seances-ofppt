@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
     if (!m.groupe || !m.module) continue;
     await prisma.userModule.upsert({
       where: { groupe_module_userId: { groupe: m.groupe, module: m.module, userId: session.user.id } },
-      update: { mhg: Number(m.mhg) || 0 },
-      create: { groupe: m.groupe, module: m.module, mhg: Number(m.mhg) || 0, userId: session.user.id },
+      update: { codeModule: m.codeModule ?? "", mhg: Number(m.mhg) || 0 },
+      create: { groupe: m.groupe, codeModule: m.codeModule ?? "", module: m.module, mhg: Number(m.mhg) || 0, userId: session.user.id },
     });
     count++;
   }

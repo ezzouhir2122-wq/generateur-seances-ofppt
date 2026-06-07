@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react";
 
 interface NavSidebarProps {
   user: { name?: string | null; email?: string | null };
+  onSettingsClick: () => void;
 }
 
 const navItems = [
@@ -21,7 +22,7 @@ const navItems = [
   ]},
 ];
 
-export default function NavSidebar({ user }: NavSidebarProps) {
+export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   const pathname = usePathname();
 
   function isActive(href: string, exact: boolean) {
@@ -69,6 +70,22 @@ export default function NavSidebar({ user }: NavSidebarProps) {
             </div>
           </div>
         ))}
+
+        {/* Paramètres */}
+        <div>
+          <div className="text-[10px] text-green-300 font-semibold tracking-widest px-2 mb-1.5">
+            SYSTÈME
+          </div>
+          <div className="space-y-0.5">
+            <button
+              onClick={onSettingsClick}
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-green-200 hover:bg-white/10 hover:text-white"
+            >
+              <span className="text-base">⚙</span>
+              Paramètres
+            </button>
+          </div>
+        </div>
       </nav>
 
       {/* User + logout */}

@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export default function LoginForm({ error }: { error?: string }) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [localError, setLocalError] = useState<string | null>(error ?? null);
   const [showPassword, setShowPassword] = useState(false);
@@ -29,8 +27,7 @@ export default function LoginForm({ error }: { error?: string }) {
       setLocalError("Email ou mot de passe incorrect");
       setIsLoading(false);
     } else {
-      router.push("/");
-      router.refresh();
+      window.location.href = "/";
     }
   }
 

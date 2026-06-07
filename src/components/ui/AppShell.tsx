@@ -21,15 +21,8 @@ export default function AppShell({ children, user, claudeKey, openaiKey }: AppSh
     <>
       <Toaster position="top-right" richColors />
       <div className="flex h-screen overflow-hidden">
-        <NavSidebar user={user} />
+        <NavSidebar user={user} onSettingsClick={() => setDashOpen(true)} />
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          <button
-            onClick={() => setDashOpen(true)}
-            aria-label="Ouvrir le tableau de bord"
-            className="absolute top-3 right-4 z-30 w-9 h-9 flex items-center justify-center rounded-lg bg-[#006633] hover:bg-[#005528] text-white transition-colors text-lg shadow-sm"
-          >
-            ⚙
-          </button>
           <main className="flex-1 overflow-y-auto bg-gray-50">
             {children}
           </main>
