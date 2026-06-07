@@ -8,7 +8,7 @@ interface Props {
   isLoading: boolean;
 }
 
-interface ModuleItem { module: string; mhg: number; }
+interface ModuleItem { module: string; mhg: number; codeModule?: string; }
 
 export default function SeanceForm({ onGenerate, isLoading }: Props) {
   const [form, setForm] = useState<SeanceFormData>({
@@ -101,7 +101,9 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
             >
               <option value="">— Choisir un module —</option>
               {modules.map((m) => (
-                <option key={m.module} value={m.module}>{m.module}</option>
+                <option key={m.module} value={m.module}>
+                  {m.codeModule ? `${m.codeModule} — ${m.module}` : m.module}
+                </option>
               ))}
             </select>
           </div>

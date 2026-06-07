@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (filtreGroupe) {
     const modules = await prisma.userModule.findMany({
       where: { userId: session.user.id, groupe: filtreGroupe },
-      select: { module: true, mhg: true },
+      select: { module: true, mhg: true, codeModule: true },
       orderBy: { module: "asc" },
     });
     return NextResponse.json(modules);

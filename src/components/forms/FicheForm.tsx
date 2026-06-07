@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import type { FicheFormData } from "@/types/seance";
 import { FILIERES_OFPPT } from "@/types/seance";
 
+interface ModuleItem {
+  module: string;
+  mhg: number;
+  codeModule?: string;
+}
+
 interface Props {
   onGenerate: (data: FicheFormData) => void;
   isLoading: boolean;
@@ -26,6 +32,33 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
     ...defaultValues,
   });
 
+  const [groupes, setGroupes] = useState<string[]>([]);
+  const [modules, setModules] = useState<ModuleItem[]>([]);
+  const [hasImport, setHasImport] = useState(false);
+  const [mhgInfo, setMhgInfo] = useState<number | null>(null);
+
+  // Charger les filières depuis l'import Excel
+  useEffect(() => {
+    fetch("/api/modules?distinct=groupe")
+      .then((r) => r.json())
+      .then((data: string[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setGroupes(data);
+          setHasImport(true);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  // Charger les modules de la filière sélectionnée
+  useEffect(() => {
+    if (!form.filiere || !hasImport) { setModules([]); setMhgInfo(null); return; }
+    fetch(`/api/modules?groupe=${encodeURIComponent(form.filiere)}`)
+      .then((r) => r.json())
+      .then((data: ModuleItem[]) => setModules(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, [form.filiere, hasImport]);
+
   useEffect(() => {
     if (defaultValues) setForm((prev) => ({ ...prev, ...defaultValues }));
   }, [defaultValues]);
@@ -33,6 +66,18 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
   const set = (field: keyof FicheFormData) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+  const handleFiliereChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setForm((prev) => ({ ...prev, filiere: e.target.value, module: "" }));
+    setMhgInfo(null);
+  };
+
+  const handleModuleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const moduleName = e.target.value;
+    const found = modules.find((m) => m.module === moduleName);
+    setMhgInfo(found ? found.mhg : null);
+    setForm((prev) => ({ ...prev, module: moduleName }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,19 +90,60 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
         Paramètres de la fiche
       </h2>
 
+      {/* Filière + Module */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="label">Filière *</label>
-          <select className="input-field" value={form.filiere} onChange={set("filiere")} required>
-            <option value="">— Choisir —</option>
-            {FILIERES_OFPPT.map((f) => <option key={f} value={f}>{f}</option>)}
-          </select>
+          {hasImport ? (
+            <select className="input-field" value={form.filiere} onChange={handleFiliereChange} required>
+              <option value="">— Choisir —</option>
+              {groupes.map((g) => <option key={g} value={g}>{g}</option>)}
+            </select>
+          ) : (
+            <select className="input-field" value={form.filiere} onChange={set("filiere")} required>
+              <option value="">— Choisir —</option>
+              {FILIERES_OFPPT.map((f) => <option key={f} value={f}>{f}</option>)}
+            </select>
+          )}
         </div>
+
         <div>
-          <label className="label">Module *</label>
-          <input className="input-field" placeholder="Ex: M201 — Comptabilité générale" value={form.module} onChange={set("module")} required />
+          <label className="label flex items-center justify-between">
+            <span>Module *</span>
+            {mhgInfo !== null && (
+              <span className="text-[10px] font-normal bg-ofppt-green/10 text-ofppt-green px-2 py-0.5 rounded-full">
+                M.H.G : {mhgInfo}h
+              </span>
+            )}
+          </label>
+          {hasImport && form.filiere ? (
+            <select className="input-field" value={form.module} onChange={handleModuleChange} required>
+              <option value="">— Choisir —</option>
+              {modules.map((m) => (
+                <option key={m.module} value={m.module}>
+                  {m.codeModule ? `${m.codeModule} — ${m.module}` : m.module}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              className="input-field"
+              placeholder={hasImport ? "Sélectionnez d'abord une filière" : "Ex: M201 — Comptabilité générale"}
+              value={form.module}
+              onChange={set("module")}
+              disabled={hasImport && !form.filiere}
+              required
+            />
+          )}
         </div>
       </div>
+
+      {/* Hint import si pas de données */}
+      {!hasImport && (
+        <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+          Importez votre tableau Excel dans <strong>Paramètres → Affectation des modules</strong> pour activer les listes automatiques.
+        </p>
+      )}
 
       <div>
         <label className="label">Intitulé de la séance *</label>
@@ -71,7 +157,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="label">Durée</label>
+          <label className="label">Durée séance</label>
           <select className="input-field" value={form.duree} onChange={set("duree")}>
             {["1h", "2h", "3h", "4h", "6h"].map((d) => <option key={d} value={d}>{d}</option>)}
           </select>
