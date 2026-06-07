@@ -167,61 +167,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             </button>
           </section>
 
-          {/* Stats */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">📊 Statistiques</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: "Séances", value: stats.seancesCount },
-                { label: "Modules", value: stats.modulesCount },
-                { label: "Groupes", value: stats.filieresCount },
-              ].map((s) => (
-                <div key={s.label} className="bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-2xl font-bold text-ofppt-green">{s.value}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Paramètres API */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🔑 Paramètres API</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-700">Claude API</span>
-                <span className={claudeKey ? "text-green-600 font-medium" : "text-red-500"}>
-                  {claudeKey ? "✅ Configuré" : "❌ Manquant"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-700">OpenAI API</span>
-                <span className={openaiKey ? "text-green-600 font-medium" : "text-red-500"}>
-                  {openaiKey ? "✅ Configuré" : "❌ Manquant"}
-                </span>
-              </div>
-              {(!claudeKey && !openaiKey) && (
-                <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-2 mt-2">
-                  Ajoutez vos clés API dans le fichier <code>.env</code> pour activer la génération.
-                </p>
-              )}
-            </div>
-          </section>
-
-          {/* Navigation */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🧭 Navigation</h3>
-            <div className="space-y-1">
-              <Link href="/" onClick={onClose} className="flex items-center gap-2 text-sm text-gray-700 hover:text-ofppt-green hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
-                <span>📝</span> Nouvelle séance
-              </Link>
-              <Link href="/historique" onClick={onClose} className="flex items-center gap-2 text-sm text-gray-700 hover:text-ofppt-green hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
-                <span>📂</span> Mes séances
-              </Link>
-            </div>
-          </section>
-
-          {/* Import Excel */}
+          {/* Import Excel — en haut pour accès rapide */}
           <section className="px-5 py-4">
             <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">📋 Affectation des modules</h3>
             <p className="text-xs text-gray-400 mb-3">Importez le tableau Excel d'affectation pour préremplir automatiquement les formulaires.</p>
@@ -301,6 +247,60 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 </div>
               </div>
             )}
+          </section>
+
+          {/* Stats */}
+          <section className="px-5 py-4">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">📊 Statistiques</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: "Séances", value: stats.seancesCount },
+                { label: "Modules", value: stats.modulesCount },
+                { label: "Groupes", value: stats.filieresCount },
+              ].map((s) => (
+                <div key={s.label} className="bg-gray-50 rounded-xl p-3 text-center">
+                  <p className="text-2xl font-bold text-ofppt-green">{s.value}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Paramètres API */}
+          <section className="px-5 py-4">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🔑 Paramètres API</h3>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-700">Claude API</span>
+                <span className={claudeKey ? "text-green-600 font-medium" : "text-red-500"}>
+                  {claudeKey ? "✅ Configuré" : "❌ Manquant"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-700">OpenAI API</span>
+                <span className={openaiKey ? "text-green-600 font-medium" : "text-red-500"}>
+                  {openaiKey ? "✅ Configuré" : "❌ Manquant"}
+                </span>
+              </div>
+              {(!claudeKey && !openaiKey) && (
+                <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-2 mt-2">
+                  Ajoutez vos clés API dans le fichier <code>.env</code> pour activer la génération.
+                </p>
+              )}
+            </div>
+          </section>
+
+          {/* Navigation */}
+          <section className="px-5 py-4">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🧭 Navigation</h3>
+            <div className="space-y-1">
+              <Link href="/" onClick={onClose} className="flex items-center gap-2 text-sm text-gray-700 hover:text-ofppt-green hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
+                <span>📝</span> Nouvelle séance
+              </Link>
+              <Link href="/historique" onClick={onClose} className="flex items-center gap-2 text-sm text-gray-700 hover:text-ofppt-green hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
+                <span>📂</span> Mes séances
+              </Link>
+            </div>
           </section>
 
           {/* À venir */}
