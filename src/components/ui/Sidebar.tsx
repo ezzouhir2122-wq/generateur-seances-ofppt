@@ -185,101 +185,103 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
       {/* Panneau */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 right-0 h-full w-[380px] bg-white shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-[380px] shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
+        style={{ background: "#111116", borderLeft: "1px solid #1E1E2C" }}
       >
         {/* Header */}
-        <div className="bg-ofppt-green text-white px-5 py-4 flex items-center justify-between shrink-0">
+        <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ borderBottom: "1px solid #1E1E2C", background: "#0D0D12" }}>
           <div className="flex items-center gap-3">
             <Image src="/logo-ofppt.jpg" alt="OFPPT" width={32} height={32} className="rounded-full object-cover" />
-            <span className="font-semibold">Tableau de bord</span>
+            <span className="font-semibold text-white">Paramètres & Modules</span>
           </div>
-          <button onClick={onClose} className="text-white/80 hover:text-white text-xl leading-none">✕</button>
+          <button onClick={onClose} className="text-[#9CA3AF] hover:text-white text-xl leading-none">✕</button>
         </div>
 
         {/* Contenu scrollable */}
-        <div className="flex-1 overflow-y-auto divide-y divide-gray-100">
+        <div className="flex-1 overflow-y-auto" style={{ borderTop: "none" }}>
 
           {/* Profil */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">👤 Profil</h3>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>👤 Profil</h3>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-ofppt-green/10 flex items-center justify-center text-ofppt-green font-bold text-lg">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-black" style={{ background: "#84CC16" }}>
                 {user.name?.[0]?.toUpperCase() ?? "F"}
               </div>
               <div>
-                <p className="font-semibold text-gray-900 text-sm">{user.name ?? "Formateur"}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="font-semibold text-white text-sm">{user.name ?? "Formateur"}</p>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>{user.email}</p>
               </div>
             </div>
             <button
               onClick={() => { signOut({ callbackUrl: "/login" }); }}
-              className="mt-3 text-xs text-red-500 hover:text-red-700 transition-colors"
+              className="mt-3 text-xs transition-colors"
+              style={{ color: "#EF4444" }}
             >
               Déconnexion
             </button>
           </section>
 
           {/* Import Excel — en haut pour accès rapide */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">📋 Affectation des modules</h3>
-            <p className="text-xs text-gray-400 mb-3">Importez le tableau Excel d'affectation pour préremplir automatiquement les formulaires.</p>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>📋 Affectation des modules</h3>
+            <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Importez le tableau Excel d&apos;affectation pour préremplir automatiquement les formulaires.</p>
 
             {stats.modulesCount > 0 && !preview && (
-              <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 mb-3 flex items-center justify-between">
-                <span className="text-sm text-green-800">
+              <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between" style={{ background: "#84CC1614", border: "1px solid #84CC1630" }}>
+                <span className="text-sm" style={{ color: "#84CC16" }}>
                   <span className="font-semibold">{stats.modulesCount} modules</span> — <span className="font-semibold">{stats.filieresCount} groupes</span>
                 </span>
-                <button onClick={resetModules} className="text-xs text-red-500 hover:text-red-700">🗑 Vider</button>
+                <button onClick={resetModules} className="text-xs" style={{ color: "#EF4444" }}>🗑 Vider</button>
               </div>
             )}
 
             {!preview ? (
               <div className="space-y-3">
-                <label className="flex items-center gap-2 cursor-pointer w-full justify-center bg-[#0B6B72] hover:bg-[#084F57] text-white text-sm py-2.5 rounded-lg transition-colors">
+                <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#84CC16" }}>
                   <span>📥</span> Importer fichier Excel (.xlsx)
                   <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFile} />
                 </label>
-                <div className="bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
-                  <p className="font-semibold text-gray-600">Format accepté :</p>
-                  <p>Colonnes détectées automatiquement par nom d'en-tête.</p>
-                  <p>Colonnes attendues :</p>
-                  <div className="font-mono bg-white border rounded px-2 py-1.5 mt-1 text-[10px] text-gray-600 space-y-0.5">
-                    <p>• <span className="text-[#0B6B72] font-semibold">Filière</span></p>
-                    <p>• <span className="text-[#0B6B72] font-semibold">Code Module</span></p>
-                    <p>• <span className="text-[#0B6B72] font-semibold">Intitulé module</span></p>
-                    <p>• <span className="text-[#0B6B72] font-semibold">Masse horaire</span></p>
+                <div className="rounded-lg p-3 text-xs space-y-1" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                  <p className="font-semibold text-white">Format accepté :</p>
+                  <p style={{ color: "#9CA3AF" }}>Colonnes détectées automatiquement par nom d&apos;en-tête.</p>
+                  <p style={{ color: "#9CA3AF" }}>Colonnes attendues :</p>
+                  <div className="font-mono rounded px-2 py-1.5 mt-1 text-[10px] space-y-0.5" style={{ background: "#0A0A0F", border: "1px solid #1E1E2C", color: "#9CA3AF" }}>
+                    <p>• <span className="font-semibold" style={{ color: "#84CC16" }}>Filière</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#84CC16" }}>Code Module</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#84CC16" }}>Intitulé module</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#84CC16" }}>Masse horaire</span></p>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="bg-blue-50 border border-blue-100 rounded-lg p-3">
-                  <p className="text-sm font-semibold text-blue-800">{preview.rows} ligne{preview.rows > 1 ? "s" : ""} détectée{preview.rows > 1 ? "s" : ""}</p>
-                  <p className="text-xs text-blue-600 mt-0.5">Aperçu des 5 premières lignes :</p>
+                <div className="rounded-lg p-3" style={{ background: "#84CC1614", border: "1px solid #84CC1630" }}>
+                  <p className="text-sm font-semibold" style={{ color: "#84CC16" }}>{preview.rows} ligne{preview.rows > 1 ? "s" : ""} détectée{preview.rows > 1 ? "s" : ""}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>Aperçu des 5 premières lignes :</p>
                 </div>
-                <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <div className="overflow-x-auto rounded-lg" style={{ border: "1px solid #1E1E2C" }}>
                   <table className="w-full text-xs">
-                    <thead className="bg-gray-100">
+                    <thead style={{ background: "#17171E", borderBottom: "1px solid #1E1E2C" }}>
                       <tr>
-                        <th className="px-2 py-1.5 text-left font-semibold text-gray-600 whitespace-nowrap">Filière</th>
-                        <th className="px-2 py-1.5 text-left font-semibold text-gray-600 whitespace-nowrap">Code</th>
-                        <th className="px-2 py-1.5 text-left font-semibold text-gray-600 whitespace-nowrap">Intitulé module</th>
-                        <th className="px-2 py-1.5 text-right font-semibold text-gray-600 whitespace-nowrap">M.H</th>
+                        <th className="px-2 py-1.5 text-left font-semibold whitespace-nowrap" style={{ color: "#4B5563" }}>Filière</th>
+                        <th className="px-2 py-1.5 text-left font-semibold whitespace-nowrap" style={{ color: "#4B5563" }}>Code</th>
+                        <th className="px-2 py-1.5 text-left font-semibold whitespace-nowrap" style={{ color: "#4B5563" }}>Intitulé module</th>
+                        <th className="px-2 py-1.5 text-right font-semibold whitespace-nowrap" style={{ color: "#4B5563" }}>M.H</th>
                       </tr>
                     </thead>
                     <tbody>
                       {preview.data.slice(0, 5).map((row, i) => (
-                        <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                          <td className="px-2 py-1 text-gray-700 font-medium whitespace-nowrap">{row.groupe}</td>
-                          <td className="px-2 py-1 text-gray-500 whitespace-nowrap">{row.codeModule}</td>
-                          <td className="px-2 py-1 text-gray-600 max-w-[110px] truncate">{row.module}</td>
-                          <td className="px-2 py-1 text-right text-gray-500 whitespace-nowrap">{row.mhg}h</td>
+                        <tr key={i} style={{ borderBottom: "1px solid #1E1E2C", background: i % 2 === 0 ? "#111116" : "#17171E" }}>
+                          <td className="px-2 py-1 font-medium whitespace-nowrap text-white">{row.groupe}</td>
+                          <td className="px-2 py-1 whitespace-nowrap" style={{ color: "#9CA3AF" }}>{row.codeModule}</td>
+                          <td className="px-2 py-1 max-w-[110px] truncate" style={{ color: "#9CA3AF" }}>{row.module}</td>
+                          <td className="px-2 py-1 text-right whitespace-nowrap" style={{ color: "#84CC16" }}>{row.mhg}h</td>
                         </tr>
                       ))}
                       {preview.rows > 5 && (
-                        <tr><td colSpan={4} className="px-2 py-1 text-center text-gray-400 italic">… et {preview.rows - 5} autres lignes</td></tr>
+                        <tr><td colSpan={4} className="px-2 py-1 text-center italic" style={{ color: "#4B5563" }}>… et {preview.rows - 5} autres lignes</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -288,13 +290,15 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <button
                     onClick={confirmImport}
                     disabled={importing}
-                    className="flex-1 bg-[#0B6B72] hover:bg-[#084F57] text-white text-sm py-2 rounded-lg transition-colors disabled:opacity-50"
+                    className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 font-medium"
+                    style={{ background: "#84CC16" }}
                   >
                     {importing ? "Import en cours…" : "✅ Confirmer l'import"}
                   </button>
                   <button
                     onClick={() => { setPreview(null); if (fileRef.current) fileRef.current.value = ""; }}
-                    className="flex-1 border border-gray-300 text-gray-600 text-sm py-2 rounded-lg hover:bg-gray-50"
+                    className="flex-1 text-sm py-2 rounded-lg transition-colors"
+                    style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
                   >
                     Annuler
                   </button>
@@ -304,31 +308,31 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Référentiel Pédagogique */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">📚 Référentiel Pédagogique OFPPT</h3>
-            <p className="text-xs text-gray-400 mb-3">Importez un référentiel (PDF, DOCX, Excel) — l'IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>📚 Référentiel Pédagogique OFPPT</h3>
+            <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Importez un référentiel (PDF, DOCX, Excel) — l&apos;IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
 
             {refResult && (
-              <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 mb-3">
-                <p className="text-sm font-semibold text-green-800">✅ Importé avec succès</p>
-                <p className="text-xs text-green-700 mt-0.5">
+              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#84CC1614", border: "1px solid #84CC1630" }}>
+                <p className="text-sm font-semibold" style={{ color: "#84CC16" }}>✅ Importé avec succès</p>
+                <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
                   <span className="font-medium">{refResult.filiere}</span> · {refResult.secteur}
                 </p>
-                <p className="text-xs text-green-600 mt-1">
+                <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>
                   {refResult.stats.modulesCreated} modules · {refResult.stats.competencesCreated} compétences · {refResult.stats.objectifsCreated} objectifs · {refResult.stats.criteresCreated} critères
                 </p>
-                <button onClick={resetReferentiel} className="text-xs text-red-500 hover:text-red-700 mt-1.5">🗑 Vider le référentiel</button>
+                <button onClick={resetReferentiel} className="text-xs mt-1.5" style={{ color: "#EF4444" }}>🗑 Vider le référentiel</button>
               </div>
             )}
 
             {refError && (
-              <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3">
-                <p className="text-xs text-red-700">{refError}</p>
+              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#2A1010", border: "1px solid #7F1D1D" }}>
+                <p className="text-xs text-red-400">{refError}</p>
               </div>
             )}
 
             {!refFile ? (
-              <label className="flex items-center gap-2 cursor-pointer w-full justify-center bg-[#1B3A6E] hover:bg-[#152e5a] text-white text-sm py-2.5 rounded-lg transition-colors">
+              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#84CC16" }}>
                 <span>📥</span> Importer un référentiel
                 <input
                   ref={refFileRef}
@@ -340,82 +344,84 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
               </label>
             ) : (
               <div className="space-y-2">
-                <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
-                  <p className="text-xs font-semibold text-blue-800 truncate">📄 {refFile.name}</p>
-                  <p className="text-[10px] text-blue-600">{(refFile.size / 1024).toFixed(0)} Ko</p>
+                <div className="rounded-lg px-3 py-2" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                  <p className="text-xs font-semibold text-white truncate">📄 {refFile.name}</p>
+                  <p className="text-[10px]" style={{ color: "#9CA3AF" }}>{(refFile.size / 1024).toFixed(0)} Ko</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={uploadReferentiel}
                     disabled={refUploading}
-                    className="flex-1 bg-[#1B3A6E] hover:bg-[#152e5a] text-white text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
+                    style={{ background: "#84CC16" }}
                   >
                     {refUploading ? (
                       <>
-                        <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                         Extraction IA…
                       </>
                     ) : "🤖 Extraire & Importer"}
                   </button>
                   <button
                     onClick={() => { setRefFile(null); if (refFileRef.current) refFileRef.current.value = ""; }}
-                    className="px-3 border border-gray-300 text-gray-600 text-sm rounded-lg hover:bg-gray-50"
+                    className="px-3 text-sm rounded-lg transition-colors"
+                    style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
                   >
                     ✕
                   </button>
                 </div>
-                <div className="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-                  <p className="text-[10px] text-amber-700">L'extraction IA peut prendre 15–30 secondes selon la taille du document.</p>
+                <div className="rounded-lg px-3 py-2" style={{ background: "#F59E0B14", border: "1px solid #F59E0B30" }}>
+                  <p className="text-[10px]" style={{ color: "#F59E0B" }}>L&apos;extraction IA peut prendre 15–30 secondes selon la taille du document.</p>
                 </div>
               </div>
             )}
 
-            <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
-              <p className="font-semibold text-gray-600">Formats acceptés :</p>
+            <div className="mt-3 rounded-lg p-3 text-xs space-y-1" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+              <p className="font-semibold text-white">Formats acceptés :</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 {["PDF", "DOCX", "Excel", "MD"].map((f) => (
-                  <span key={f} className="bg-white border border-gray-200 rounded px-2 py-0.5 font-mono text-[10px] text-[#0B6B72]">{f}</span>
+                  <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#0A0A0F", border: "1px solid #84CC1440", color: "#84CC16" }}>{f}</span>
                 ))}
               </div>
-              <p className="text-[10px] text-gray-400 mt-1">L'IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
+              <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>L&apos;IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
             </div>
           </section>
 
           {/* Stats */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">📊 Statistiques</h3>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>📊 Statistiques</h3>
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: "Séances", value: stats.seancesCount },
                 { label: "Modules", value: stats.modulesCount },
                 { label: "Groupes", value: stats.filieresCount },
               ].map((s) => (
-                <div key={s.label} className="bg-gray-50 rounded-xl p-3 text-center">
-                  <p className="text-2xl font-bold text-ofppt-green">{s.value}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+                <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                  <p className="text-2xl font-bold" style={{ color: "#84CC16" }}>{s.value}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>{s.label}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {/* Paramètres API */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🔑 Paramètres API</h3>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🔑 Paramètres API</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-700">Claude API</span>
-                <span className={claudeKey ? "text-green-600 font-medium" : "text-red-500"}>
+                <span style={{ color: "#9CA3AF" }}>Claude API</span>
+                <span className="font-medium" style={{ color: claudeKey ? "#84CC16" : "#EF4444" }}>
                   {claudeKey ? "✅ Configuré" : "❌ Manquant"}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-700">OpenAI API</span>
-                <span className={openaiKey ? "text-green-600 font-medium" : "text-red-500"}>
+                <span style={{ color: "#9CA3AF" }}>OpenAI API</span>
+                <span className="font-medium" style={{ color: openaiKey ? "#84CC16" : "#EF4444" }}>
                   {openaiKey ? "✅ Configuré" : "❌ Manquant"}
                 </span>
               </div>
               {(!claudeKey && !openaiKey) && (
-                <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-2 mt-2">
+                <p className="text-xs rounded-lg p-2 mt-2" style={{ color: "#F59E0B", background: "#F59E0B14", border: "1px solid #F59E0B30" }}>
                   Ajoutez vos clés API dans le fichier <code>.env</code> pour activer la génération.
                 </p>
               )}
@@ -423,13 +429,19 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Navigation */}
-          <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🧭 Navigation</h3>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🧭 Navigation</h3>
             <div className="space-y-1">
-              <Link href="/" onClick={onClose} className="flex items-center gap-2 text-sm text-gray-700 hover:text-ofppt-green hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
+              <Link href="/" onClick={onClose} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-colors" style={{ color: "#9CA3AF" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#84CC16"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
+              >
                 <span>📝</span> Nouvelle séance
               </Link>
-              <Link href="/historique" onClick={onClose} className="flex items-center gap-2 text-sm text-gray-700 hover:text-ofppt-green hover:bg-gray-50 px-3 py-2 rounded-lg transition-colors">
+              <Link href="/historique" onClick={onClose} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-colors" style={{ color: "#9CA3AF" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#84CC16"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
+              >
                 <span>📂</span> Mes séances
               </Link>
             </div>
@@ -437,7 +449,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
           {/* À venir */}
           <section className="px-5 py-4">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">🚀 À venir</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🚀 À venir</h3>
             <div className="space-y-2">
               {[
                 "Génération de séquences pédagogiques",
@@ -445,8 +457,8 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 "Export groupé (plusieurs séances)",
                 "Planification annuelle automatique",
               ].map((item) => (
-                <div key={item} className="flex items-center gap-2 text-sm text-gray-400">
-                  <span className="w-2 h-2 rounded-full bg-gray-200 shrink-0" />
+                <div key={item} className="flex items-center gap-2 text-sm" style={{ color: "#4B5563" }}>
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: "#1E1E2C" }} />
                   {item}
                 </div>
               ))}

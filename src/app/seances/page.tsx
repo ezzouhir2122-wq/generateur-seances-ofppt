@@ -38,8 +38,8 @@ export default function SeancesPage() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-[#1B3A6E]">Génération de séance</h1>
-        <p className="text-gray-500 mt-1">Remplissez le formulaire pour générer une séance complète en quelques secondes</p>
+        <h1 className="text-2xl font-bold text-white">Génération de séance</h1>
+        <p className="mt-1" style={{ color: "#9CA3AF" }}>Remplissez le formulaire pour générer une séance complète en quelques secondes</p>
       </div>
 
       <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
@@ -52,14 +52,14 @@ export default function SeancesPage() {
         <div className={contenu ? "col-span-1" : "lg:col-span-3"}>
           {isLoading && (
             <div className="card flex flex-col items-center justify-center py-20 gap-4">
-              <div className="w-10 h-10 border-4 border-[#0B6B72] border-t-transparent rounded-full animate-spin" />
-              <p className="text-gray-500 text-sm">Génération de la séance en cours...</p>
+              <div className="w-10 h-10 border-4 border-[#84CC16] border-t-transparent rounded-full animate-spin" />
+              <p className="text-sm" style={{ color: "#9CA3AF" }}>Génération de la séance en cours...</p>
             </div>
           )}
 
           {error && (
-            <div className="card border-red-200 bg-red-50">
-              <p className="text-red-600 text-sm">{error}</p>
+            <div className="card" style={{ borderColor: "#7F1D1D", background: "#2A1010" }}>
+              <p className="text-red-400 text-sm">{error}</p>
             </div>
           )}
 
@@ -73,11 +73,11 @@ export default function SeancesPage() {
           )}
 
           {!isLoading && !contenu && !error && (
-            <div className="card border-dashed border-2 border-gray-200 bg-gray-50/50 flex flex-col items-center justify-center py-20 gap-3">
-              <div className="w-12 h-12 rounded-full bg-[#0B6B72]/10 flex items-center justify-center text-2xl">
+            <div className="card flex flex-col items-center justify-center py-20 gap-3" style={{ borderStyle: "dashed", borderColor: "#1E1E2C" }}>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: "#84CC1614" }}>
                 📄
               </div>
-              <p className="text-gray-400 text-sm">La séance générée apparaîtra ici</p>
+              <p className="text-sm" style={{ color: "#4B5563" }}>La séance générée apparaîtra ici</p>
             </div>
           )}
         </div>

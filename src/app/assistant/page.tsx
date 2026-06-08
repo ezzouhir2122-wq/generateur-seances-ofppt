@@ -141,21 +141,22 @@ export default function AssistantPage() {
 
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <div className="border-b border-gray-100 bg-white px-5 py-3 flex items-center justify-between flex-shrink-0">
+        <div className="px-5 py-3 flex items-center justify-between flex-shrink-0" style={{ borderBottom: "1px solid #1E1E2C", background: "#111116" }}>
           <div>
-            <h1 className="font-bold text-gray-900 text-sm">Assistant pédagogique IA</h1>
-            <p className="text-xs text-gray-500">Questions pédagogiques OFPPT — {domaine}</p>
+            <h1 className="font-bold text-white text-sm">Assistant pédagogique IA</h1>
+            <p className="text-xs" style={{ color: "#9CA3AF" }}>Questions pédagogiques OFPPT — {domaine}</p>
           </div>
           <div className="flex gap-1.5 flex-wrap">
             {DOMAINES.map(d => (
               <button
                 key={d}
                 onClick={() => setDomaine(d)}
-                className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                className="text-xs px-2.5 py-1 rounded-full border transition-colors"
+                style={
                   domaine === d
-                    ? "bg-[#006633] text-white border-[#006633]"
-                    : "border-gray-200 text-gray-600 hover:border-[#006633] hover:text-[#006633]"
-                }`}
+                    ? { background: "#84CC1618", color: "#84CC16", borderColor: "#84CC1640" }
+                    : { borderColor: "#1E1E2C", color: "#9CA3AF" }
+                }
               >
                 {d}
               </button>

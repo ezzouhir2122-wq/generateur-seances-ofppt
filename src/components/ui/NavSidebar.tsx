@@ -97,25 +97,28 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   const initials = (user.name ?? user.email ?? "F").charAt(0).toUpperCase();
 
   return (
-    <aside className="w-[220px] flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "#0B6B72" }}>
+    <aside
+      className="w-[220px] flex-shrink-0 flex flex-col h-screen sticky top-0"
+      style={{ background: "#0D0D12", borderRight: "1px solid #1E1E2C" }}
+    >
       {/* Logo + App name */}
-      <div className="px-5 pt-6 pb-5">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-12 h-12 rounded-xl bg-white overflow-hidden flex-shrink-0 flex items-center justify-center shadow-md">
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={48} height={48} className="object-cover w-full h-full" />
+      <div className="px-5 pt-6 pb-5" style={{ borderBottom: "1px solid #1E1E2C" }}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-cover w-full h-full" />
           </div>
           <div>
             <div className="text-white font-bold text-sm leading-tight">OFPPT</div>
-            <div className="text-white/60 text-[9px] leading-tight">Compétencia IA · OFPPT</div>
+            <div className="text-[10px] leading-tight" style={{ color: "#84CC16" }}>Compétencia IA</div>
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 space-y-4 overflow-y-auto pb-4">
+      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
         {navSections.map((section) => (
           <div key={section.label}>
-            <div className="text-[9px] text-white/40 font-bold tracking-widest px-2 mb-1.5 uppercase">
+            <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>
               {section.label}
             </div>
             <div className="space-y-0.5">
@@ -125,13 +128,16 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 ${
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150"
+                    style={
                       active
-                        ? "bg-white/20 text-white font-semibold shadow-sm"
-                        : "text-white/65 hover:bg-white/10 hover:text-white"
-                    }`}
+                        ? { background: "#84CC1618", color: "#84CC16", fontWeight: 600 }
+                        : { color: "#9CA3AF" }
+                    }
+                    onMouseEnter={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "#17171E"; }}
+                    onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
                   >
-                    <span className={active ? "text-white" : "text-white/50"}>
+                    <span style={{ color: active ? "#84CC16" : "#4B5563" }}>
                       {item.icon}
                     </span>
                     {item.label}
@@ -144,13 +150,16 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
 
         {/* Paramètres */}
         <div>
-          <div className="text-[9px] text-white/40 font-bold tracking-widest px-2 mb-1.5 uppercase">SYSTÈME</div>
+          <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>SYSTÈME</div>
           <div className="space-y-0.5">
             <button
               onClick={onSettingsClick}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 text-white/65 hover:bg-white/10 hover:text-white"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150"
+              style={{ color: "#9CA3AF" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#17171E")}
+              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "")}
             >
-              <span className="text-white/50"><GearIcon /></span>
+              <span style={{ color: "#4B5563" }}><GearIcon /></span>
               Modules & Paramètres
             </button>
           </div>
@@ -158,24 +167,30 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       </nav>
 
       {/* User + footer */}
-      <div className="px-4 pb-5 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+      <div className="px-4 pb-5 pt-3" style={{ borderTop: "1px solid #1E1E2C" }}>
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-8 h-8 rounded-full bg-[#C8A84B] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-black text-xs font-bold flex-shrink-0"
+            style={{ background: "#84CC16" }}
+          >
             {initials}
           </div>
           <div className="min-w-0">
             <div className="text-white text-xs font-semibold truncate">{user.name ?? "Formateur"}</div>
-            <div className="text-white/40 text-[10px] truncate">{user.email}</div>
+            <div className="text-[10px] truncate" style={{ color: "#4B5563" }}>{user.email}</div>
           </div>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full text-xs text-white/50 hover:text-white border border-white/15 hover:border-white/30 rounded-lg py-1.5 transition-colors mb-4"
+          className="w-full text-xs rounded-lg py-1.5 transition-colors mb-4"
+          style={{ color: "#9CA3AF", border: "1px solid #1E1E2C" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#84CC16"; (e.currentTarget as HTMLButtonElement).style.color = "#84CC16"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1E1E2C"; (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; }}
         >
           Déconnexion
         </button>
-        <div className="text-white/30 text-[9px] leading-relaxed">
-          <span className="font-semibold text-white/40">Développé par :</span><br />
+        <div className="text-[9px] leading-relaxed" style={{ color: "#4B5563" }}>
+          <span className="font-semibold" style={{ color: "#4B5563" }}>Développé par :</span><br />
           Mr EZZOUIR Elmustapha<br />
           (9559)
         </div>

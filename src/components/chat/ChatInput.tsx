@@ -34,7 +34,7 @@ export default function ChatInput({ onSend, disabled }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-100 bg-white px-4 py-3">
+    <form onSubmit={handleSubmit} className="px-4 py-3 flex-shrink-0" style={{ borderTop: "1px solid #1E1E2C", background: "#111116" }}>
       <div className="flex gap-2 items-end">
         <textarea
           ref={textareaRef}
@@ -45,20 +45,21 @@ export default function ChatInput({ onSend, disabled }: Props) {
           rows={1}
           disabled={disabled}
           placeholder="Posez votre question pédagogique… (Entrée pour envoyer)"
-          className="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B6B72]/30 focus:border-[#0B6B72] transition-colors bg-gray-50 disabled:opacity-50"
-          style={{ minHeight: "42px", maxHeight: "120px" }}
+          className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#4B5563] focus:outline-none focus:ring-2 focus:ring-[#84CC16]/30 focus:border-[#84CC16] transition-colors disabled:opacity-50"
+          style={{ minHeight: "42px", maxHeight: "120px", background: "#1A1A24", border: "1px solid #1E1E2C" }}
         />
         <button
           type="submit"
           disabled={disabled || !value.trim()}
-          className="w-10 h-10 bg-[#0B6B72] hover:bg-[#084F57] disabled:opacity-40 text-white rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
+          className="w-10 h-10 disabled:opacity-40 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 text-black font-bold"
+          style={{ background: "#84CC16" }}
         >
           <svg className="w-4 h-4 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
           </svg>
         </button>
       </div>
-      <p className="text-[10px] text-gray-400 mt-1.5">Entrée pour envoyer · Maj+Entrée pour nouvelle ligne</p>
+      <p className="text-[10px] mt-1.5" style={{ color: "#4B5563" }}>Entrée pour envoyer · Maj+Entrée pour nouvelle ligne</p>
     </form>
   );
 }

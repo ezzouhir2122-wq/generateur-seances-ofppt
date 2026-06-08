@@ -58,30 +58,31 @@ function FichesContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Fiches pédagogiques</h1>
-        <p className="text-gray-500 text-sm mt-1">Générez une fiche pédagogique complète au format OFPPT</p>
+      <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #1E1E2C" }}>
+        <h1 className="text-2xl font-bold text-white">Fiches pédagogiques</h1>
+        <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>Générez une fiche pédagogique complète au format OFPPT</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FicheForm onGenerate={handleGenerate} isLoading={isLoading} defaultValues={defaultValues} />
         <div className="card">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-4">
-            <h2 className="text-xl font-bold text-ofppt-green">Fiche générée</h2>
+          <div className="flex items-center justify-between pb-4 mb-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h2 className="text-base font-bold" style={{ color: "#84CC16" }}>Fiche générée</h2>
             {ficheId && (
               <button
                 onClick={() => router.push(`/fiches/${ficheId}`)}
-                className="text-sm text-[#006633] hover:underline"
+                className="text-sm hover:underline"
+                style={{ color: "#84CC16" }}
               >
                 Voir le détail →
               </button>
             )}
           </div>
           {contenu ? (
-            <div className="prose prose-sm max-w-none">
+            <div className="prose prose-sm max-w-none prose-invert">
               <ReactMarkdown>{contenu}</ReactMarkdown>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-64 text-gray-400 text-sm">
+            <div className="flex items-center justify-center h-64 text-sm" style={{ color: "#4B5563" }}>
               {isLoading ? "Génération en cours…" : "La fiche apparaîtra ici"}
             </div>
           )}

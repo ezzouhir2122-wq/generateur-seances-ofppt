@@ -23,7 +23,7 @@ export default function AppShell({ children, user, claudeKey, openaiKey }: AppSh
       <div className="flex h-screen overflow-hidden">
         <NavSidebar user={user} onSettingsClick={() => setDashOpen(true)} />
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          <main className="flex-1 overflow-y-auto bg-gray-50">
+          <main className="flex-1 overflow-y-auto" style={{ background: "#0A0A0F" }}>
             {children}
           </main>
         </div>

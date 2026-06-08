@@ -94,7 +94,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-xl font-bold text-ofppt-green border-b border-gray-100 pb-4">
+      <h2 className="text-base font-bold pb-4" style={{ color: "#84CC16", borderBottom: "1px solid #1E1E2C" }}>
         Paramètres de la fiche
       </h2>
 
@@ -120,7 +120,8 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
           <button
             type="button"
             onClick={() => setShowList((s) => !s)}
-            className="flex items-center gap-2 text-sm font-medium text-ofppt-green border border-ofppt-green/40 bg-ofppt-green/5 hover:bg-ofppt-green/10 rounded-lg px-3 py-1.5 transition-colors"
+            className="flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-1.5 transition-colors"
+            style={{ color: "#84CC16", border: "1px solid #84CC1640", background: "#84CC1610" }}
           >
             <span>📋</span>
             <span>Lister les modules ({modules.length})</span>
@@ -128,29 +129,30 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
           </button>
 
           {showList && (
-            <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
+            <div className="mt-2 rounded-lg overflow-hidden" style={{ border: "1px solid #1E1E2C" }}>
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead style={{ background: "#17171E", borderBottom: "1px solid #1E1E2C" }}>
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-24">Code</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Intitulé module</th>
-                    <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide w-20">M.H.G</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide w-24" style={{ color: "#4B5563" }}>Code</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "#4B5563" }}>Intitulé module</th>
+                    <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide w-20" style={{ color: "#4B5563" }}>M.H.G</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {modules.map((m) => (
                     <tr
                       key={m.module}
                       onClick={() => selectModuleFromList(m)}
-                      className={`cursor-pointer transition-colors ${
+                      className="cursor-pointer transition-colors"
+                      style={
                         form.module === m.module
-                          ? "bg-ofppt-green/10 text-ofppt-green"
-                          : "hover:bg-gray-50"
-                      }`}
+                          ? { background: "#84CC1614", color: "#84CC16" }
+                          : { borderBottom: "1px solid #1E1E2C" }
+                      }
                     >
-                      <td className="px-3 py-2 font-mono text-xs text-gray-500">{m.codeModule || "—"}</td>
-                      <td className="px-3 py-2 font-medium">{m.module}</td>
-                      <td className="px-3 py-2 text-right font-semibold text-ofppt-green">{m.mhg}h</td>
+                      <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
+                      <td className="px-3 py-2 font-medium text-white">{m.module}</td>
+                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#84CC16" }}>{m.mhg}h</td>
                     </tr>
                   ))}
                 </tbody>
@@ -167,7 +169,8 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             <label className="label">Code module</label>
             <input
               type="text"
-              className="input-field bg-gray-50 font-mono text-sm tracking-wide"
+              className="input-field font-mono text-sm tracking-wide"
+              style={{ background: "#17171E", color: "#4B5563" }}
               value={form.codeModule ?? ""}
               readOnly
               placeholder="—"
@@ -177,7 +180,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             <label className="label flex items-center justify-between">
               <span>Intitulé module *</span>
               {mhgInfo !== null && (
-                <span className="text-[10px] font-normal bg-ofppt-green/10 text-ofppt-green px-2 py-0.5 rounded-full">
+                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#84CC1614", color: "#84CC16" }}>
                   M.H.G : {mhgInfo}h
                 </span>
               )}
@@ -210,7 +213,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
               required
             />
           </div>
-          <p className="text-xs text-amber-600 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+          <p className="text-xs rounded-lg px-3 py-2" style={{ color: "#F59E0B", background: "#F59E0B14", border: "1px solid #F59E0B30" }}>
             Importez votre tableau Excel dans <strong>Paramètres → Affectation des modules</strong> pour activer les listes automatiques.
           </p>
         </>

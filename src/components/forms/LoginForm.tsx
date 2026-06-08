@@ -35,36 +35,53 @@ export default function LoginForm({ error }: { error?: string }) {
     <form onSubmit={handleSubmit} className="space-y-5">
 
       {localError && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-600 text-sm text-center">{localError}</p>
+        <div className="p-3 rounded-lg" style={{ background: "#2A1010", border: "1px solid #7F1D1D" }}>
+          <p className="text-red-400 text-sm text-center">{localError}</p>
         </div>
       )}
 
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1.5" htmlFor="email">
-          Email
+        <label className="block text-sm font-semibold text-white mb-1.5" htmlFor="email">
+          Courriel professionnel
         </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#006633]/30 focus:border-[#006633] transition-colors bg-gray-50"
-          placeholder="formateur@ofppt.ma"
-          required
-          autoComplete="email"
-        />
+        <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4B5563]">
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <path d="M22 6l-10 7L2 6"/>
+            </svg>
+          </span>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            className="w-full rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#84CC16]/30 focus:border-[#84CC16]"
+            style={{ background: "#1A1A24", border: "1px solid #1E1E2C" }}
+            placeholder="vous@entreprise.com"
+            required
+            autoComplete="email"
+          />
+        </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-600 mb-1.5" htmlFor="password">
+        <label className="block text-sm font-semibold text-white mb-1.5" htmlFor="password">
           Mot de passe
         </label>
         <div className="relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#4B5563]">
+            <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="11" r="3"/>
+              <path d="M7.929 7.929A5 5 0 0117 11v1a1 1 0 01-2 0v-1a3 3 0 10-6 0v1a1 1 0 01-2 0v-1a5 5 0 01.929-2.929"/>
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+            </svg>
+          </span>
           <input
             id="password"
             name="password"
             type={showPassword ? "text" : "password"}
-            className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#006633]/30 focus:border-[#006633] transition-colors bg-gray-50 pr-10"
+            className="w-full rounded-lg pl-10 pr-16 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#84CC16]/30 focus:border-[#84CC16]"
+            style={{ background: "#1A1A24", border: "1px solid #1E1E2C" }}
             placeholder="••••••••"
             required
             autoComplete="current-password"
@@ -72,28 +89,39 @@ export default function LoginForm({ error }: { error?: string }) {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#4B5563] hover:text-[#9CA3AF] text-xs transition-colors"
           >
-            {showPassword ? "Masquer" : "Voir"}
+            {showPassword ? "Masquer" : "Afficher"}
           </button>
         </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-1">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input type="checkbox" className="w-4 h-4 rounded" style={{ accentColor: "#84CC16" }} />
+          <span className="text-xs text-[#9CA3AF]">Afficher le mot de passe</span>
+        </label>
+        <span className="text-xs text-[#9CA3AF] cursor-default">Mot de passe oublié ?</span>
       </div>
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-[#006633] hover:bg-[#005528] text-white font-semibold py-3 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide uppercase mt-2"
+        className="w-full font-bold py-3 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide flex items-center justify-center gap-2"
+        style={{ background: "#84CC16", color: "#000000" }}
+        onMouseEnter={e => !isLoading && ((e.target as HTMLButtonElement).style.background = "#65A30D")}
+        onMouseLeave={e => !isLoading && ((e.target as HTMLButtonElement).style.background = "#84CC16")}
       >
         {isLoading ? (
-          <span className="flex items-center justify-center gap-2">
+          <>
             <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
             </svg>
             Connexion…
-          </span>
+          </>
         ) : (
-          "Se connecter"
+          <>Se connecter <span>›</span></>
         )}
       </button>
 

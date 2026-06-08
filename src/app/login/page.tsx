@@ -9,43 +9,87 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "linear-gradient(135deg, #e8f2f4 0%, #dceef0 50%, #f0f4f5 100%)" }}>
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen flex" style={{ background: "#0A0A0F" }}>
 
-        {/* Card principale */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-
-          {/* En-tête vert */}
-          <div className="px-8 py-8 text-center" style={{ background: "#0B6B72" }}>
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-md mb-4 overflow-hidden">
-              <Image
-                src="/logo-ofppt.jpg"
-                alt="Logo OFPPT"
-                width={80}
-                height={80}
-                className="object-cover w-full h-full"
-              />
-            </div>
-            <h1 className="text-2xl font-bold text-white tracking-wide">Competencia IA</h1>
-            <div className="h-0.5 w-12 bg-[#C8A84B] mx-auto my-2 rounded-full" />
-            <p className="text-white/70 text-sm">
-              Générateur de Séances Pédagogiques
-            </p>
+      {/* Côté gauche — branding */}
+      <div className="hidden lg:flex flex-col justify-between w-1/2 px-16 py-16" style={{ background: "#0D0D14" }}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl overflow-hidden">
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-cover w-full h-full" />
           </div>
-
-          {/* Formulaire */}
-          <div className="px-8 py-7">
-            <LoginForm error={params.error} />
-          </div>
-
+          <span className="text-white font-bold text-sm">Compétencia IA</span>
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-xs text-gray-400 mt-5">
-          © {new Date().getFullYear()} OFPPT — Accès réservé aux formateurs
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 border border-[#84CC16]/40 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-[#84CC16] text-xs">✦</span>
+            <span className="text-[#84CC16] text-xs font-medium">Génération pédagogique · OFPPT</span>
+          </div>
+          <h1 className="text-5xl font-bold text-white leading-tight mb-4">
+            Transformez vos<br />
+            <span className="text-[#84CC16]">séances en quelques</span><br />
+            secondes.
+          </h1>
+          <p className="text-[#9CA3AF] text-base leading-relaxed max-w-sm">
+            Décrivez votre module. L&apos;IA génère une séance pédagogique complète conforme au format OFPPT, prête à être exportée.
+          </p>
 
+          <div className="flex gap-10 mt-10">
+            <div>
+              <p className="text-3xl font-bold text-white">100%</p>
+              <p className="text-[#9CA3AF] text-xs mt-1">Format OFPPT standard</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-white">&#60; 30s</p>
+              <p className="text-[#9CA3AF] text-xs mt-1">Temps de génération moyen</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-white">PDF · Word</p>
+              <p className="text-[#9CA3AF] text-xs mt-1">Export immédiat</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-[#4B5563] text-xs">
+          © {new Date().getFullYear()} OFPPT — Développé par Mr EZZOUIR Elmustapha
+        </p>
       </div>
+
+      {/* Côté droit — formulaire */}
+      <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
+        <div className="w-full max-w-sm">
+
+          {/* Header mobile (caché sur grand écran) */}
+          <div className="flex items-center gap-3 mb-8 lg:hidden">
+            <div className="w-9 h-9 rounded-xl overflow-hidden">
+              <Image src="/logo-ofppt.jpg" alt="OFPPT" width={36} height={36} className="object-cover w-full h-full" />
+            </div>
+            <span className="text-white font-bold">Compétencia IA</span>
+          </div>
+
+          {/* Tabs */}
+          <div className="flex rounded-xl mb-8 p-1" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+            <button className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-colors" style={{ background: "#111116" }}>
+              Se connecter
+            </button>
+            <button className="flex-1 py-2.5 rounded-lg text-sm font-medium text-[#9CA3AF] cursor-default">
+              Créer un compte
+            </button>
+          </div>
+
+          <h2 className="text-2xl font-bold text-white mb-1">Content de te revoir</h2>
+          <p className="text-[#9CA3AF] text-sm mb-7">
+            Connectez-vous pour accéder à votre espace formateur.
+          </p>
+
+          <LoginForm error={params.error} />
+
+          <p className="text-center text-[#4B5563] text-xs mt-8 lg:hidden">
+            © {new Date().getFullYear()} OFPPT — Accès réservé aux formateurs
+          </p>
+        </div>
+      </div>
+
     </div>
   );
 }

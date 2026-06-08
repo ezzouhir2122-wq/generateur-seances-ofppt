@@ -19,6 +19,18 @@ const config: Config = {
           gold: "#C8A84B",
           dark: "#1a1a2e",
         },
+        dark: {
+          base: "#0A0A0F",
+          surface: "#111116",
+          raised: "#17171E",
+          input: "#1A1A24",
+          border: "#1E1E2C",
+        },
+        accent: {
+          DEFAULT: "#84CC16",
+          hover: "#65A30D",
+          muted: "#84CC1620",
+        },
       },
     },
   },

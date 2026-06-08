@@ -12,24 +12,33 @@ interface Props {
 export default function SeanceResult({ contenu, onExportPDF, onExportWord, onReset }: Props) {
   return (
     <div className="card space-y-4">
-      <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-        <h2 className="text-xl font-bold text-ofppt-green">Séance générée</h2>
+      <div className="flex items-center justify-between pb-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+        <h2 className="text-base font-bold" style={{ color: "#84CC16" }}>Séance générée</h2>
         <div className="flex gap-2">
           <button
             onClick={onExportPDF}
-            className="px-4 py-2 text-sm border border-ofppt-green text-ofppt-green rounded-lg hover:bg-ofppt-green hover:text-white transition-colors font-medium"
+            className="px-3 py-1.5 text-xs rounded-lg transition-colors font-medium"
+            style={{ border: "1px solid #84CC1640", color: "#84CC16", background: "#84CC1610" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#84CC1620")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#84CC1610")}
           >
             Exporter PDF
           </button>
           <button
             onClick={onExportWord}
-            className="px-4 py-2 text-sm border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-medium"
+            className="px-3 py-1.5 text-xs rounded-lg transition-colors font-medium"
+            style={{ border: "1px solid #3B82F640", color: "#3B82F6", background: "#3B82F610" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#3B82F620")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#3B82F610")}
           >
             Exporter Word
           </button>
           <button
             onClick={onReset}
-            className="px-4 py-2 text-sm border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors"
+            className="px-3 py-1.5 text-xs rounded-lg transition-colors"
+            style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#84CC1640")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#1E1E2C")}
           >
             Nouvelle séance
           </button>
@@ -38,7 +47,7 @@ export default function SeanceResult({ contenu, onExportPDF, onExportWord, onRes
 
       <div
         id="seance-content"
-        className="prose prose-sm max-w-none prose-headings:text-ofppt-green prose-table:text-sm"
+        className="prose prose-sm max-w-none prose-invert prose-headings:text-[#84CC16] prose-table:text-sm"
       >
         <ReactMarkdown>{contenu}</ReactMarkdown>
       </div>

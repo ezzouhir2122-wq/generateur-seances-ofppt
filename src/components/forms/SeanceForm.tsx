@@ -83,7 +83,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-xl font-bold text-ofppt-green border-b border-gray-100 pb-4">
+      <h2 className="text-base font-bold pb-4" style={{ color: "#84CC16", borderBottom: "1px solid #1E1E2C" }}>
         Paramètres de la séance
       </h2>
 
@@ -104,7 +104,8 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               <button
                 type="button"
                 onClick={() => setShowList((s) => !s)}
-                className="flex items-center gap-2 text-sm font-medium text-ofppt-green border border-ofppt-green/40 bg-ofppt-green/5 hover:bg-ofppt-green/10 rounded-lg px-3 py-1.5 transition-colors"
+                className="flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-1.5 transition-colors"
+              style={{ color: "#84CC16", border: "1px solid #84CC1640", background: "#84CC1610" }}
               >
                 <span>📋</span>
                 <span>Lister les modules ({modules.length})</span>
@@ -112,29 +113,30 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               </button>
 
               {showList && (
-                <div className="mt-2 border border-gray-200 rounded-lg overflow-hidden">
+                <div className="mt-2 rounded-lg overflow-hidden" style={{ border: "1px solid #1E1E2C" }}>
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50 border-b border-gray-200">
+                    <thead style={{ background: "#17171E", borderBottom: "1px solid #1E1E2C" }}>
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-24">Code</th>
-                        <th className="px-3 py-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Intitulé module</th>
-                        <th className="px-3 py-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide w-20">M.H.G</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide w-24" style={{ color: "#4B5563" }}>Code</th>
+                        <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "#4B5563" }}>Intitulé module</th>
+                        <th className="px-3 py-2 text-right text-xs font-semibold uppercase tracking-wide w-20" style={{ color: "#4B5563" }}>M.H.G</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody>
                       {modules.map((m) => (
                         <tr
                           key={m.module}
                           onClick={() => selectModuleFromList(m)}
-                          className={`cursor-pointer transition-colors ${
+                          className="cursor-pointer transition-colors"
+                          style={
                             form.module === m.module
-                              ? "bg-ofppt-green/10 text-ofppt-green"
-                              : "hover:bg-gray-50"
-                          }`}
+                              ? { background: "#84CC1614", color: "#84CC16" }
+                              : { borderBottom: "1px solid #1E1E2C" }
+                          }
                         >
-                          <td className="px-3 py-2 font-mono text-xs text-gray-500">{m.codeModule || "—"}</td>
-                          <td className="px-3 py-2 font-medium">{m.module}</td>
-                          <td className="px-3 py-2 text-right font-semibold text-ofppt-green">{m.mhg}h</td>
+                          <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
+                          <td className="px-3 py-2 font-medium text-white">{m.module}</td>
+                          <td className="px-3 py-2 text-right font-semibold" style={{ color: "#84CC16" }}>{m.mhg}h</td>
                         </tr>
                       ))}
                     </tbody>
@@ -150,7 +152,8 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               <label className="label">Code module</label>
               <input
                 type="text"
-                className="input-field bg-gray-50 font-mono text-sm tracking-wide"
+                className="input-field font-mono text-sm tracking-wide"
+                style={{ background: "#17171E", color: "#4B5563" }}
                 value={form.codeModule ?? ""}
                 readOnly
                 placeholder="—"
@@ -195,7 +198,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               required
             />
           </div>
-          <p className="text-xs text-amber-600 bg-amber-50 rounded-lg p-2">
+          <p className="text-xs rounded-lg p-2" style={{ color: "#F59E0B", background: "#F59E0B14", border: "1px solid #F59E0B30" }}>
             💡 Importez votre fichier Excel via <span className="font-medium">⚙ Paramètres</span> pour remplir automatiquement filières et modules.
           </p>
         </>
@@ -238,11 +241,12 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
           ].map((t) => (
             <label
               key={t.value}
-              className={`flex-1 border rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors ${
+              className="flex-1 rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors"
+              style={
                 form.type === t.value
-                  ? "border-ofppt-green bg-ofppt-green/5 text-ofppt-green font-medium"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
+                  ? { border: "1px solid #84CC1640", background: "#84CC1614", color: "#84CC16", fontWeight: 600 }
+                  : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
+              }
             >
               <input type="radio" name="type" value={t.value} className="hidden" checked={form.type === t.value} onChange={set("type")} />
               {t.label}

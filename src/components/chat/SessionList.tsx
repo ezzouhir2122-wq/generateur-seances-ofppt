@@ -17,39 +17,50 @@ interface Props {
 
 export default function SessionList({ sessions, activeId, onSelect, onNew, onDelete }: Props) {
   return (
-    <div className="w-56 flex-shrink-0 border-r border-gray-100 bg-white flex flex-col h-full">
-      <div className="p-3 border-b border-gray-100">
+    <div className="w-56 flex-shrink-0 flex flex-col h-full" style={{ borderRight: "1px solid #1E1E2C", background: "#0D0D12" }}>
+      <div className="p-3" style={{ borderBottom: "1px solid #1E1E2C" }}>
         <button
           onClick={onNew}
-          className="w-full bg-[#0B6B72] hover:bg-[#084F57] text-white text-sm font-medium py-2 rounded-lg transition-colors"
+          className="w-full text-black text-sm font-medium py-2 rounded-lg transition-colors"
+          style={{ background: "#84CC16" }}
+          onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#65A30D")}
+          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#84CC16")}
         >
           + Nouvelle conversation
         </button>
       </div>
       <div className="flex-1 overflow-y-auto">
         {sessions.length === 0 ? (
-          <p className="text-xs text-gray-400 p-3 text-center">Aucune conversation</p>
+          <p className="text-xs p-3 text-center" style={{ color: "#4B5563" }}>Aucune conversation</p>
         ) : (
           sessions.map((s) => (
             <div
               key={s.id}
               onClick={() => onSelect(s.id)}
-              className={`group flex items-start gap-2 px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 ${
-                activeId === s.id ? "bg-teal-50 border-l-2 border-l-[#0B6B72]" : ""
-              }`}
+              className="group flex items-start gap-2 px-3 py-2.5 cursor-pointer transition-colors"
+              style={{
+                borderBottom: "1px solid #1E1E2C",
+                background: activeId === s.id ? "#84CC1610" : "transparent",
+                borderLeft: activeId === s.id ? "2px solid #84CC16" : "2px solid transparent",
+              }}
+              onMouseEnter={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "#17171E"; }}
+              onMouseLeave={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
             >
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium text-[#0B6B72] truncate">{s.domaine}</div>
-                <div className="text-xs text-gray-500 truncate mt-0.5">
+                <div className="text-xs font-medium truncate" style={{ color: activeId === s.id ? "#84CC16" : "#9CA3AF" }}>{s.domaine}</div>
+                <div className="text-xs truncate mt-0.5" style={{ color: "#4B5563" }}>
                   {s.messages[0]?.content ?? "Nouvelle conversation"}
                 </div>
-                <div className="text-[10px] text-gray-400 mt-0.5">
+                <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>
                   {new Date(s.createdAt).toLocaleDateString("fr-FR")}
                 </div>
               </div>
               <button
                 onClick={(e) => { e.stopPropagation(); onDelete(s.id); }}
-                className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500 transition-all text-xs mt-0.5"
+                className="opacity-0 group-hover:opacity-100 transition-all text-xs mt-0.5"
+                style={{ color: "#4B5563" }}
+                onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = "#EF4444")}
+                onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = "#4B5563")}
               >
                 ✕
               </button>
