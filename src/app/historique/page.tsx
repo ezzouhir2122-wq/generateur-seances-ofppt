@@ -50,7 +50,7 @@ export default async function HistoriquePage() {
             {seances.length} séance{seances.length !== 1 ? "s" : ""} générée{seances.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Link href="/" className="btn-primary text-sm">
+        <Link href="/seances" className="btn-primary text-sm">
           + Nouvelle séance
         </Link>
       </div>
@@ -59,7 +59,7 @@ export default async function HistoriquePage() {
         <div className="card border-dashed border-2 border-gray-200 bg-gray-50/50 flex flex-col items-center justify-center py-20 gap-3">
           <div className="text-4xl">📄</div>
           <p className="text-gray-400 text-sm">Aucune séance sauvegardée pour l'instant</p>
-          <Link href="/" className="btn-primary text-sm mt-2">
+          <Link href="/seances" className="btn-primary text-sm mt-2">
             Générer ma première séance
           </Link>
         </div>

@@ -4,6 +4,9 @@
 
 @layer base {
   :root {
+    --ofppt-teal: #0B6B72;
+    --ofppt-teal-hover: #0D7E88;
+    --ofppt-navy: #1B3A6E;
     --ofppt-green: #006633;
     --ofppt-gold: #C8A84B;
   }
@@ -15,7 +18,7 @@
 
 @layer components {
   .btn-primary {
-    @apply bg-ofppt-green hover:bg-ofppt-lightgreen text-white font-semibold px-6 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-[#0B6B72] hover:bg-[#0D7E88] text-white font-semibold px-6 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .card {
@@ -23,7 +26,7 @@
   }
 
   .input-field {
-    @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-ofppt-green/40 focus:border-ofppt-green transition-colors;
+    @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#0B6B72]/40 focus:border-[#0B6B72] transition-colors;
   }
 
   .label {

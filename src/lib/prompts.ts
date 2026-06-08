@@ -22,16 +22,27 @@ Format la réponse en markdown avec les sections suivantes :
 ## Évaluation`;
 }
 
+const FICHE_ANNEE_LABELS: Record<string, string> = {
+  "1ere-annee": "1ère Année",
+  "2eme-annee": "2ème Année",
+  "3eme-annee": "3ème Année",
+};
+
 export function buildFichePrompt(data: FicheFormData): string {
+  const niveauLabel = data.niveau === "TS" ? "Technicien Spécialisé" : "Technicien";
+  const anneeLabel = FICHE_ANNEE_LABELS[data.annee ?? ""] ?? "";
+  const niveauFull = anneeLabel ? `${niveauLabel} — ${anneeLabel}` : niveauLabel;
+  const moduleLabel = data.codeModule ? `${data.codeModule} — ${data.module}` : data.module;
+
   return `Tu es un expert en pédagogie OFPPT. Génère une fiche pédagogique complète au format officiel OFPPT.
 
 Filière : ${data.filiere}
-Module : ${data.module}
+Module : ${moduleLabel}
 Intitulé de la séance : ${data.intitule}
 Formateur : ${data.formateur}
 Durée : ${data.duree}
 Type : ${data.type}
-Niveau : ${data.niveau}
+Niveau : ${niveauFull}
 
 Objectifs pédagogiques :
 - Savoir : ${data.objectifsSavoir}

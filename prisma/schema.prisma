@@ -86,3 +86,62 @@ model ChatMessage {
   sessionId String
   session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
+
+// ─── Référentiel Pédagogique OFPPT ───────────────────────────────────────────
+
+model Secteur {
+  id        String    @id @default(cuid())
+  nom       String
+  code      String?
+  filieres  Filiere[]
+  createdAt DateTime  @default(now())
+}
+
+model Filiere {
+  id        String      @id @default(cuid())
+  nom       String
+  code      String?
+  secteurId String
+  secteur   Secteur     @relation(fields: [secteurId], references: [id], onDelete: Cascade)
+  modules   RefModule[]
+  createdAt DateTime    @default(now())
+}
+
+model RefModule {
+  id          String       @id @default(cuid())
+  nom         String
+  code        String?
+  mhg         Int?
+  filiereId   String
+  filiere     Filiere      @relation(fields: [filiereId], references: [id], onDelete: Cascade)
+  competences Competence[]
+  createdAt   DateTime     @default(now())
+
+  @@map("RefModule")
+}
+
+model Competence {
+  id        String     @id @default(cuid())
+  titre     String
+  moduleId  String
+  module    RefModule  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  objectifs Objectif[]
+  createdAt DateTime   @default(now())
+}
+
+model Objectif {
+  id           String               @id @default(cuid())
+  titre        String
+  competenceId String
+  competence   Competence           @relation(fields: [competenceId], references: [id], onDelete: Cascade)
+  criteres     CriterePerformance[]
+  createdAt    DateTime             @default(now())
+}
+
+model CriterePerformance {
+  id          String   @id @default(cuid())
+  description String   @db.Text
+  objectifId  String
+  objectif    Objectif @relation(fields: [objectifId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}

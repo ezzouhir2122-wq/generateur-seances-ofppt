@@ -13,6 +13,12 @@ interface Stats {
   filieresCount: number;
 }
 
+interface ReferentielStats {
+  secteur: string;
+  filiere: string;
+  stats: { modulesCreated: number; competencesCreated: number; objectifsCreated: number; criteresCreated: number };
+}
+
 interface ModuleRow {
   groupe: string;
   codeModule: string;
@@ -33,6 +39,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
   const [preview, setPreview] = useState<{ rows: number; data: ModuleRow[] } | null>(null);
   const [importing, setImporting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Référentiel pédagogique state
+  const [refFile, setRefFile] = useState<File | null>(null);
+  const [refUploading, setRefUploading] = useState(false);
+  const [refResult, setRefResult] = useState<ReferentielStats | null>(null);
+  const [refError, setRefError] = useState<string | null>(null);
+  const refFileRef = useRef<HTMLInputElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const loadStats = useCallback(async () => {
@@ -65,13 +78,18 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
         // Détection des colonnes par nom d'en-tête (format OFPPT)
         const headers = Object.keys(raw[0]);
-        const find = (keywords: string[]) =>
-          headers.find((h) => keywords.some((k) => h.toLowerCase().replace(/[.\s]/g, "").includes(k.replace(/[.\s]/g, "")))) ?? "";
+        const matched = new Set<string>();
+        const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[\s._-]/g, "");
+        const find = (keywords: string[]) => {
+          const h = headers.find((h) => !matched.has(h) && keywords.some((k) => norm(h).includes(norm(k)))) ?? "";
+          if (h) matched.add(h);
+          return h;
+        };
 
-        const colFiliere = find(["filière", "filiere", "filiére", "groupe", "group", "section"]);
-        const colCode = find(["code module", "codemodule", "code_module", "code"]);
-        const colIntitule = find(["intitulé module", "intitulemodule", "intitulé", "module", "libellé", "matière", "désignation"]);
-        const colMhg = find(["masse horaire", "massehoraire", "mhg", "mh.g", "charge horaire", "chargehoraire", "horaire", "volume", "heure"]);
+        const colFiliere = find(["filiere", "filière", "groupe", "group", "section"]);
+        const colCode    = find(["code module", "codemodule", "code_module", "code"]);
+        const colIntitule = find(["intitule module", "intitulé module", "intituledumodule", "intitule du module", "intitule", "intitulé", "libelle", "libellé", "matiere", "designation"]);
+        const colMhg    = find(["masse horaire", "massehoraire", "mhg", "mh.g", "charge horaire", "chargehoraire", "horaire", "volume", "heure"]);
 
         const data = raw
           .map((r) => ({
@@ -116,6 +134,42 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
     await fetch("/api/modules", { method: "DELETE" });
     toast.success("Modules réinitialisés");
     loadStats();
+  };
+
+  const handleRefFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setRefFile(file);
+    setRefResult(null);
+    setRefError(null);
+  };
+
+  const uploadReferentiel = async () => {
+    if (!refFile) return;
+    setRefUploading(true);
+    setRefError(null);
+    try {
+      const fd = new FormData();
+      fd.append("file", refFile);
+      const res = await fetch("/api/referentiel", { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Erreur inconnue");
+      setRefResult(json);
+      setRefFile(null);
+      if (refFileRef.current) refFileRef.current.value = "";
+      toast.success("Référentiel importé avec succès");
+    } catch (err) {
+      setRefError(err instanceof Error ? err.message : "Erreur lors de l'import");
+    } finally {
+      setRefUploading(false);
+    }
+  };
+
+  const resetReferentiel = async () => {
+    if (!confirm("Supprimer tout le référentiel importé ?")) return;
+    await fetch("/api/referentiel", { method: "DELETE" });
+    setRefResult(null);
+    toast.success("Référentiel réinitialisé");
   };
 
   return (
@@ -183,7 +237,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
             {!preview ? (
               <div className="space-y-3">
-                <label className="flex items-center gap-2 cursor-pointer w-full justify-center bg-[#006633] hover:bg-[#005528] text-white text-sm py-2.5 rounded-lg transition-colors">
+                <label className="flex items-center gap-2 cursor-pointer w-full justify-center bg-[#0B6B72] hover:bg-[#084F57] text-white text-sm py-2.5 rounded-lg transition-colors">
                   <span>📥</span> Importer fichier Excel (.xlsx)
                   <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFile} />
                 </label>
@@ -192,10 +246,10 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <p>Colonnes détectées automatiquement par nom d'en-tête.</p>
                   <p>Colonnes attendues :</p>
                   <div className="font-mono bg-white border rounded px-2 py-1.5 mt-1 text-[10px] text-gray-600 space-y-0.5">
-                    <p>• <span className="text-[#006633] font-semibold">Filière</span></p>
-                    <p>• <span className="text-[#006633] font-semibold">Code Module</span></p>
-                    <p>• <span className="text-[#006633] font-semibold">Intitulé module</span></p>
-                    <p>• <span className="text-[#006633] font-semibold">Masse horaire</span></p>
+                    <p>• <span className="text-[#0B6B72] font-semibold">Filière</span></p>
+                    <p>• <span className="text-[#0B6B72] font-semibold">Code Module</span></p>
+                    <p>• <span className="text-[#0B6B72] font-semibold">Intitulé module</span></p>
+                    <p>• <span className="text-[#0B6B72] font-semibold">Masse horaire</span></p>
                   </div>
                 </div>
               </div>
@@ -234,7 +288,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <button
                     onClick={confirmImport}
                     disabled={importing}
-                    className="flex-1 bg-[#006633] hover:bg-[#005528] text-white text-sm py-2 rounded-lg transition-colors disabled:opacity-50"
+                    className="flex-1 bg-[#0B6B72] hover:bg-[#084F57] text-white text-sm py-2 rounded-lg transition-colors disabled:opacity-50"
                   >
                     {importing ? "Import en cours…" : "✅ Confirmer l'import"}
                   </button>
@@ -247,6 +301,84 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 </div>
               </div>
             )}
+          </section>
+
+          {/* Référentiel Pédagogique */}
+          <section className="px-5 py-4">
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">📚 Référentiel Pédagogique OFPPT</h3>
+            <p className="text-xs text-gray-400 mb-3">Importez un référentiel (PDF, DOCX, Excel) — l'IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
+
+            {refResult && (
+              <div className="bg-green-50 border border-green-200 rounded-lg px-3 py-2 mb-3">
+                <p className="text-sm font-semibold text-green-800">✅ Importé avec succès</p>
+                <p className="text-xs text-green-700 mt-0.5">
+                  <span className="font-medium">{refResult.filiere}</span> · {refResult.secteur}
+                </p>
+                <p className="text-xs text-green-600 mt-1">
+                  {refResult.stats.modulesCreated} modules · {refResult.stats.competencesCreated} compétences · {refResult.stats.objectifsCreated} objectifs · {refResult.stats.criteresCreated} critères
+                </p>
+                <button onClick={resetReferentiel} className="text-xs text-red-500 hover:text-red-700 mt-1.5">🗑 Vider le référentiel</button>
+              </div>
+            )}
+
+            {refError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-3">
+                <p className="text-xs text-red-700">{refError}</p>
+              </div>
+            )}
+
+            {!refFile ? (
+              <label className="flex items-center gap-2 cursor-pointer w-full justify-center bg-[#1B3A6E] hover:bg-[#152e5a] text-white text-sm py-2.5 rounded-lg transition-colors">
+                <span>📥</span> Importer un référentiel
+                <input
+                  ref={refFileRef}
+                  type="file"
+                  accept=".pdf,.docx,.doc,.xlsx,.xls,.md,.markdown"
+                  className="hidden"
+                  onChange={handleRefFile}
+                />
+              </label>
+            ) : (
+              <div className="space-y-2">
+                <div className="bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                  <p className="text-xs font-semibold text-blue-800 truncate">📄 {refFile.name}</p>
+                  <p className="text-[10px] text-blue-600">{(refFile.size / 1024).toFixed(0)} Ko</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={uploadReferentiel}
+                    disabled={refUploading}
+                    className="flex-1 bg-[#1B3A6E] hover:bg-[#152e5a] text-white text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {refUploading ? (
+                      <>
+                        <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Extraction IA…
+                      </>
+                    ) : "🤖 Extraire & Importer"}
+                  </button>
+                  <button
+                    onClick={() => { setRefFile(null); if (refFileRef.current) refFileRef.current.value = ""; }}
+                    className="px-3 border border-gray-300 text-gray-600 text-sm rounded-lg hover:bg-gray-50"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                  <p className="text-[10px] text-amber-700">L'extraction IA peut prendre 15–30 secondes selon la taille du document.</p>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-3 bg-gray-50 rounded-lg p-3 text-xs text-gray-500 space-y-1">
+              <p className="font-semibold text-gray-600">Formats acceptés :</p>
+              <div className="flex gap-2 flex-wrap mt-1">
+                {["PDF", "DOCX", "Excel", "MD"].map((f) => (
+                  <span key={f} className="bg-white border border-gray-200 rounded px-2 py-0.5 font-mono text-[10px] text-[#0B6B72]">{f}</span>
+                ))}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1">L'IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
+            </div>
           </section>
 
           {/* Stats */}

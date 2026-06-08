@@ -44,6 +44,15 @@ export async function POST(req: Request) {
     }
   }
 
+  const anneeLabels: Record<string, string> = {
+    "1ere-annee": "1ère Année",
+    "2eme-annee": "2ème Année",
+    "3eme-annee": "3ème Année",
+  };
+  const niveauLabel = data.niveau === "TS" ? "Technicien Spécialisé" : data.niveau === "T" ? "Technicien" : data.niveau;
+  const anneeLabel = anneeLabels[data.annee ?? ""] ?? "";
+  const niveauDb = anneeLabel ? `${niveauLabel} - ${anneeLabel}` : niveauLabel;
+
   const fiche = await prisma.fiche.create({
     data: {
       titre: `${data.module} — ${data.intitule}`,
@@ -51,7 +60,7 @@ export async function POST(req: Request) {
       module: data.module,
       formateur: data.formateur,
       duree: data.duree,
-      niveau: data.niveau,
+      niveau: niveauDb,
       type: data.type,
       objectifsSavoir: data.objectifsSavoir,
       objectifsSavoirFaire: data.objectifsSavoirFaire,

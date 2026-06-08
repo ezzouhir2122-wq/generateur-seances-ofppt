@@ -10,8 +10,12 @@ const config: Config = {
     extend: {
       colors: {
         ofppt: {
-          green: "#006633",
-          lightgreen: "#009944",
+          teal: "#0B6B72",
+          tealhover: "#0D7E88",
+          tealdark: "#084F57",
+          navy: "#1B3A6E",
+          green: "#0B6B72",
+          lightgreen: "#0D7E88",
           gold: "#C8A84B",
           dark: "#1a1a2e",
         },

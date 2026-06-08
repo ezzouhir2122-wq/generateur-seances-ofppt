@@ -10,16 +10,80 @@ interface NavSidebarProps {
   onSettingsClick: () => void;
 }
 
-const navItems = [
-  { section: "OUTILS", items: [
-    { href: "/", label: "Séances", icon: "📝", exact: true },
-    { href: "/fiches", label: "Fiches pédag.", icon: "📋", exact: true },
-    { href: "/assistant", label: "Assistant IA", icon: "🤖", exact: false },
-  ]},
-  { section: "HISTORIQUE", items: [
-    { href: "/historique", label: "Mes séances", icon: "🕒", exact: false },
-    { href: "/fiches/historique", label: "Mes fiches", icon: "📁", exact: false },
-  ]},
+const HomeIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+    <path d="M9 21V12h6v9"/>
+  </svg>
+);
+
+const GridIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+  </svg>
+);
+
+const LightningIcon = () => (
+  <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+  </svg>
+);
+
+const ClipboardIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+    <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+  </svg>
+);
+
+const ChatIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  </svg>
+);
+
+const GearIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="3"/>
+    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+  </svg>
+);
+
+const navSections = [
+  {
+    label: "PRINCIPAL",
+    items: [
+      { href: "/", label: "Tableau de bord", icon: <HomeIcon />, exact: true },
+    ],
+  },
+  {
+    label: "GÉNÉRATION IA",
+    items: [
+      { href: "/seances", label: "Séance pédagogique", icon: <LightningIcon />, exact: false },
+      { href: "/fiches", label: "Fiche pédagogique", icon: <ClipboardIcon />, exact: true },
+    ],
+  },
+  {
+    label: "HISTORIQUE",
+    items: [
+      { href: "/historique", label: "Mes séances", icon: <ClockIcon />, exact: false },
+      { href: "/fiches/historique", label: "Mes fiches", icon: <GridIcon />, exact: false },
+    ],
+  },
+  {
+    label: "ASSISTANT",
+    items: [
+      { href: "/assistant", label: "Assistant IA", icon: <ChatIcon />, exact: false },
+    ],
+  },
 ];
 
 export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
@@ -33,78 +97,88 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   const initials = (user.name ?? user.email ?? "F").charAt(0).toUpperCase();
 
   return (
-    <aside className="w-[190px] flex-shrink-0 bg-[#006633] flex flex-col h-screen sticky top-0">
-      {/* Logo */}
-      <div className="flex items-center gap-2.5 px-4 pt-5 pb-6">
-        <div className="w-8 h-8 rounded-full bg-white overflow-hidden flex-shrink-0">
-          <Image src="/logo-ofppt.jpg" alt="OFPPT" width={32} height={32} className="object-cover w-full h-full" />
-        </div>
-        <div>
-          <div className="text-white font-bold text-sm leading-tight">Competencia IA</div>
-          <div className="text-green-300 text-[10px]">OFPPT</div>
+    <aside className="w-[220px] flex-shrink-0 flex flex-col h-screen sticky top-0" style={{ background: "#0B6B72" }}>
+      {/* Logo + App name */}
+      <div className="px-5 pt-6 pb-5">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-12 h-12 rounded-xl bg-white overflow-hidden flex-shrink-0 flex items-center justify-center shadow-md">
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={48} height={48} className="object-cover w-full h-full" />
+          </div>
+          <div>
+            <div className="text-white font-bold text-sm leading-tight">OFPPT</div>
+            <div className="text-white/60 text-[9px] leading-tight">Compétencia IA · OFPPT</div>
+          </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 space-y-5 overflow-y-auto">
-        {navItems.map((group) => (
-          <div key={group.section}>
-            <div className="text-[10px] text-green-300 font-semibold tracking-widest px-2 mb-1.5">
-              {group.section}
+      <nav className="flex-1 px-3 space-y-4 overflow-y-auto pb-4">
+        {navSections.map((section) => (
+          <div key={section.label}>
+            <div className="text-[9px] text-white/40 font-bold tracking-widest px-2 mb-1.5 uppercase">
+              {section.label}
             </div>
             <div className="space-y-0.5">
-              {group.items.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    isActive(item.href, item.exact)
-                      ? "bg-white/20 text-white font-semibold"
-                      : "text-green-200 hover:bg-white/10 hover:text-white"
-                  }`}
-                >
-                  <span className="text-base">{item.icon}</span>
-                  {item.label}
-                </Link>
-              ))}
+              {section.items.map((item) => {
+                const active = isActive(item.href, item.exact);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 ${
+                      active
+                        ? "bg-white/20 text-white font-semibold shadow-sm"
+                        : "text-white/65 hover:bg-white/10 hover:text-white"
+                    }`}
+                  >
+                    <span className={active ? "text-white" : "text-white/50"}>
+                      {item.icon}
+                    </span>
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
           </div>
         ))}
 
         {/* Paramètres */}
         <div>
-          <div className="text-[10px] text-green-300 font-semibold tracking-widest px-2 mb-1.5">
-            SYSTÈME
-          </div>
+          <div className="text-[9px] text-white/40 font-bold tracking-widest px-2 mb-1.5 uppercase">SYSTÈME</div>
           <div className="space-y-0.5">
             <button
               onClick={onSettingsClick}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-green-200 hover:bg-white/10 hover:text-white"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 text-white/65 hover:bg-white/10 hover:text-white"
             >
-              <span className="text-base">⚙</span>
-              Paramètres
+              <span className="text-white/50"><GearIcon /></span>
+              Modules & Paramètres
             </button>
           </div>
         </div>
       </nav>
 
-      {/* User + logout */}
-      <div className="px-3 pb-4 pt-3 border-t border-white/15">
+      {/* User + footer */}
+      <div className="px-4 pb-5 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="w-7 h-7 rounded-full bg-[#C8A84B] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-[#C8A84B] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
             <div className="text-white text-xs font-semibold truncate">{user.name ?? "Formateur"}</div>
-            <div className="text-green-300 text-[10px] truncate">{user.email}</div>
+            <div className="text-white/40 text-[10px] truncate">{user.email}</div>
           </div>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full text-xs text-green-300 hover:text-white border border-white/20 hover:border-white/40 rounded-lg py-1.5 transition-colors"
+          className="w-full text-xs text-white/50 hover:text-white border border-white/15 hover:border-white/30 rounded-lg py-1.5 transition-colors mb-4"
         >
           Déconnexion
         </button>
+        <div className="text-white/30 text-[9px] leading-relaxed">
+          <span className="font-semibold text-white/40">Développé par :</span><br />
+          Mr EZZOUIR Elmustapha<br />
+          (9559)
+        </div>
       </div>
     </aside>
   );
