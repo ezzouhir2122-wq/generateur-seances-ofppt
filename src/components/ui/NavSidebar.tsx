@@ -138,7 +138,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-4 space-y-4 overflow-y-auto">
+      <nav className="flex-1 px-3 py-3 space-y-2 overflow-y-auto">
         {navSections.map((section) => (
           <div key={section.label}>
             <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>
@@ -151,7 +151,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150"
+                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
                     style={
                       active
                         ? { background: "#84CC1618", color: "#84CC16", fontWeight: 600 }
@@ -177,7 +177,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           <div className="space-y-0.5">
             <button
               onClick={onSettingsClick}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
               style={{ color: "#9CA3AF" }}
               onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#17171E")}
               onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "")}
