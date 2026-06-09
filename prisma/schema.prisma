@@ -160,6 +160,8 @@ model Groupe {
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   stagiaires Stagiaire[]
   createdAt  DateTime    @default(now())
+
+  @@index([userId])
 }
 
 model Stagiaire {
@@ -171,6 +173,8 @@ model Stagiaire {
   groupe       Groupe                  @relation(fields: [groupeId], references: [id], onDelete: Cascade)
   progressions ProgressionCompetence[]
   createdAt    DateTime                @default(now())
+
+  @@index([groupeId])
 }
 
 model ProgressionCompetence {
