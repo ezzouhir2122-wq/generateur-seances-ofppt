@@ -152,6 +152,61 @@ Pour chaque exercice :
 Génère des exercices progressifs avec un contexte réaliste adapté au secteur ${data.filiere}. Inclure le nombre de points par exercice.`;
   }
 
+  if (data.type === "controle") {
+    const duree = data.dureeExamen ?? "1h";
+    return `Tu es un expert en évaluation pédagogique OFPPT. Génère un contrôle continu complet pour :
+- Filière : ${data.filiere}
+- Module : ${moduleLabel}
+- Niveau : ${niveauFull}
+- Durée : ${duree}${themeStr}${themesStr}
+
+**Format de sortie (Markdown) :**
+
+# Contrôle Continu — ${moduleLabel}
+
+## En-tête
+| Établissement | Filière | Module | Niveau | Durée | Note |
+|---------------|---------|--------|--------|-------|------|
+| OFPPT | ${data.filiere} | ${moduleLabel} | ${niveauFull} | ${duree} | /20 |
+
+*Documents : Non autorisés sauf indication contraire*
+
+---
+
+## SUJET
+
+### Partie 1 — Questions de cours (X pts)
+(Questions directes sur les notions essentielles de la période évaluée)
+...
+
+### Partie 2 — QCM (X pts)
+(5 à 8 questions à choix multiples ciblées)
+**Q1 — ...**
+A) ... B) ... C) ... D) ...
+...
+
+### Partie 3 — Application (X pts)
+(Exercice(s) d'application sur le chapitre couvert)
+...
+
+---
+
+## CORRIGÉ ET BARÈME
+
+### Barème
+| Partie | Points |
+|--------|--------|
+| Partie 1 — Questions de cours | /X |
+| Partie 2 — QCM | /X |
+| Partie 3 — Application | /X |
+| **Total** | **/20** |
+
+### Correction détaillée
+...
+
+Génère un contrôle continu équilibré, adapté à une évaluation intermédiaire (pas un examen final). Couvrir les notions récentes du module, avec un niveau de difficulté modéré et un corrigé complet.`;
+  }
+
   if (data.type === "examen") {
     const duree = data.dureeExamen ?? "2h";
     return `Tu es un expert en évaluation OFPPT. Génère un examen de fin de module complet pour :

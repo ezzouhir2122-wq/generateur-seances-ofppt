@@ -14,6 +14,7 @@ interface Props {
 const TYPES: { value: EvaluationType; label: string; icon: string; desc: string }[] = [
   { value: "qcm", label: "QCM", icon: "☑", desc: "Questions + Réponses + Corrigé" },
   { value: "exercices", label: "Exercices", icon: "✏", desc: "Exercices pratiques corrigés" },
+  { value: "controle", label: "Contrôle continu", icon: "📋", desc: "Cours + QCM + Application" },
   { value: "examen", label: "Examen", icon: "📝", desc: "Sujet + Corrigé + Barème" },
   { value: "rattrapage", label: "Rattrapage", icon: "🔄", desc: "Session de rattrapage" },
 ];
@@ -81,7 +82,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
       {/* Type selector */}
       <div>
         <label className="label">Type d&apos;évaluation *</label>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
           {TYPES.map(t => (
             <label
               key={t.value}
@@ -171,20 +172,14 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
           </div>
           <div>
             <label className="label">Nombre de questions</label>
-            <div className="flex gap-2">
-              {[5, 10, 15, 20].map(n => (
-                <label key={n} className="flex-1 rounded-lg py-2 text-sm text-center cursor-pointer transition-colors"
-                  style={
-                    form.nbQuestions === n
-                      ? { border: "1px solid #84CC1640", background: "#84CC1614", color: "#84CC16", fontWeight: 600 }
-                      : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
-                  }>
-                  <input type="radio" name="nbQuestions" className="hidden" checked={form.nbQuestions === n}
-                    onChange={() => setForm(prev => ({ ...prev, nbQuestions: n }))} />
-                  {n}
-                </label>
-              ))}
-            </div>
+            <input
+              type="number"
+              className="input-field"
+              placeholder="Ex: 10, 15, 20…"
+              min={1}
+              value={form.nbQuestions ?? ""}
+              onChange={e => setForm(prev => ({ ...prev, nbQuestions: e.target.value ? parseInt(e.target.value) : undefined }))}
+            />
           </div>
         </>
       )}
@@ -215,24 +210,24 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
         </>
       )}
 
+      {form.type === "controle" && (
+        <>
+          <div>
+            <label className="label">Thème / Chapitre évalué</label>
+            <input className="input-field" placeholder="Ex: Comptabilité des stocks" value={form.theme ?? ""} onChange={set("theme")} />
+          </div>
+          <div>
+            <label className="label">Durée du contrôle</label>
+            <input className="input-field" placeholder="Ex: 45min, 1h, 1h30…" value={form.dureeExamen ?? ""} onChange={set("dureeExamen")} />
+          </div>
+        </>
+      )}
+
       {(form.type === "examen" || form.type === "rattrapage") && (
         <>
           <div>
             <label className="label">Durée de l&apos;examen</label>
-            <div className="flex gap-2">
-              {["1h", "1h30", "2h", "3h"].map(d => (
-                <label key={d} className="flex-1 rounded-lg py-2 text-sm text-center cursor-pointer transition-colors"
-                  style={
-                    form.dureeExamen === d
-                      ? { border: "1px solid #84CC1640", background: "#84CC1614", color: "#84CC16", fontWeight: 600 }
-                      : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
-                  }>
-                  <input type="radio" name="dureeExamen" className="hidden" checked={form.dureeExamen === d}
-                    onChange={() => setForm(prev => ({ ...prev, dureeExamen: d }))} />
-                  {d}
-                </label>
-              ))}
-            </div>
+            <input className="input-field" placeholder="Ex: 1h30, 2h, 3h…" value={form.dureeExamen ?? ""} onChange={set("dureeExamen")} />
           </div>
           <div>
             <label className="label">Thèmes couverts</label>

@@ -20,7 +20,7 @@ export interface SeanceGeneree {
   createdAt?: Date;
 }
 
-export type EvaluationType = "qcm" | "exercices" | "examen" | "rattrapage";
+export type EvaluationType = "qcm" | "exercices" | "controle" | "examen" | "rattrapage";
 
 export interface EvaluationFormData {
   type: EvaluationType;

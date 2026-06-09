@@ -9,6 +9,7 @@ import { exportToPDF, exportToWord } from "@/lib/export";
 const TYPE_LABELS: Record<EvaluationType, string> = {
   qcm: "QCM",
   exercices: "Exercices pratiques",
+  controle: "Contrôle continu",
   examen: "Examen fin de module",
   rattrapage: "Session de rattrapage",
 };
@@ -94,6 +95,7 @@ export default function EvaluationsPage() {
               {[
                 { icon: "☑", title: "QCM", desc: "Questions à choix multiples avec corrigé automatique. Idéal pour l'évaluation formative rapide." },
                 { icon: "✏", title: "Exercices pratiques", desc: "Exercices d'application sur le module avec correction détaillée et barème." },
+                { icon: "📋", title: "Contrôle continu", desc: "Évaluation intermédiaire : questions de cours + QCM + application. Corrigé et barème /20 inclus." },
                 { icon: "📝", title: "Examen fin de module", desc: "Sujet complet d'examen avec corrigé et grille de notation sur 20." },
                 { icon: "🔄", title: "Session de rattrapage", desc: "Sujet de rattrapage ciblant les compétences essentielles, avec corrigé." },
               ].map(card => (
