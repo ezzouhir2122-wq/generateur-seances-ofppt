@@ -4,7 +4,7 @@ import { useState } from "react";
 import SeanceForm from "@/components/forms/SeanceForm";
 import SeanceResult from "@/components/ui/SeanceResult";
 import { SeanceFormData } from "@/types/seance";
-import { exportToPDF, exportToWord } from "@/lib/export";
+import { exportToPDF, exportToWord, exportToPPT } from "@/lib/export";
 
 export default function SeancesPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -68,6 +68,7 @@ export default function SeancesPage() {
               contenu={contenu}
               onExportPDF={() => exportToPDF(contenu, titre)}
               onExportWord={() => exportToWord(contenu, titre)}
+              onExportPPT={() => exportToPPT(contenu, titre)}
               onReset={() => { setContenu(null); setError(null); }}
             />
           )}

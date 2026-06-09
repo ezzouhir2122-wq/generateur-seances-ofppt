@@ -6,10 +6,11 @@ interface Props {
   contenu: string;
   onExportPDF: () => void;
   onExportWord: () => void;
+  onExportPPT: () => void;
   onReset: () => void;
 }
 
-export default function SeanceResult({ contenu, onExportPDF, onExportWord, onReset }: Props) {
+export default function SeanceResult({ contenu, onExportPDF, onExportWord, onExportPPT, onReset }: Props) {
   return (
     <div className="card space-y-4">
       <div className="flex items-center justify-between pb-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
@@ -32,6 +33,15 @@ export default function SeanceResult({ contenu, onExportPDF, onExportWord, onRes
             onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#3B82F610")}
           >
             Exporter Word
+          </button>
+          <button
+            onClick={onExportPPT}
+            className="px-3 py-1.5 text-xs rounded-lg transition-colors font-medium"
+            style={{ border: "1px solid #F59E0B40", color: "#F59E0B", background: "#F59E0B10" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#F59E0B20")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#F59E0B10")}
+          >
+            Exporter PPT
           </button>
           <button
             onClick={onReset}

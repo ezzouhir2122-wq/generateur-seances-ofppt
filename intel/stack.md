@@ -20,6 +20,7 @@
 ## Export
 - **jsPDF** — export PDF
 - **docx** — export Word
+- **pptxgenjs** — export PowerPoint (PPTX) avec slides structurées
 
 ## Déploiement (prévu)
 - Vercel (frontend + API) ou VPS

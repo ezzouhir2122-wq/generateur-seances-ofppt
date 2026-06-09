@@ -2,7 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
-import { exportToPDF, exportToWord } from "@/lib/export";
+import { exportToPDF, exportToWord, exportToPPT } from "@/lib/export";
 
 interface Seance {
   id: string;
@@ -61,6 +61,12 @@ export default function SeanceDetailClient({ seance }: { seance: Seance }) {
             className="px-4 py-2 text-sm border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-colors font-medium"
           >
             Word
+          </button>
+          <button
+            onClick={() => exportToPPT(seance.contenu, seance.title)}
+            className="px-4 py-2 text-sm border border-amber-500 text-amber-500 rounded-lg hover:bg-amber-500 hover:text-white transition-colors font-medium"
+          >
+            PPT
           </button>
           <Link
             href={`/fiches?from=${seance.id}`}
