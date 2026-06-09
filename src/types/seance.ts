@@ -7,6 +7,9 @@ export interface SeanceFormData {
   annee: "1ere-annee" | "2eme-annee" | "3eme-annee";
   type: "theorique" | "tp" | "ta";
   objectifs: string;
+  competence?: string;
+  niveauApprentissage?: "debutant" | "intermediaire" | "avance";
+  mode?: "presentiel" | "distanciel" | "hybride";
 }
 
 export interface SeanceGeneree {

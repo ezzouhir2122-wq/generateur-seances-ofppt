@@ -14,6 +14,9 @@ export interface SeanceParams {
   annee?: string;
   type: "theorique" | "tp" | "ta";
   objectifs: string;
+  competence?: string;
+  niveauApprentissage?: "debutant" | "intermediaire" | "avance";
+  mode?: "presentiel" | "distanciel" | "hybride";
 }
 
 export async function generateSeance(params: SeanceParams): Promise<string> {

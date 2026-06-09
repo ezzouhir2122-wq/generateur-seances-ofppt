@@ -20,6 +20,9 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
     annee: "1ere-annee",
     type: "theorique",
     objectifs: "",
+    competence: "",
+    niveauApprentissage: "intermediaire",
+    mode: "presentiel",
   });
 
   const [groupes, setGroupes] = useState<string[]>([]);
@@ -255,17 +258,93 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
         </div>
       </div>
 
+      {/* Compétence ciblée */}
+      <div>
+        <label className="label">Compétence ciblée</label>
+        <textarea
+          className="input-field resize-none"
+          rows={2}
+          placeholder="Ex: Établir un bilan comptable selon les normes SYSCOA"
+          value={form.competence ?? ""}
+          onChange={set("competence")}
+        />
+      </div>
+
       {/* Objectifs */}
       <div>
         <label className="label">Objectifs pédagogiques *</label>
         <textarea
           className="input-field resize-none"
-          rows={4}
+          rows={3}
           placeholder="Ex: À la fin de cette séance, le stagiaire sera capable de..."
           value={form.objectifs}
           onChange={set("objectifs")}
           required
         />
+      </div>
+
+      {/* Niveau d'apprentissage */}
+      <div>
+        <label className="label">Niveau d&apos;apprentissage</label>
+        <div className="flex gap-3">
+          {[
+            { value: "debutant", label: "Débutant", icon: "○" },
+            { value: "intermediaire", label: "Intermédiaire", icon: "◑" },
+            { value: "avance", label: "Avancé", icon: "●" },
+          ].map((n) => (
+            <label
+              key={n.value}
+              className="flex-1 rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors"
+              style={
+                form.niveauApprentissage === n.value
+                  ? { border: "1px solid #84CC1640", background: "#84CC1614", color: "#84CC16", fontWeight: 600 }
+                  : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
+              }
+            >
+              <input
+                type="radio"
+                name="niveauApprentissage"
+                value={n.value}
+                className="hidden"
+                checked={form.niveauApprentissage === n.value}
+                onChange={set("niveauApprentissage")}
+              />
+              <span className="mr-1 text-xs">{n.icon}</span>{n.label}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Mode de formation */}
+      <div>
+        <label className="label">Mode de formation</label>
+        <div className="flex gap-3">
+          {[
+            { value: "presentiel", label: "Présentiel", icon: "🏫" },
+            { value: "distanciel", label: "Distanciel", icon: "💻" },
+            { value: "hybride", label: "Hybride", icon: "⚡" },
+          ].map((m) => (
+            <label
+              key={m.value}
+              className="flex-1 rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors"
+              style={
+                form.mode === m.value
+                  ? { border: "1px solid #84CC1640", background: "#84CC1614", color: "#84CC16", fontWeight: 600 }
+                  : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
+              }
+            >
+              <input
+                type="radio"
+                name="mode"
+                value={m.value}
+                className="hidden"
+                checked={form.mode === m.value}
+                onChange={set("mode")}
+              />
+              <span className="mr-1">{m.icon}</span>{m.label}
+            </label>
+          ))}
+        </div>
       </div>
 
       <button type="submit" className="btn-primary w-full" disabled={isLoading}>
