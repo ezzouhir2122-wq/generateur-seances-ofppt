@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import QuickActionLink from "@/components/ui/QuickActionLink";
+import DashboardSuiviWidget from "@/components/suivi/DashboardSuiviWidget";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -12,14 +13,18 @@ export default async function DashboardPage() {
   let fichesCount = 0;
   let modulesCount = 0;
   let filieresCount = 0;
+  let groupesCount = 0;
   let recentSeances: { id: string; title: string; module: string; filiere: string; createdAt: Date }[] = [];
   let recentFiches: { id: string; titre: string; module: string; createdAt: Date }[] = [];
+  let allStagiaires: { id: string; nom: string; prenom: string; cne: string | null; createdAt: string; progressions: { competenceId: string; pourcentage: number; source: string }[] }[] = [];
+  let topCompetences: { id: string; titre: string; moduleNom: string }[] = [];
 
   try {
-    [seancesCount, fichesCount, modulesCount] = await Promise.all([
+    [seancesCount, fichesCount, modulesCount, groupesCount] = await Promise.all([
       prisma.seance.count({ where: { userId: session.user.id } }),
       prisma.fiche.count({ where: { userId: session.user.id } }),
       prisma.userModule.count({ where: { userId: session.user.id } }),
+      prisma.groupe.count({ where: { userId: session.user.id } }),
     ]);
 
     const groupes = await prisma.userModule.findMany({
@@ -43,6 +48,32 @@ export default async function DashboardPage() {
         select: { id: true, titre: true, module: true, createdAt: true },
       }),
     ]);
+    if (groupesCount > 0) {
+      const groupesData = await prisma.groupe.findMany({
+        where: { userId: session.user.id },
+        include: {
+          stagiaires: {
+            include: { progressions: { select: { competenceId: true, pourcentage: true, source: true } } },
+          },
+        },
+        take: 3,
+      });
+      allStagiaires = groupesData.flatMap((g) =>
+        g.stagiaires.map((s) => ({
+          ...s,
+          createdAt: s.createdAt.toISOString(),
+        }))
+      );
+      if (groupesData[0]) {
+        const comps = await prisma.competence.findMany({
+          where: { module: { filiereId: groupesData[0].filiere } },
+          include: { module: { select: { nom: true } } },
+          take: 6,
+          orderBy: { createdAt: "asc" },
+        });
+        topCompetences = comps.map((c) => ({ id: c.id, titre: c.titre, moduleNom: c.module.nom }));
+      }
+    }
   } catch {}
 
   const statCards = [
@@ -198,6 +229,13 @@ export default async function DashboardPage() {
               ))}
             </div>
           </div>
+
+          {/* Suivi des Compétences widget */}
+          <DashboardSuiviWidget
+            competences={topCompetences}
+            stagiaires={allStagiaires}
+            groupesCount={groupesCount}
+          />
         </div>
       </div>
     </div>
