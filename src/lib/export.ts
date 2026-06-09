@@ -182,3 +182,116 @@ export async function exportFicheWord(contenu: string, titre: string): Promise<v
   a.click();
   URL.revokeObjectURL(url);
 }
+
+export function exportProgressionExcel(
+  groupeNom: string,
+  competences: { id: string; titre: string }[],
+  stagiaires: { nom: string; prenom: string; progressions: { competenceId: string; pourcentage: number }[] }[]
+): void {
+  import("xlsx").then((XLSX) => {
+    const headers = ["Stagiaire", ...competences.map((c) => c.titre)];
+    const rows = stagiaires.map((s) => {
+      const row: (string | number)[] = [`${s.prenom} ${s.nom}`];
+      for (const c of competences) {
+        const p = s.progressions.find((p) => p.competenceId === c.id);
+        row.push(p ? p.pourcentage : "");
+      }
+      return row;
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws["!cols"] = [{ wch: 20 }, ...competences.map(() => ({ wch: 15 }))];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Progression");
+
+    // Feuille moyennes
+    const moyenneHeaders = ["Compétence", "Moyenne (%)"];
+    const moyenneRows = competences.map((c) => {
+      const vals = stagiaires
+        .map((s) => s.progressions.find((p) => p.competenceId === c.id)?.pourcentage ?? null)
+        .filter((v): v is number => v !== null);
+      const moy = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : "";
+      return [c.titre, moy];
+    });
+    const wsMoy = XLSX.utils.aoa_to_sheet([moyenneHeaders, ...moyenneRows]);
+    XLSX.utils.book_append_sheet(wb, wsMoy, "Moyennes");
+
+    XLSX.writeFile(wb, `${groupeNom.replace(/\s+/g, "-")}-progression.xlsx`);
+  });
+}
+
+export function exportProgressionPDF(
+  groupeNom: string,
+  filiere: string,
+  annee: string,
+  competences: { id: string; titre: string }[],
+  stagiaires: { nom: string; prenom: string; progressions: { competenceId: string; pourcentage: number }[] }[]
+): void {
+  import("jspdf").then(({ default: jsPDF }) => {
+    const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const GREEN: [number, number, number] = [132, 204, 22];
+    const DARK: [number, number, number] = [11, 11, 20];
+
+    // En-tête
+    doc.setFillColor(...DARK);
+    doc.rect(0, 0, 297, 210, "F");
+    doc.setFillColor(...GREEN);
+    doc.rect(0, 0, 297, 2, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(...GREEN);
+    doc.text("OFPPT — Suivi des Compétences", 14, 14);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(200, 200, 200);
+    doc.text(`Groupe : ${groupeNom}  |  Filière : ${filiere}  |  Année : ${annee}`, 14, 22);
+    doc.text(`Généré le : ${new Date().toLocaleDateString("fr-MA")}`, 14, 28);
+
+    // Tableau
+    const colWidth = Math.min(30, Math.floor((270 - 40) / competences.length));
+    const startX = 14;
+    let y = 36;
+
+    // En-tête tableau
+    doc.setFillColor(18, 18, 30);
+    doc.rect(startX, y, 40, 7, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7);
+    doc.setTextColor(...GREEN);
+    doc.text("Stagiaire", startX + 1, y + 5);
+    competences.forEach((c, i) => {
+      const x = startX + 40 + i * colWidth;
+      doc.rect(x, y, colWidth, 7, "F");
+      const label = c.titre.length > 12 ? c.titre.slice(0, 12) + "…" : c.titre;
+      doc.text(label, x + 1, y + 5);
+    });
+    y += 7;
+
+    // Lignes stagiaires
+    doc.setFont("helvetica", "normal");
+    stagiaires.forEach((s, idx) => {
+      if (y > 190) { doc.addPage(); y = 20; }
+      const bg: [number, number, number] = idx % 2 === 0 ? [12, 12, 20] : [18, 18, 30];
+      doc.setFillColor(...bg);
+      doc.rect(startX, y, 40 + competences.length * colWidth, 6, "F");
+      doc.setTextColor(220, 220, 220);
+      doc.text(`${s.prenom} ${s.nom}`, startX + 1, y + 4.5);
+      competences.forEach((c, i) => {
+        const val = s.progressions.find((p) => p.competenceId === c.id)?.pourcentage;
+        const x = startX + 40 + i * colWidth;
+        if (val !== undefined) {
+          const color: [number, number, number] =
+            val >= 75 ? [132, 204, 22] : val >= 50 ? [245, 158, 11] : [239, 68, 68];
+          doc.setTextColor(...color);
+          doc.text(`${val}%`, x + 1, y + 4.5);
+        } else {
+          doc.setTextColor(75, 85, 99);
+          doc.text("—", x + 1, y + 4.5);
+        }
+      });
+      y += 6;
+    });
+
+    doc.save(`${groupeNom.replace(/\s+/g, "-")}-progression.pdf`);
+  });
+}
