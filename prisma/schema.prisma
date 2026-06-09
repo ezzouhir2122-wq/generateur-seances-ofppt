@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -17,6 +18,7 @@ model User {
   modules      UserModule[]
   fiches       Fiche[]
   chatSessions ChatSession[]
+  groupes      Groupe[]
 }
 
 model UserModule {
@@ -121,12 +123,13 @@ model RefModule {
 }
 
 model Competence {
-  id        String     @id @default(cuid())
-  titre     String
-  moduleId  String
-  module    RefModule  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  objectifs Objectif[]
-  createdAt DateTime   @default(now())
+  id           String                  @id @default(cuid())
+  titre        String
+  moduleId     String
+  module       RefModule               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  objectifs    Objectif[]
+  progressions ProgressionCompetence[]
+  createdAt    DateTime                @default(now())
 }
 
 model Objectif {
@@ -144,4 +147,41 @@ model CriterePerformance {
   objectifId  String
   objectif    Objectif @relation(fields: [objectifId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
+}
+
+// ─── Suivi des Compétences ────────────────────────────────────────────────────
+
+model Groupe {
+  id         String      @id @default(cuid())
+  nom        String
+  filiere    String      // stores Filiere.id
+  annee      String      // ex: "2024-2025"
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stagiaires Stagiaire[]
+  createdAt  DateTime    @default(now())
+}
+
+model Stagiaire {
+  id           String                  @id @default(cuid())
+  nom          String
+  prenom       String
+  cne          String?
+  groupeId     String
+  groupe       Groupe                  @relation(fields: [groupeId], references: [id], onDelete: Cascade)
+  progressions ProgressionCompetence[]
+  createdAt    DateTime                @default(now())
+}
+
+model ProgressionCompetence {
+  id           String     @id @default(cuid())
+  stagiaireId  String
+  stagiaire    Stagiaire  @relation(fields: [stagiaireId], references: [id], onDelete: Cascade)
+  competenceId String
+  competence   Competence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
+  pourcentage  Int
+  source       String     @default("manuel")
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([stagiaireId, competenceId])
 }
