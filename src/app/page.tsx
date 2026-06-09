@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import QuickActionLink from "@/components/ui/QuickActionLink";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -193,20 +194,7 @@ export default async function DashboardPage() {
             <h2 className="font-bold text-white text-base mb-4">Accès rapide</h2>
             <div className="space-y-2">
               {quickActions.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-3 p-3 rounded-xl transition-colors"
-                  style={{ background: item.bg, border: "1px solid #1E1E2C" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = item.accent)}
-                  onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#1E1E2C")}
-                >
-                  <span className="text-lg">{item.icon}</span>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: item.accent }}>{item.label}</p>
-                    <p className="text-[11px]" style={{ color: "#4B5563" }}>{item.desc}</p>
-                  </div>
-                </Link>
+                <QuickActionLink key={item.href} {...item} />
               ))}
             </div>
           </div>
