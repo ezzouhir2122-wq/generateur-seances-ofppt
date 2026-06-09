@@ -20,6 +20,22 @@ export interface SeanceGeneree {
   createdAt?: Date;
 }
 
+export type EvaluationType = "qcm" | "exercices" | "examen" | "rattrapage";
+
+export interface EvaluationFormData {
+  type: EvaluationType;
+  filiere: string;
+  module: string;
+  codeModule?: string;
+  niveau: "T" | "TS";
+  annee: "1ere-annee" | "2eme-annee" | "3eme-annee";
+  theme?: string;
+  nbQuestions?: number;
+  nbExercices?: number;
+  dureeExamen?: string;
+  themesCouverts?: string;
+}
+
 export const FILIERES_OFPPT = [
   "Développement Digital",
   "Gestion des Entreprises",
