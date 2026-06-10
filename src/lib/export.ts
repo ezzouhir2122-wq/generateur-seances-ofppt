@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
+import { getLogoBase64, stampAllPages, PdfFormateur } from "@/lib/pdf-helpers";
 
 export async function exportToPPT(contenu: string, titre: string): Promise<void> {
   const { default: PptxGenJS } = await import("pptxgenjs");
@@ -93,22 +94,44 @@ export async function exportToPPT(contenu: string, titre: string): Promise<void>
   URL.revokeObjectURL(url);
 }
 
-export async function exportToPDF(contenu: string, titre: string) {
+export async function exportToPDF(
+  contenu: string,
+  titre: string,
+  formateur?: PdfFormateur,
+  type = "Séance Pédagogique"
+) {
+  const logoBase64 = await getLogoBase64();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.setTextColor(0, 102, 51); // ofppt green
-  doc.text("OFPPT — Fiche de Séance Pédagogique", 15, 20);
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const contentTop = 26;
+  const contentBottom = pageH - 16;
+  const lineH = 5;
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
-  doc.setTextColor(50, 50, 50);
+  doc.setTextColor(31, 41, 55);
 
-  const lines = doc.splitTextToSize(contenu.replace(/[#*`|]/g, ""), 180);
-  doc.text(lines, 15, 35);
+  const lines = doc.splitTextToSize(
+    contenu.replace(/[#*`|]/g, "").replace(/\n{3,}/g, "\n\n"),
+    pageW - 30
+  );
 
-  doc.save(`${titre}.pdf`);
+  let y = contentTop;
+  for (const line of lines) {
+    if (y + lineH > contentBottom) {
+      doc.addPage();
+      y = contentTop;
+    }
+    doc.text(line, 15, y);
+    y += lineH;
+  }
+
+  if (formateur) {
+    stampAllPages(doc, { titre, type, logoBase64 }, formateur);
+  }
+
+  doc.save(`${titre.replace(/\s+/g, "-")}.pdf`);
 }
 
 export async function exportToWord(contenu: string, titre: string) {
@@ -141,26 +164,47 @@ export async function exportToWord(contenu: string, titre: string) {
   URL.revokeObjectURL(url);
 }
 
-export function exportFichePDF(contenu: string, titre: string): void {
-  import("jspdf").then(({ default: jsPDF }) => {
-    const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const lines = contenu.replace(/#{1,6} /g, "").split("\n").filter(Boolean);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.text("Competencia IA — OFPPT", 20, 20);
-    doc.setFontSize(12);
-    doc.text(titre, 20, 30);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    let y = 42;
-    for (const line of lines) {
-      const wrapped = doc.splitTextToSize(line, 170);
-      if (y + wrapped.length * 5 > 280) { doc.addPage(); y = 20; }
-      doc.text(wrapped, 20, y);
-      y += wrapped.length * 5 + 2;
+export async function exportFichePDF(
+  contenu: string,
+  titre: string,
+  formateur?: PdfFormateur
+): Promise<void> {
+  const { default: jsPDF } = await import("jspdf");
+  const logoBase64 = await getLogoBase64();
+
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const contentTop = 26;
+  const contentBottom = pageH - 16;
+  const lineH = 5;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.setTextColor(31, 41, 55);
+
+  const lines = contenu
+    .replace(/#{1,6} /g, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .split("\n")
+    .filter(Boolean);
+
+  let y = contentTop;
+  for (const rawLine of lines) {
+    const wrapped = doc.splitTextToSize(rawLine, pageW - 30);
+    if (y + wrapped.length * lineH > contentBottom) {
+      doc.addPage();
+      y = contentTop;
     }
-    doc.save(`${titre.replace(/\s+/g, "-")}.pdf`);
-  });
+    doc.text(wrapped, 15, y);
+    y += wrapped.length * lineH + 2;
+  }
+
+  if (formateur) {
+    stampAllPages(doc, { titre, type: "Fiche Pédagogique", logoBase64 }, formateur);
+  }
+
+  doc.save(`${titre.replace(/\s+/g, "-")}.pdf`);
 }
 
 export async function exportFicheWord(contenu: string, titre: string): Promise<void> {
@@ -225,42 +269,31 @@ export function exportProgressionPDF(
   filiere: string,
   annee: string,
   competences: { id: string; titre: string }[],
-  stagiaires: { nom: string; prenom: string; progressions: { competenceId: string; pourcentage: number }[] }[]
+  stagiaires: { nom: string; prenom: string; progressions: { competenceId: string; pourcentage: number }[] }[],
+  formateur?: PdfFormateur
 ): void {
-  import("jspdf").then(({ default: jsPDF }) => {
+  import("jspdf").then(async ({ default: jsPDF }) => {
+    const logoBase64 = await getLogoBase64();
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
-    const GREEN: [number, number, number] = [132, 204, 22];
-    const DARK: [number, number, number] = [11, 11, 20];
+    const W = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
 
-    // En-tête
-    doc.setFillColor(...DARK);
-    doc.rect(0, 0, 297, 210, "F");
-    doc.setFillColor(...GREEN);
-    doc.rect(0, 0, 297, 2, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.setTextColor(...GREEN);
-    doc.text("OFPPT — Suivi des Compétences", 14, 14);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(200, 200, 200);
-    doc.text(`Groupe : ${groupeNom}  |  Filière : ${filiere}  |  Année : ${annee}`, 14, 22);
-    doc.text(`Généré le : ${new Date().toLocaleDateString("fr-MA")}`, 14, 28);
-
-    // Tableau
-    const colWidth = Math.min(30, Math.floor((270 - 40) / competences.length));
+    const titre = `Suivi — ${groupeNom} | ${filiere} | ${annee}`;
+    const colWidth = Math.min(30, Math.floor((W - 60) / Math.max(competences.length, 1)));
     const startX = 14;
-    let y = 36;
+    let y = 28;
 
     // En-tête tableau
     doc.setFillColor(18, 18, 30);
     doc.rect(startX, y, 40, 7, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
-    doc.setTextColor(...GREEN);
+    doc.setTextColor(132, 204, 22);
     doc.text("Stagiaire", startX + 1, y + 5);
+
     competences.forEach((c, i) => {
       const x = startX + 40 + i * colWidth;
+      doc.setFillColor(18, 18, 30);
       doc.rect(x, y, colWidth, 7, "F");
       const label = c.titre.length > 12 ? c.titre.slice(0, 12) + "…" : c.titre;
       doc.text(label, x + 1, y + 5);
@@ -270,12 +303,16 @@ export function exportProgressionPDF(
     // Lignes stagiaires
     doc.setFont("helvetica", "normal");
     stagiaires.forEach((s, idx) => {
-      if (y > 190) { doc.addPage(); y = 20; }
+      if (y > pageH - 20) {
+        doc.addPage();
+        y = 28;
+      }
       const bg: [number, number, number] = idx % 2 === 0 ? [12, 12, 20] : [18, 18, 30];
       doc.setFillColor(...bg);
       doc.rect(startX, y, 40 + competences.length * colWidth, 6, "F");
       doc.setTextColor(220, 220, 220);
       doc.text(`${s.prenom} ${s.nom}`, startX + 1, y + 4.5);
+
       competences.forEach((c, i) => {
         const val = s.progressions.find((p) => p.competenceId === c.id)?.pourcentage;
         const x = startX + 40 + i * colWidth;
@@ -291,6 +328,10 @@ export function exportProgressionPDF(
       });
       y += 6;
     });
+
+    if (formateur) {
+      stampAllPages(doc, { titre, type: "Suivi des Compétences", logoBase64 }, formateur);
+    }
 
     doc.save(`${groupeNom.replace(/\s+/g, "-")}-progression.pdf`);
   });
