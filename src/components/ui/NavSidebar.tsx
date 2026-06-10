@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -90,9 +91,10 @@ const navSections = [
   },
   {
     label: "SUIVI DES COMPÉTENCES",
-    items: [
-      { href: "/suivi", label: "Mes groupes", icon: <BarChartIcon />, exact: false },
-    ],
+    href: "/suivi",
+    icon: <BarChartIcon />,
+    exact: false,
+    items: [],
   },
   {
     label: "HISTORIQUE",
@@ -141,16 +143,12 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       <nav className="flex-1 px-3 py-3 space-y-2 overflow-y-auto">
         {navSections.map((section) => (
           <div key={section.label}>
-            <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>
-              {section.label}
-            </div>
-            <div className="space-y-0.5">
-              {section.items.map((item) => {
-                const active = isActive(item.href, item.exact);
+            {"href" in section && section.href ? (
+              (() => {
+                const active = isActive(section.href as string, (section as { exact: boolean }).exact);
                 return (
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    href={section.href as string}
                     className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
                     style={
                       active
@@ -161,13 +159,43 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
                     onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
                   >
                     <span style={{ color: active ? "#84CC16" : "#4B5563" }}>
-                      {item.icon}
+                      {(section as { icon: React.ReactNode }).icon}
                     </span>
-                    {item.label}
+                    {section.label}
                   </Link>
                 );
-              })}
-            </div>
+              })()
+            ) : (
+              <>
+                <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>
+                  {section.label}
+                </div>
+                <div className="space-y-0.5">
+                  {section.items.map((item) => {
+                    const active = isActive(item.href, item.exact);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
+                        style={
+                          active
+                            ? { background: "#84CC1618", color: "#84CC16", fontWeight: 600 }
+                            : { color: "#9CA3AF" }
+                        }
+                        onMouseEnter={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "#17171E"; }}
+                        onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
+                      >
+                        <span style={{ color: active ? "#84CC16" : "#4B5563" }}>
+                          {item.icon}
+                        </span>
+                        {item.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </>
+            )}
           </div>
         ))}
 
