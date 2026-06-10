@@ -29,7 +29,12 @@ interface ModuleRow {
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
-  user: { name?: string | null; email?: string | null };
+  user: {
+    name?: string | null;
+    email?: string | null;
+    matricule?: string | null;
+    etablissement?: string | null;
+  };
   claudeKey: boolean;
   openaiKey: boolean;
 }
@@ -47,6 +52,27 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
   const [refError, setRefError] = useState<string | null>(null);
   const refFileRef = useRef<HTMLInputElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+  const [matricule, setMatricule] = useState(user.matricule ?? "");
+  const [etablissement, setEtablissement] = useState(user.etablissement ?? "");
+  const [savingProfile, setSavingProfile] = useState(false);
+
+  const saveProfile = async () => {
+    setSavingProfile(true);
+    try {
+      const res = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ matricule: matricule.trim(), etablissement: etablissement.trim() }),
+      });
+      if (!res.ok) throw new Error("Erreur");
+      toast.success("Profil sauvegardé");
+    } catch {
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
 
   const loadStats = useCallback(async () => {
     try {
@@ -221,6 +247,34 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             >
               Déconnexion
             </button>
+            {/* Infos PDF */}
+            <div className="mt-4 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#4B5563" }}>Infos pour les PDF</p>
+              <input
+                type="text"
+                placeholder="Matricule (ex: 9559)"
+                value={matricule}
+                onChange={e => setMatricule(e.target.value)}
+                className="w-full text-xs px-3 py-2 rounded-lg outline-none"
+                style={{ background: "#17171E", border: "1px solid #1E1E2C", color: "#E5E7EB" }}
+              />
+              <input
+                type="text"
+                placeholder="Établissement (ex: ISTA Hay Riad)"
+                value={etablissement}
+                onChange={e => setEtablissement(e.target.value)}
+                className="w-full text-xs px-3 py-2 rounded-lg outline-none"
+                style={{ background: "#17171E", border: "1px solid #1E1E2C", color: "#E5E7EB" }}
+              />
+              <button
+                onClick={saveProfile}
+                disabled={savingProfile}
+                className="w-full text-xs py-2 rounded-lg font-medium text-black disabled:opacity-50 transition-colors"
+                style={{ background: "#84CC16" }}
+              >
+                {savingProfile ? "Sauvegarde…" : "Sauvegarder le profil"}
+              </button>
+            </div>
           </section>
 
           {/* Import Excel — en haut pour accès rapide */}
