@@ -11,261 +11,265 @@ interface NavSidebarProps {
   onSettingsClick: () => void;
 }
 
-const HomeIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
-    <path d="M9 21V12h6v9"/>
-  </svg>
-);
-
-const GridIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+/* ─── SVG Icons ─── */
+const DashboardIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
     <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
   </svg>
 );
-
-const CheckSquareIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const SeanceIcon = () => (
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+  </svg>
+);
+const FicheIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+    <rect x="8" y="2" width="8" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+  </svg>
+);
+const EvalIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <polyline points="9 11 12 14 22 4"/>
     <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
   </svg>
 );
-
-const LightningIcon = () => (
-  <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
-    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-  </svg>
-);
-
-const ClipboardIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
-    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
-    <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
-  </svg>
-);
-
-const ClockIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
-  </svg>
-);
-
-const ChatIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-  </svg>
-);
-
-const PencilCheckIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const CorrectionIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
     <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
   </svg>
 );
-
-const BookOpenIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+const HistoriqueIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+  </svg>
+);
+const FolderIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+  </svg>
+);
+const SuiviIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+    <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+  </svg>
+);
+const BiblioIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
     <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
   </svg>
 );
-
-const BarChartIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <line x1="18" y1="20" x2="18" y2="10"/>
-    <line x1="12" y1="20" x2="12" y2="4"/>
-    <line x1="6" y1="20" x2="6" y2="14"/>
-    <line x1="2" y1="20" x2="22" y2="20"/>
+const AssistantIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
   </svg>
 );
-
 const GearIcon = () => (
-  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="3"/>
     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
   </svg>
 );
 
+/* ─── Navigation structure ─── */
 const navSections = [
   {
-    label: "PRINCIPAL",
+    id: "principal",
+    label: "Accueil",
     items: [
-      { href: "/", label: "Tableau de bord", icon: <HomeIcon />, exact: true },
+      { href: "/", label: "Tableau de bord", icon: <DashboardIcon />, exact: true },
     ],
   },
   {
-    label: "GÉNÉRATION IA",
+    id: "generation",
+    label: "Génération IA",
     items: [
-      { href: "/seances", label: "Séance pédagogique", icon: <LightningIcon />, exact: false },
-      { href: "/fiches", label: "Fiche pédagogique", icon: <ClipboardIcon />, exact: true },
-      { href: "/evaluations", label: "Évaluations", icon: <CheckSquareIcon />, exact: false },
-      { href: "/corrections", label: "Correction IA", icon: <PencilCheckIcon />, exact: false },
+      { href: "/seances", label: "Séance pédagogique", icon: <SeanceIcon />, exact: false },
+      { href: "/fiches", label: "Fiche pédagogique", icon: <FicheIcon />, exact: true },
+      { href: "/evaluations", label: "Évaluation", icon: <EvalIcon />, exact: false },
+      { href: "/corrections", label: "Correction IA", icon: <CorrectionIcon />, exact: false },
     ],
   },
   {
-    label: "SUIVI DES COMPÉTENCES",
-    href: "/suivi",
-    icon: <BarChartIcon />,
-    exact: false,
-    items: [],
-  },
-  {
-    label: "BIBLIOTHÈQUE",
-    href: "/bibliotheque",
-    icon: <BookOpenIcon />,
-    exact: false,
-    items: [],
-  },
-  {
-    label: "HISTORIQUE",
+    id: "documents",
+    label: "Mes Documents",
     items: [
-      { href: "/historique", label: "Mes séances", icon: <ClockIcon />, exact: false },
-      { href: "/fiches/historique", label: "Mes fiches", icon: <GridIcon />, exact: false },
+      { href: "/historique", label: "Mes séances", icon: <HistoriqueIcon />, exact: false },
+      { href: "/fiches/historique", label: "Mes fiches", icon: <FolderIcon />, exact: false },
     ],
   },
   {
-    label: "ASSISTANT",
+    id: "pedagogie",
+    label: "Pédagogie",
     items: [
-      { href: "/assistant", label: "Assistant IA", icon: <ChatIcon />, exact: false },
+      { href: "/suivi", label: "Suivi des compétences", icon: <SuiviIcon />, exact: false },
+      { href: "/bibliotheque", label: "Bibliothèque", icon: <BiblioIcon />, exact: false },
+    ],
+  },
+  {
+    id: "assistant",
+    label: "Intelligence Artificielle",
+    items: [
+      { href: "/assistant", label: "Assistant IA", icon: <AssistantIcon />, exact: false },
     ],
   },
 ];
 
+/* ─── NavItem component ─── */
+function NavItem({ href, label, icon, active }: { href: string; label: string; icon: React.ReactNode; active: boolean }) {
+  return (
+    <Link
+      href={href}
+      className="group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
+      style={active
+        ? { background: "#84CC1614", color: "#84CC16" }
+        : { color: "#6B7280" }
+      }
+      onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "#17171E"; (e.currentTarget as HTMLAnchorElement).style.color = "#D1D5DB"; } }}
+      onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "#6B7280"; } }}
+    >
+      {active && (
+        <span
+          className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
+          style={{ background: "#84CC16" }}
+        />
+      )}
+      <span style={{ color: active ? "#84CC16" : "#4B5563", flexShrink: 0 }}>
+        {icon}
+      </span>
+      <span className="truncate">{label}</span>
+    </Link>
+  );
+}
+
+/* ─── Main component ─── */
 export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   const pathname = usePathname();
 
   function isActive(href: string, exact: boolean) {
     if (exact) return pathname === href;
-    return pathname.startsWith(href);
+    return pathname === href || pathname.startsWith(href + "/");
   }
 
   const initials = (user.name ?? user.email ?? "F").charAt(0).toUpperCase();
 
   return (
     <aside
-      className="w-[220px] flex-shrink-0 flex flex-col h-screen sticky top-0"
-      style={{ background: "#0D0D12", borderRight: "1px solid #1E1E2C" }}
+      className="w-[240px] flex-shrink-0 flex flex-col h-screen sticky top-0"
+      style={{ background: "#0D0D12", borderRight: "1px solid #1A1A28" }}
     >
-      {/* Logo + App name */}
-      <div className="px-5 pt-6 pb-5" style={{ borderBottom: "1px solid #1E1E2C" }}>
+      {/* ─ Branding ─ */}
+      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid #1A1A28" }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-cover w-full h-full" />
+          <div
+            className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
+            style={{ background: "#17171E", border: "1px solid #1E1E2C" }}
+          >
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={36} height={36} className="object-cover w-full h-full" />
           </div>
-          <div>
-            <div className="text-white font-bold text-sm leading-tight">OFPPT</div>
-            <div className="text-[10px] leading-tight" style={{ color: "#84CC16" }}>Compétencia IA</div>
+          <div className="min-w-0">
+            <div className="text-white font-bold text-sm leading-tight tracking-wide">OFPPT</div>
+            <div className="text-[11px] font-medium leading-tight" style={{ color: "#84CC16" }}>Compétencia IA</div>
           </div>
         </div>
       </div>
 
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-3 space-y-2 overflow-y-auto">
-        {navSections.map((section) => (
-          <div key={section.label}>
-            {"href" in section && section.href ? (
-              (() => {
-                const active = isActive(section.href as string, (section as { exact: boolean }).exact);
-                return (
-                  <Link
-                    href={section.href as string}
-                    className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
-                    style={
-                      active
-                        ? { background: "#84CC1618", color: "#84CC16", fontWeight: 600 }
-                        : { color: "#9CA3AF" }
-                    }
-                    onMouseEnter={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "#17171E"; }}
-                    onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
-                  >
-                    <span style={{ color: active ? "#84CC16" : "#4B5563" }}>
-                      {(section as { icon: React.ReactNode }).icon}
-                    </span>
-                    {section.label}
-                  </Link>
-                );
-              })()
-            ) : (
-              <>
-                <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>
-                  {section.label}
-                </div>
-                <div className="space-y-0.5">
-                  {section.items.map((item) => {
-                    const active = isActive(item.href, item.exact);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
-                        style={
-                          active
-                            ? { background: "#84CC1618", color: "#84CC16", fontWeight: 600 }
-                            : { color: "#9CA3AF" }
-                        }
-                        onMouseEnter={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "#17171E"; }}
-                        onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
-                      >
-                        <span style={{ color: active ? "#84CC16" : "#4B5563" }}>
-                          {item.icon}
-                        </span>
-                        {item.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              </>
+      {/* ─ Navigation ─ */}
+      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
+        {navSections.map((section, sIdx) => (
+          <div key={section.id}>
+            {/* Section label */}
+            <div
+              className="flex items-center gap-2 px-2 mb-1.5"
+            >
+              <span
+                className="text-[9px] font-bold tracking-[0.12em] uppercase select-none"
+                style={{ color: "#374151" }}
+              >
+                {section.label}
+              </span>
+              <span
+                className="flex-1 h-px"
+                style={{ background: "#1A1A28" }}
+              />
+            </div>
+            {/* Items */}
+            <div className="space-y-0.5">
+              {section.items.map((item) => (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  active={isActive(item.href, item.exact)}
+                />
+              ))}
+            </div>
+            {/* Section divider (except after last) */}
+            {sIdx < navSections.length - 1 && (
+              <div className="mt-4 h-px" style={{ background: "#1A1A28" }} />
             )}
           </div>
         ))}
 
-        {/* Paramètres */}
+        {/* ─ Système ─ */}
         <div>
-          <div className="text-[9px] font-bold tracking-widest px-2 mb-1.5 uppercase" style={{ color: "#4B5563" }}>SYSTÈME</div>
-          <div className="space-y-0.5">
-            <button
-              onClick={onSettingsClick}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-150"
-              style={{ color: "#9CA3AF" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#17171E")}
-              onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "")}
-            >
-              <span style={{ color: "#4B5563" }}><GearIcon /></span>
-              Modules & Paramètres
-            </button>
+          <div className="flex items-center gap-2 px-2 mb-1.5">
+            <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none" style={{ color: "#374151" }}>
+              Système
+            </span>
+            <span className="flex-1 h-px" style={{ background: "#1A1A28" }} />
           </div>
+          <button
+            onClick={onSettingsClick}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
+            style={{ color: "#6B7280" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#17171E"; (e.currentTarget as HTMLButtonElement).style.color = "#D1D5DB"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; }}
+          >
+            <span style={{ color: "#4B5563", flexShrink: 0 }}><GearIcon /></span>
+            Modules & Paramètres
+          </button>
         </div>
       </nav>
 
-      {/* User + footer */}
-      <div className="px-4 pb-5 pt-3" style={{ borderTop: "1px solid #1E1E2C" }}>
-        <div className="flex items-center gap-2.5 mb-3">
+      {/* ─ User card ─ */}
+      <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid #1A1A28" }}>
+        {/* Avatar + name */}
+        <div
+          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-2"
+          style={{ background: "#111116", border: "1px solid #1E1E2C" }}
+        >
           <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-black text-xs font-bold flex-shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-black text-xs font-bold flex-shrink-0 select-none"
             style={{ background: "#84CC16" }}
           >
             {initials}
           </div>
-          <div className="min-w-0">
-            <div className="text-white text-xs font-semibold truncate">{user.name ?? "Formateur"}</div>
-            <div className="text-[10px] truncate" style={{ color: "#4B5563" }}>{user.email}</div>
+          <div className="min-w-0 flex-1">
+            <div className="text-white text-xs font-semibold truncate leading-tight">{user.name ?? "Formateur"}</div>
+            <div className="text-[10px] truncate leading-tight mt-0.5" style={{ color: "#4B5563" }}>{user.email}</div>
           </div>
         </div>
+
+        {/* Disconnect */}
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full text-xs rounded-lg py-1.5 transition-colors mb-4"
-          style={{ color: "#9CA3AF", border: "1px solid #1E1E2C" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#84CC16"; (e.currentTarget as HTMLButtonElement).style.color = "#84CC16"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1E1E2C"; (e.currentTarget as HTMLButtonElement).style.color = "#9CA3AF"; }}
+          className="w-full text-xs rounded-lg py-2 transition-all duration-150 font-medium"
+          style={{ color: "#6B7280", border: "1px solid #1E1E2C" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444408"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#1E1E2C"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
         >
           Déconnexion
         </button>
-        <div className="text-[9px] leading-relaxed" style={{ color: "#4B5563" }}>
-          <span className="font-semibold" style={{ color: "#4B5563" }}>Développé par :</span><br />
-          Mr EZZOUIR Elmustapha<br />
-          (9559)
+
+        {/* Credit */}
+        <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "#2D2D3F" }}>
+          Développé par Mr EZZOUIR Elmustapha (9559)
         </div>
       </div>
     </aside>
