@@ -65,6 +65,13 @@ const PencilCheckIcon = () => (
   </svg>
 );
 
+const BookOpenIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+    <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+  </svg>
+);
+
 const BarChartIcon = () => (
   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <line x1="18" y1="20" x2="18" y2="10"/>
@@ -101,6 +108,13 @@ const navSections = [
     label: "SUIVI DES COMPÉTENCES",
     href: "/suivi",
     icon: <BarChartIcon />,
+    exact: false,
+    items: [],
+  },
+  {
+    label: "BIBLIOTHÈQUE",
+    href: "/bibliotheque",
+    icon: <BookOpenIcon />,
     exact: false,
     items: [],
   },
