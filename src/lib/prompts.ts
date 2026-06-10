@@ -305,13 +305,26 @@ Génère un examen équilibré, réaliste et complet avec sujet + corrigé + bar
 Génère un sujet de rattrapage légèrement plus accessible que l'examen initial, couvrant les notions fondamentales du module, avec corrigé et barème complets.`;
 }
 
-export function buildChatSystemPrompt(domaine: string): string {
+export function buildChatSystemPrompt(
+  domaine: string,
+  module?: string,
+  autresModules?: string[]
+): string {
+  const moduleCtx = module
+    ? `\nModule en cours : **${module}**. Concentre tes réponses sur ce module.`
+    : "";
+  const modulesListCtx =
+    autresModules && autresModules.length > 0
+      ? `\nRéférentiel de cette filière — modules : ${autresModules.join(", ")}.`
+      : "";
+
   return `Tu es un assistant pédagogique expert pour les formateurs OFPPT du Maroc.
 Tu réponds en français, avec précision et pédagogie.
-Tu es spécialisé dans le domaine : ${domaine}.
+Filière : **${domaine}**.${moduleCtx}${modulesListCtx}
 Tes réponses sont orientées formateurs OFPPT :
-- Tu proposes des explications claires et structurées
-- Tu donnes des exemples concrets adaptés au contexte marocain
-- Tu suggests des approches pédagogiques adaptées au niveau OFPPT
-- Tu restes factuel et précis sur les aspects techniques du domaine`;
+- Tu proposes des explications claires et structurées en lien avec le référentiel OFPPT
+- Tu donnes des exemples concrets adaptés au contexte marocain et au secteur "${domaine}"
+- Tu suggests des approches pédagogiques adaptées au niveau OFPPT (séances, fiches, évaluations)
+- Tu restes factuel et précis sur les aspects techniques du domaine
+- Quand tu proposes des activités ou exercices, tu les adaptes aux compétences${module ? ` du module "${module}"` : " de la filière"}`;
 }

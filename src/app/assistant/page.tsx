@@ -6,15 +6,18 @@ import ChatInput from "@/components/chat/ChatInput";
 import SessionList from "@/components/chat/SessionList";
 import { toast } from "sonner";
 
-const DOMAINES = [
-  "Pédagogie générale",
+const FALLBACK_FILIERES = [
+  "Développement Informatique",
   "Réseaux & Informatique",
-  "Comptabilité",
+  "Comptabilité & Gestion",
   "Finance",
-  "Gestion",
+  "Commerce",
   "Électronique",
   "Mécanique",
 ];
+
+interface RefModule { id: string; nom: string; code: string | null }
+interface FiliereSummary { id: string; nom: string; code: string | null; modules: RefModule[] }
 
 interface ChatSession {
   id: string;
@@ -28,8 +31,27 @@ export default function AssistantPage() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [domaine, setDomaine] = useState("Comptabilité");
+
+  const [filieres, setFilieres] = useState<FiliereSummary[]>([]);
+  const [filiere, setFiliere] = useState("");
+  const [module, setModule] = useState("");
+
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Load referential filières from DB
+  useEffect(() => {
+    fetch("/api/referentiel?mode=summary")
+      .then(r => r.json())
+      .then((data: FiliereSummary[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFilieres(data);
+          setFiliere(data[0].nom);
+        } else {
+          setFiliere(FALLBACK_FILIERES[0]);
+        }
+      })
+      .catch(() => { setFiliere(FALLBACK_FILIERES[0]); });
+  }, []);
 
   const loadSessions = useCallback(async () => {
     const res = await fetch("/api/chat/sessions");
@@ -43,6 +65,12 @@ export default function AssistantPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Reset module when filière changes
+  useEffect(() => { setModule(""); }, [filiere]);
+
+  const currentFiliereModules =
+    filieres.find(f => f.nom === filiere)?.modules ?? [];
+
   async function selectSession(id: string) {
     setActiveSessionId(id);
     const res = await fetch(`/api/chat/sessions/${id}`);
@@ -54,14 +82,15 @@ export default function AssistantPage() {
       }))
     );
     const s = sessions.find(s => s.id === id);
-    if (s) setDomaine(s.domaine);
+    if (s) setFiliere(s.domaine.split(" — ")[0] ?? s.domaine);
   }
 
   async function newSession() {
+    const label = module ? `${filiere} — ${module}` : filiere;
     const res = await fetch("/api/chat/sessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ domaine }),
+      body: JSON.stringify({ domaine: label }),
     });
     const session = await res.json();
     setActiveSessionId(session.id);
@@ -83,10 +112,11 @@ export default function AssistantPage() {
     let sessionId = activeSessionId;
 
     if (!sessionId) {
+      const label = module ? `${filiere} — ${module}` : filiere;
       const res = await fetch("/api/chat/sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domaine }),
+        body: JSON.stringify({ domaine: label }),
       });
       const s = await res.json();
       sessionId = s.id;
@@ -100,7 +130,13 @@ export default function AssistantPage() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: content, sessionId, domaine }),
+        body: JSON.stringify({
+          message: content,
+          sessionId,
+          domaine: filiere,
+          module: module || undefined,
+          modulesContext: currentFiliereModules.map(m => m.nom),
+        }),
       });
 
       if (!res.ok || !res.body) throw new Error("Erreur serveur");
@@ -137,6 +173,10 @@ export default function AssistantPage() {
     }
   }
 
+  const filieresList = filieres.length > 0
+    ? filieres.map(f => f.nom)
+    : FALLBACK_FILIERES;
+
   return (
     <div className="flex h-full">
       <SessionList
@@ -154,7 +194,10 @@ export default function AssistantPage() {
             <div>
               <h1 className="font-bold text-white text-sm">Assistant Pédagogique IA</h1>
               <p className="text-xs" style={{ color: "#6B7280" }}>
-                Domaine actif : <span style={{ color: "#84CC16" }}>{domaine}</span>
+                {module
+                  ? <>Filière : <span style={{ color: "#84CC16" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#84CC16" }}>{module}</span></>
+                  : <>Filière : <span style={{ color: "#84CC16" }}>{filiere || "—"}</span></>
+                }
               </p>
             </div>
             <div
@@ -164,22 +207,55 @@ export default function AssistantPage() {
               IA
             </div>
           </div>
-          <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
-            {DOMAINES.map(d => (
+
+          {/* Filière tabs */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+            {filieresList.map(f => (
               <button
-                key={d}
-                onClick={() => setDomaine(d)}
+                key={f}
+                onClick={() => setFiliere(f)}
                 className="text-[11px] px-2.5 py-1 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
                 style={
-                  domaine === d
+                  filiere === f
                     ? { background: "#84CC1618", color: "#84CC16", borderColor: "#84CC1640" }
                     : { borderColor: "#1E1E2C", color: "#6B7280" }
                 }
               >
-                {d}
+                {f}
               </button>
             ))}
           </div>
+
+          {/* Module tabs — only shown when filière has modules in DB */}
+          {currentFiliereModules.length > 0 && (
+            <div className="flex gap-1.5 overflow-x-auto pt-1.5 pb-0.5 scrollbar-none">
+              <button
+                onClick={() => setModule("")}
+                className="text-[10px] px-2 py-0.5 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
+                style={
+                  module === ""
+                    ? { background: "#3B82F618", color: "#3B82F6", borderColor: "#3B82F640" }
+                    : { borderColor: "#17171E", color: "#4B5563" }
+                }
+              >
+                Tous modules
+              </button>
+              {currentFiliereModules.map(m => (
+                <button
+                  key={m.id}
+                  onClick={() => setModule(m.nom)}
+                  className="text-[10px] px-2 py-0.5 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
+                  style={
+                    module === m.nom
+                      ? { background: "#3B82F618", color: "#3B82F6", borderColor: "#3B82F640" }
+                      : { borderColor: "#17171E", color: "#4B5563" }
+                  }
+                >
+                  {m.code ? `${m.code} — ${m.nom}` : m.nom}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <ChatWindow messages={messages} isLoading={isLoading} onSuggestionClick={sendMessage} />

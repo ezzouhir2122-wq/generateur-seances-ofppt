@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return new Response("Non autorisé", { status: 401 });
 
-  const { message, sessionId, domaine } = await req.json();
+  const { message, sessionId, domaine, module: moduleName, modulesContext } = await req.json();
 
   if (!message || !sessionId) return new Response("Paramètres manquants", { status: 400 });
 
@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         const response = anthropic.messages.stream({
           model: "claude-opus-4-5",
           max_tokens: 2048,
-          system: buildChatSystemPrompt(domaine ?? "Général"),
+          system: buildChatSystemPrompt(domaine ?? "Général", moduleName, modulesContext),
           messages: history,
         });
 

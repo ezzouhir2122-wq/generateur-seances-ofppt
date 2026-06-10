@@ -148,9 +148,24 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+
+  // Lightweight mode for the assistant — returns only filières + module names
+  const mode = req.nextUrl.searchParams.get("mode");
+  if (mode === "summary") {
+    const filieres = await prisma.filiere.findMany({
+      select: {
+        id: true,
+        nom: true,
+        code: true,
+        modules: { select: { id: true, nom: true, code: true }, orderBy: { nom: "asc" } },
+      },
+      orderBy: { nom: "asc" },
+    });
+    return NextResponse.json(filieres);
+  }
 
   const secteurs = await prisma.secteur.findMany({
     include: {
