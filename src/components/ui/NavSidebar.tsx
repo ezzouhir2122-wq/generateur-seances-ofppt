@@ -58,6 +58,13 @@ const ChatIcon = () => (
   </svg>
 );
 
+const PencilCheckIcon = () => (
+  <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </svg>
+);
+
 const BarChartIcon = () => (
   <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <line x1="18" y1="20" x2="18" y2="10"/>
@@ -87,6 +94,7 @@ const navSections = [
       { href: "/seances", label: "Séance pédagogique", icon: <LightningIcon />, exact: false },
       { href: "/fiches", label: "Fiche pédagogique", icon: <ClipboardIcon />, exact: true },
       { href: "/evaluations", label: "Évaluations", icon: <CheckSquareIcon />, exact: false },
+      { href: "/corrections", label: "Correction IA", icon: <PencilCheckIcon />, exact: false },
     ],
   },
   {
