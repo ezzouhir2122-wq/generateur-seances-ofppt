@@ -6,7 +6,15 @@ import ChatInput from "@/components/chat/ChatInput";
 import SessionList from "@/components/chat/SessionList";
 import { toast } from "sonner";
 
-const DOMAINES = ["Comptabilité", "Finance", "Gestion", "Fiscalité", "Pédagogie générale"];
+const DOMAINES = [
+  "Pédagogie générale",
+  "Réseaux & Informatique",
+  "Comptabilité",
+  "Finance",
+  "Gestion",
+  "Électronique",
+  "Mécanique",
+];
 
 interface ChatSession {
   id: string;
@@ -141,21 +149,31 @@ export default function AssistantPage() {
 
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-3 flex items-center justify-between flex-shrink-0" style={{ borderBottom: "1px solid #1E1E2C", background: "#111116" }}>
-          <div>
-            <h1 className="font-bold text-white text-sm">Assistant pédagogique IA</h1>
-            <p className="text-xs" style={{ color: "#9CA3AF" }}>Questions pédagogiques OFPPT — {domaine}</p>
+        <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: "1px solid #1E1E2C", background: "#111116" }}>
+          <div className="flex items-center justify-between mb-2.5">
+            <div>
+              <h1 className="font-bold text-white text-sm">Assistant Pédagogique IA</h1>
+              <p className="text-xs" style={{ color: "#6B7280" }}>
+                Domaine actif : <span style={{ color: "#84CC16" }}>{domaine}</span>
+              </p>
+            </div>
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold"
+              style={{ background: "#84CC16" }}
+            >
+              IA
+            </div>
           </div>
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
             {DOMAINES.map(d => (
               <button
                 key={d}
                 onClick={() => setDomaine(d)}
-                className="text-xs px-2.5 py-1 rounded-full border transition-colors"
+                className="text-[11px] px-2.5 py-1 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
                 style={
                   domaine === d
                     ? { background: "#84CC1618", color: "#84CC16", borderColor: "#84CC1640" }
-                    : { borderColor: "#1E1E2C", color: "#9CA3AF" }
+                    : { borderColor: "#1E1E2C", color: "#6B7280" }
                 }
               >
                 {d}
@@ -164,7 +182,7 @@ export default function AssistantPage() {
           </div>
         </div>
 
-        <ChatWindow messages={messages} isLoading={isLoading} />
+        <ChatWindow messages={messages} isLoading={isLoading} onSuggestionClick={sendMessage} />
         <div ref={bottomRef} />
         <ChatInput onSend={sendMessage} disabled={isLoading} />
       </div>
