@@ -19,6 +19,18 @@ interface ReferentielStats {
   stats: { modulesCreated: number; competencesCreated: number; objectifsCreated: number; criteresCreated: number };
 }
 
+interface ReferentielItem {
+  id: string;
+  nom: string;
+  code: string | null;
+  filieres: {
+    id: string;
+    nom: string;
+    code: string | null;
+    modules: { id: string; nom: string; code: string | null }[];
+  }[];
+}
+
 interface ModuleRow {
   groupe: string;
   codeModule: string;
@@ -57,6 +69,9 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
   const [etablissement, setEtablissement] = useState(user.etablissement ?? "");
   const [savingProfile, setSavingProfile] = useState(false);
 
+  const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
+  const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
+
   const saveProfile = async () => {
     setSavingProfile(true);
     try {
@@ -81,9 +96,16 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
     } catch {}
   }, []);
 
+  const loadReferentiels = useCallback(async () => {
+    try {
+      const res = await fetch("/api/referentiel");
+      if (res.ok) setReferentiels(await res.json());
+    } catch {}
+  }, []);
+
   useEffect(() => {
-    if (open) loadStats();
-  }, [open, loadStats]);
+    if (open) { loadStats(); loadReferentiels(); }
+  }, [open, loadStats, loadReferentiels]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -195,7 +217,15 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
     if (!confirm("Supprimer tout le référentiel importé ?")) return;
     await fetch("/api/referentiel", { method: "DELETE" });
     setRefResult(null);
+    setReferentiels([]);
     toast.success("Référentiel réinitialisé");
+  };
+
+  const deleteSecteur = async (secteurId: string, nom: string) => {
+    if (!confirm(`Supprimer le secteur « ${nom} » et toutes ses filières ?`)) return;
+    await fetch(`/api/referentiel?secteurId=${secteurId}`, { method: "DELETE" });
+    setReferentiels(prev => prev.filter(s => s.id !== secteurId));
+    toast.success(`Secteur « ${nom} » supprimé`);
   };
 
   return (
@@ -439,6 +469,100 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
               </div>
               <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>L&apos;IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
             </div>
+          </section>
+
+          {/* Référentiels importés */}
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>
+              🗂️ Référentiels importés
+            </h3>
+
+            {referentiels.length === 0 ? (
+              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                <p className="text-xs" style={{ color: "#4B5563" }}>Aucun référentiel importé</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {referentiels.map(secteur => {
+                  const totalModules = secteur.filieres.reduce((acc, f) => acc + f.modules.length, 0);
+                  const isExpanded = expandedSecteur === secteur.id;
+                  return (
+                    <div key={secteur.id} className="rounded-lg overflow-hidden" style={{ border: "1px solid #1E1E2C" }}>
+                      {/* Secteur header */}
+                      <button
+                        onClick={() => setExpandedSecteur(isExpanded ? null : secteur.id)}
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-left transition-colors"
+                        style={{ background: "#17171E" }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "#1E1E2C"}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "#17171E"}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-[10px] transition-transform duration-200" style={{ transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", color: "#4B5563" }}>▶</span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-white truncate">{secteur.nom}</p>
+                            <p className="text-[10px]" style={{ color: "#4B5563" }}>
+                              {secteur.filieres.length} filière{secteur.filieres.length > 1 ? "s" : ""} · {totalModules} module{totalModules > 1 ? "s" : ""}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={e => { e.stopPropagation(); deleteSecteur(secteur.id, secteur.nom); }}
+                          className="text-[10px] px-2 py-0.5 rounded transition-colors ml-2 shrink-0"
+                          style={{ color: "#EF4444", border: "1px solid transparent" }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444410"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
+                        >
+                          🗑
+                        </button>
+                      </button>
+
+                      {/* Filières list */}
+                      {isExpanded && (
+                        <div style={{ borderTop: "1px solid #1E1E2C" }}>
+                          {secteur.filieres.map((filiere, idx) => (
+                            <div
+                              key={filiere.id}
+                              className="px-3 py-2"
+                              style={{
+                                borderTop: idx > 0 ? "1px solid #17171E" : undefined,
+                                background: "#111116",
+                              }}
+                            >
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0">
+                                  <p className="text-xs font-medium truncate" style={{ color: "#39C84A" }}>
+                                    {filiere.code ? <span className="font-mono text-[10px] mr-1.5" style={{ color: "#4B5563" }}>{filiere.code}</span> : null}
+                                    {filiere.nom}
+                                  </p>
+                                  <p className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>
+                                    {filiere.modules.length} module{filiere.modules.length > 1 ? "s" : ""}
+                                  </p>
+                                  {/* Module names */}
+                                  {filiere.modules.length > 0 && (
+                                    <div className="mt-1.5 flex flex-wrap gap-1">
+                                      {filiere.modules.map(mod => (
+                                        <span
+                                          key={mod.id}
+                                          className="text-[9px] px-1.5 py-0.5 rounded"
+                                          style={{ background: "#17171E", color: "#6B7280", border: "1px solid #1E1E2C", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                                          title={mod.nom}
+                                        >
+                                          {mod.code ? `${mod.code} · ` : ""}{mod.nom.length > 28 ? mod.nom.slice(0, 28) + "…" : mod.nom}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
           {/* Stats */}
