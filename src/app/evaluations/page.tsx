@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import EvaluationForm from "@/components/forms/EvaluationForm";
 import EvaluationResult from "@/components/ui/EvaluationResult";
 import type { EvaluationFormData, EvaluationType } from "@/types/seance";
@@ -20,6 +21,10 @@ export default function EvaluationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [typeLabel, setTypeLabel] = useState("");
   const [titre, setTitre] = useState("");
+  const { data: session } = useSession();
+  const formateur = session?.user
+    ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
+    : undefined;
 
   const handleGenerate = async (data: EvaluationFormData) => {
     setIsLoading(true);
@@ -83,7 +88,7 @@ export default function EvaluationsPage() {
             <EvaluationResult
               contenu={contenu}
               typeLabel={typeLabel}
-              onExportPDF={() => exportToPDF(contenu, titre)}
+              onExportPDF={() => exportToPDF(contenu, titre, formateur, "Évaluation")}
               onExportWord={() => exportToWord(contenu, titre)}
               onReset={() => { setContenu(null); setError(null); }}
             />

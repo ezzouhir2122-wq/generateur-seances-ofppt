@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 import { exportFichePDF, exportFicheWord } from "@/lib/export";
 
 interface Fiche {
@@ -20,6 +21,10 @@ interface Fiche {
 }
 
 export default function FicheDetailClient({ fiche }: { fiche: Fiche }) {
+  const { data: session } = useSession();
+  const formateur = session?.user
+    ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
+    : undefined;
   const router = useRouter();
 
   async function handleDelete() {
@@ -31,8 +36,8 @@ export default function FicheDetailClient({ fiche }: { fiche: Fiche }) {
     }
   }
 
-  function handlePDF() {
-    exportFichePDF(fiche.contenu, fiche.titre);
+  async function handlePDF() {
+    await exportFichePDF(fiche.contenu, fiche.titre, formateur);
   }
 
   function handleWord() {

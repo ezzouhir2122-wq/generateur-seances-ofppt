@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import SeanceForm from "@/components/forms/SeanceForm";
 import SeanceResult from "@/components/ui/SeanceResult";
 import { SeanceFormData } from "@/types/seance";
@@ -11,6 +12,10 @@ export default function SeancesPage() {
   const [contenu, setContenu] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [titre, setTitre] = useState("");
+  const { data: session } = useSession();
+  const formateur = session?.user
+    ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
+    : undefined;
 
   const handleGenerate = async (data: SeanceFormData) => {
     setIsLoading(true);
@@ -66,7 +71,7 @@ export default function SeancesPage() {
           {contenu && (
             <SeanceResult
               contenu={contenu}
-              onExportPDF={() => exportToPDF(contenu, titre)}
+              onExportPDF={() => exportToPDF(contenu, titre, formateur)}
               onExportWord={() => exportToWord(contenu, titre)}
               onExportPPT={() => exportToPPT(contenu, titre)}
               onReset={() => { setContenu(null); setError(null); }}

@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { exportToPDF, exportToWord, exportToPPT } from "@/lib/export";
 
 interface Seance {
@@ -18,6 +19,11 @@ interface Seance {
 }
 
 export default function SeanceDetailClient({ seance }: { seance: Seance }) {
+  const { data: session } = useSession();
+  const formateur = session?.user
+    ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
+    : undefined;
+
   const typeLabel: Record<string, string> = {
     theorique: "Cours théorique",
     tp: "Travaux Pratiques",
@@ -51,7 +57,7 @@ export default function SeanceDetailClient({ seance }: { seance: Seance }) {
         </div>
         <div className="flex gap-2 shrink-0">
           <button
-            onClick={() => exportToPDF(seance.contenu, seance.title)}
+            onClick={() => exportToPDF(seance.contenu, seance.title, formateur)}
             className="px-4 py-2 text-sm border border-ofppt-green text-ofppt-green rounded-lg hover:bg-ofppt-green hover:text-white transition-colors font-medium"
           >
             PDF

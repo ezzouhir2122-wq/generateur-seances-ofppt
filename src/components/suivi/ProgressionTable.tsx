@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { CompetenceItem, StagiaireItem } from "@/types/suivi";
 import ProgressionCharts from "./ProgressionCharts";
 import { exportProgressionExcel, exportProgressionPDF } from "@/lib/export";
@@ -29,6 +30,10 @@ export default function ProgressionTable({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState("");
+  const { data: session } = useSession();
+  const formateur = session?.user
+    ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
+    : undefined;
 
   const handleCellBlur = useCallback(
     async (stagiaireId: string, competenceId: string, value: string) => {
@@ -93,7 +98,7 @@ export default function ProgressionTable({
           Export Excel
         </button>
         <button
-          onClick={() => exportProgressionPDF(groupeNom, filiereNom, annee, competences, stagiaires)}
+          onClick={() => exportProgressionPDF(groupeNom, filiereNom, annee, competences, stagiaires, formateur)}
           className="px-3 py-2 text-xs font-medium rounded-xl transition-colors"
           style={{ border: "1px solid #84CC1640", color: "#84CC16", background: "#84CC1610" }}
         >
