@@ -9,16 +9,18 @@ datasource db {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  name         String
-  password     String
-  createdAt    DateTime      @default(now())
-  seances      Seance[]
-  modules      UserModule[]
-  fiches       Fiche[]
-  chatSessions ChatSession[]
-  groupes      Groupe[]
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  password      String
+  createdAt     DateTime      @default(now())
+  matricule     String?
+  etablissement String?
+  seances       Seance[]
+  modules       UserModule[]
+  fiches        Fiche[]
+  chatSessions  ChatSession[]
+  groupes       Groupe[]
 }
 
 model UserModule {
