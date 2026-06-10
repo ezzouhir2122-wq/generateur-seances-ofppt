@@ -123,7 +123,7 @@ export default function GroupeForm() {
           type="submit"
           disabled={loading}
           className="flex-1 py-2.5 text-sm font-semibold rounded-xl transition-colors"
-          style={{ background: loading ? "#4B5563" : "#84CC16", color: "#0B0B14" }}
+          style={{ background: loading ? "#4B5563" : "#39C84A", color: "#0B0B14" }}
         >
           {loading ? "Création…" : "Créer le groupe"}
         </button>

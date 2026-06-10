@@ -7,7 +7,7 @@ export async function exportToPPT(contenu: string, titre: string): Promise<void>
   const prs = new PptxGenJS();
   prs.layout = "LAYOUT_WIDE";
 
-  const GREEN = "84CC16";
+  const GREEN = "39C84A";
   const DARK = "0B0B14";
   const CARD = "12121E";
   const TEXT = "E5E7EB";
@@ -288,7 +288,7 @@ export function exportProgressionPDF(
     doc.rect(startX, y, 40, 7, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
-    doc.setTextColor(132, 204, 22);
+    doc.setTextColor(57, 200, 74);
     doc.text("Stagiaire", startX + 1, y + 5);
 
     competences.forEach((c, i) => {
@@ -318,7 +318,7 @@ export function exportProgressionPDF(
         const x = startX + 40 + i * colWidth;
         if (val !== undefined) {
           const color: [number, number, number] =
-            val >= 75 ? [132, 204, 22] : val >= 50 ? [245, 158, 11] : [239, 68, 68];
+            val >= 75 ? [57, 200, 74] : val >= 50 ? [245, 158, 11] : [239, 68, 68];
           doc.setTextColor(...color);
           doc.text(`${val}%`, x + 1, y + 4.5);
         } else {

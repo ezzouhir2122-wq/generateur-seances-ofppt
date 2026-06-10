@@ -3,9 +3,9 @@ export default function CorrectionIAPage() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
       <div
         className="w-16 h-16 rounded-2xl flex items-center justify-center"
-        style={{ background: "#84CC1618", border: "1px solid #84CC1630" }}
+        style={{ background: "#39C84A18", border: "1px solid #39C84A30" }}
       >
-        <svg width="32" height="32" fill="none" stroke="#84CC16" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="32" height="32" fill="none" stroke="#39C84A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
           <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
         </svg>
@@ -18,7 +18,7 @@ export default function CorrectionIAPage() {
       </div>
       <div
         className="text-xs font-semibold px-3 py-1.5 rounded-full"
-        style={{ background: "#1E1E2C", color: "#84CC16", border: "1px solid #84CC1640" }}
+        style={{ background: "#1E1E2C", color: "#39C84A", border: "1px solid #39C84A40" }}
       >
         Bientôt disponible
       </div>

@@ -195,14 +195,14 @@ export default function AssistantPage() {
               <h1 className="font-bold text-white text-sm">Assistant Pédagogique IA</h1>
               <p className="text-xs" style={{ color: "#6B7280" }}>
                 {module
-                  ? <>Filière : <span style={{ color: "#84CC16" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#84CC16" }}>{module}</span></>
-                  : <>Filière : <span style={{ color: "#84CC16" }}>{filiere || "—"}</span></>
+                  ? <>Filière : <span style={{ color: "#39C84A" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#39C84A" }}>{module}</span></>
+                  : <>Filière : <span style={{ color: "#39C84A" }}>{filiere || "—"}</span></>
                 }
               </p>
             </div>
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold"
-              style={{ background: "#84CC16" }}
+              style={{ background: "#39C84A" }}
             >
               IA
             </div>
@@ -217,7 +217,7 @@ export default function AssistantPage() {
                 className="text-[11px] px-2.5 py-1 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
                 style={
                   filiere === f
-                    ? { background: "#84CC1618", color: "#84CC16", borderColor: "#84CC1640" }
+                    ? { background: "#39C84A18", color: "#39C84A", borderColor: "#39C84A40" }
                     : { borderColor: "#1E1E2C", color: "#6B7280" }
                 }
               >

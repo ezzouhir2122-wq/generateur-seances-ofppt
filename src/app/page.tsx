@@ -122,7 +122,7 @@ export default async function DashboardPage() {
   const userName = session.user.name?.split(" ")[0] ?? "Formateur";
 
   const quickActions = [
-    { href: "/seances", label: "Nouvelle séance", desc: "Générer une séance pédagogique", accent: "#84CC16", bg: "#84CC1610", icon: "⚡" },
+    { href: "/seances", label: "Nouvelle séance", desc: "Générer une séance pédagogique", accent: "#39C84A", bg: "#39C84A10", icon: "⚡" },
     { href: "/fiches", label: "Nouvelle fiche", desc: "Générer une fiche pédagogique", accent: "#9CA3AF", bg: "#17171E", icon: "📋" },
     { href: "/evaluations", label: "Créer une évaluation", desc: "Générer une évaluation IA", accent: "#9CA3AF", bg: "#17171E", icon: "📝" },
     { href: "/corrections", label: "Correction IA", desc: "Corriger et noter une copie", accent: "#9CA3AF", bg: "#17171E", icon: "✏️" },
@@ -133,7 +133,7 @@ export default async function DashboardPage() {
 
       {/* ── Header ── */}
       <div className="mb-8 pb-6" style={{ borderBottom: "1px solid #1E1E2C" }}>
-        <p className="text-sm mb-1 font-medium" style={{ color: "#84CC16" }}>
+        <p className="text-sm mb-1 font-medium" style={{ color: "#39C84A" }}>
           {greeting}, {userName} 👋
         </p>
         <h1 className="text-3xl font-bold text-white">Tableau de bord</h1>
@@ -146,24 +146,24 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
 
         {/* Formateur */}
-        <div className="rounded-2xl p-5" style={{ background: "#111116", border: "1px solid #84CC1628" }}>
+        <div className="rounded-2xl p-5" style={{ background: "#111116", border: "1px solid #39C84A28" }}>
           <div className="flex items-center gap-2.5 mb-5">
-            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#84CC1618" }}>
-              <svg width="15" height="15" fill="none" stroke="#84CC16" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: "#39C84A18" }}>
+              <svg width="15" height="15" fill="none" stroke="#39C84A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                 <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
               </svg>
             </div>
             <div>
-              <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "#84CC16" }}>Formateur</p>
+              <p className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "#39C84A" }}>Formateur</p>
               <p className="text-[10px]" style={{ color: "#4B5563" }}>Productivité personnelle</p>
             </div>
           </div>
-          <KpiRow label="Séances générées" value={seancesCount} accent="#84CC16" />
-          <KpiRow label="Fiches générées" value={fichesCount} accent="#84CC16" />
-          <KpiRow label="Modules importés" value={modulesCount} accent="#84CC16" />
+          <KpiRow label="Séances générées" value={seancesCount} accent="#39C84A" />
+          <KpiRow label="Fiches générées" value={fichesCount} accent="#39C84A" />
+          <KpiRow label="Modules importés" value={modulesCount} accent="#39C84A" />
           <div className="flex items-center justify-between pt-1.5">
             <span className="text-xs" style={{ color: "#6B7280" }}>Temps économisé</span>
-            <span className="text-sm font-bold" style={{ color: "#84CC16" }}>{tempsEconomiseLabel}</span>
+            <span className="text-sm font-bold" style={{ color: "#39C84A" }}>{tempsEconomiseLabel}</span>
           </div>
         </div>
 
@@ -262,7 +262,7 @@ export default async function DashboardPage() {
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: "#1E1E2C" }}>
                       <div
                         className="h-2 rounded-full"
-                        style={{ width: `${pct}%`, background: "linear-gradient(90deg,#84CC16,#65A30D)" }}
+                        style={{ width: `${pct}%`, background: "linear-gradient(90deg,#39C84A,#65A30D)" }}
                       />
                     </div>
                   </div>
@@ -281,7 +281,7 @@ export default async function DashboardPage() {
                 <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
               </svg>
               <p className="text-xs" style={{ color: "#4B5563" }}>Aucune activité pour l&apos;instant</p>
-              <Link href="/seances" className="text-xs font-medium hover:underline" style={{ color: "#84CC16" }}>
+              <Link href="/seances" className="text-xs font-medium hover:underline" style={{ color: "#39C84A" }}>
                 Générer ma première séance →
               </Link>
             </div>
@@ -291,7 +291,7 @@ export default async function DashboardPage() {
                 {recentSeances.map((s) => (
                   <li key={s.id}>
                     <Link href={`/historique/${s.id}`} className="flex items-start gap-2.5 text-sm group" style={{ color: "#9CA3AF" }}>
-                      <span className="mt-0.5 shrink-0" style={{ color: "#84CC16" }}>⚡</span>
+                      <span className="mt-0.5 shrink-0" style={{ color: "#39C84A" }}>⚡</span>
                       <span className="line-clamp-1 group-hover:text-white transition-colors">
                         {s.title || `${s.filiere} — ${s.module}`}
                       </span>
@@ -310,7 +310,7 @@ export default async function DashboardPage() {
                 ))}
               </ul>
               <div className="flex gap-4 mt-5 pt-4" style={{ borderTop: "1px solid #1E1E2C" }}>
-                <Link href="/historique" className="text-xs font-medium hover:underline" style={{ color: "#84CC16" }}>
+                <Link href="/historique" className="text-xs font-medium hover:underline" style={{ color: "#39C84A" }}>
                   Toutes les séances →
                 </Link>
                 <Link href="/fiches/historique" className="text-xs font-medium hover:underline" style={{ color: "#9CA3AF" }}>

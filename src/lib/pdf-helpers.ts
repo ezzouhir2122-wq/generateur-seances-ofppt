@@ -39,7 +39,7 @@ export async function getLogoBase64(): Promise<string | null> {
 
 export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
   const W = doc.internal.pageSize.getWidth();
-  const GREEN: [number, number, number] = [132, 204, 22];
+  const GREEN: [number, number, number] = [57, 200, 74];
 
   // Bande verte supérieure
   doc.setFillColor(...GREEN);
@@ -90,7 +90,7 @@ export function pdfFooter(
 ): void {
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const GREEN: [number, number, number] = [132, 204, 22];
+  const GREEN: [number, number, number] = [57, 200, 74];
   const footerY = H - 12;
 
   // Ligne séparatrice

@@ -75,7 +75,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#84CC16", borderBottom: "1px solid #1E1E2C" }}>
+      <h2 className="text-base font-bold pb-4" style={{ color: "#39C84A", borderBottom: "1px solid #1E1E2C" }}>
         Paramètres de l&apos;évaluation
       </h2>
 
@@ -89,7 +89,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
               className="flex items-start gap-2.5 p-3 rounded-xl cursor-pointer transition-colors"
               style={
                 form.type === t.value
-                  ? { border: "1px solid #84CC1640", background: "#84CC1614" }
+                  ? { border: "1px solid #39C84A40", background: "#39C84A14" }
                   : { border: "1px solid #1E1E2C", background: "#17171E" }
               }
             >
@@ -97,7 +97,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
                 onChange={() => setForm(prev => ({ ...prev, type: t.value }))} />
               <span className="text-lg leading-none mt-0.5">{t.icon}</span>
               <div>
-                <p className="text-sm font-semibold" style={{ color: form.type === t.value ? "#84CC16" : "#fff" }}>{t.label}</p>
+                <p className="text-sm font-semibold" style={{ color: form.type === t.value ? "#39C84A" : "#fff" }}>{t.label}</p>
                 <p className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>{t.desc}</p>
               </div>
             </label>
@@ -197,7 +197,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
                 <label key={n} className="flex-1 rounded-lg py-2 text-sm text-center cursor-pointer transition-colors"
                   style={
                     form.nbExercices === n
-                      ? { border: "1px solid #84CC1640", background: "#84CC1614", color: "#84CC16", fontWeight: 600 }
+                      ? { border: "1px solid #39C84A40", background: "#39C84A14", color: "#39C84A", fontWeight: 600 }
                       : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
                   }>
                   <input type="radio" name="nbExercices" className="hidden" checked={form.nbExercices === n}

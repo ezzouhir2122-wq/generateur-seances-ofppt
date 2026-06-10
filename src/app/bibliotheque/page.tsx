@@ -3,9 +3,9 @@ export default function BibliothequePage() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
       <div
         className="w-16 h-16 rounded-2xl flex items-center justify-center"
-        style={{ background: "#84CC1618", border: "1px solid #84CC1630" }}
+        style={{ background: "#39C84A18", border: "1px solid #39C84A30" }}
       >
-        <svg width="32" height="32" fill="none" stroke="#84CC16" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="32" height="32" fill="none" stroke="#39C84A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
           <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
         </svg>
@@ -30,7 +30,7 @@ export default function BibliothequePage() {
       </div>
       <div
         className="text-xs font-semibold px-3 py-1.5 rounded-full"
-        style={{ background: "#1E1E2C", color: "#84CC16", border: "1px solid #84CC1640" }}
+        style={{ background: "#1E1E2C", color: "#39C84A", border: "1px solid #39C84A40" }}
       >
         Bientôt disponible
       </div>

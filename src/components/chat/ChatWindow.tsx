@@ -19,9 +19,9 @@ const SUGGESTIONS = [
   {
     category: "Préparation",
     icon: "⚡",
-    accent: "#84CC16",
-    bg: "#84CC1612",
-    border: "#84CC1630",
+    accent: "#39C84A",
+    bg: "#39C84A12",
+    border: "#39C84A30",
     desc: "Planification & contenu",
     prompt: "Prépare une séance de 2 heures sur les réseaux informatiques pour des stagiaires de niveau technicien.",
   },
@@ -64,7 +64,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
           <div className="text-center">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 text-black font-bold text-lg"
-              style={{ background: "#84CC16" }}
+              style={{ background: "#39C84A" }}
             >
               IA
             </div>
@@ -110,7 +110,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
           {msg.role === "assistant" && (
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold mr-2 mt-1 flex-shrink-0"
-              style={{ background: "#84CC16" }}
+              style={{ background: "#39C84A" }}
             >
               IA
             </div>
@@ -119,7 +119,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
             className="max-w-[75%] rounded-2xl px-4 py-3 text-sm"
             style={
               msg.role === "user"
-                ? { background: "#84CC1618", color: "#FFFFFF", borderRadius: "16px 4px 16px 16px", border: "1px solid #84CC1630" }
+                ? { background: "#39C84A18", color: "#FFFFFF", borderRadius: "16px 4px 16px 16px", border: "1px solid #39C84A30" }
                 : { background: "#111116", color: "#E5E7EB", borderRadius: "4px 16px 16px 16px", border: "1px solid #1E1E2C" }
             }
           >
@@ -127,7 +127,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
               <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-headings:my-2">
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                 {msg.streaming && (
-                  <span className="inline-block w-1.5 h-4 animate-pulse ml-0.5 align-middle" style={{ background: "#84CC16" }} />
+                  <span className="inline-block w-1.5 h-4 animate-pulse ml-0.5 align-middle" style={{ background: "#39C84A" }} />
                 )}
               </div>
             ) : (
@@ -141,7 +141,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
         <div className="flex justify-start">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold mr-2 mt-1 flex-shrink-0"
-            style={{ background: "#84CC16" }}
+            style={{ background: "#39C84A" }}
           >
             IA
           </div>
@@ -150,9 +150,9 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
             style={{ background: "#111116", border: "1px solid #1E1E2C", borderRadius: "4px 16px 16px 16px" }}
           >
             <div className="flex gap-1.5 items-center">
-              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#84CC16", animationDelay: "0ms" }} />
-              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#84CC16", animationDelay: "150ms" }} />
-              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#84CC16", animationDelay: "300ms" }} />
+              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#39C84A", animationDelay: "0ms" }} />
+              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#39C84A", animationDelay: "150ms" }} />
+              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#39C84A", animationDelay: "300ms" }} />
             </div>
           </div>
         </div>

@@ -46,7 +46,7 @@ export default async function GroupeDetailPage({ params }: { params: Promise<{ g
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white">{groupe.nom}</h1>
-          <p className="mt-1 text-sm" style={{ color: "#84CC16" }}>
+          <p className="mt-1 text-sm" style={{ color: "#39C84A" }}>
             {filiereNom} · {groupe.annee}
           </p>
         </div>

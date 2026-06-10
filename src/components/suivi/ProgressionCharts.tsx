@@ -15,11 +15,11 @@ interface Props {
 
 const tooltipStyle = {
   contentStyle: { background: "#12121E", border: "1px solid #1E1E2C", color: "#E5E7EB", fontSize: 12, borderRadius: 8 },
-  cursor: { fill: "#84CC1610" },
+  cursor: { fill: "#39C84A10" },
 };
 
 function pctColor(v: number): string {
-  return v >= 75 ? "#84CC16" : v >= 50 ? "#F59E0B" : "#EF4444";
+  return v >= 75 ? "#39C84A" : v >= 50 ? "#F59E0B" : "#EF4444";
 }
 
 function shortLabel(titre: string, max = 14): string {
@@ -61,7 +61,7 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
             className="px-3 py-1.5 text-xs rounded-lg font-medium transition-colors"
             style={
               tab === t
-                ? { background: "#84CC1618", color: "#84CC16", border: "1px solid #84CC1630" }
+                ? { background: "#39C84A18", color: "#39C84A", border: "1px solid #39C84A30" }
                 : { border: "1px solid #1E1E2C", color: "#6B7280" }
             }
           >
@@ -116,7 +116,7 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
                   <PolarGrid stroke="#1E1E2C" />
                   <PolarAngleAxis dataKey="competence" tick={{ fill: "#6B7280", fontSize: 9 }} />
                   <Tooltip {...tooltipStyle} formatter={(v) => [`${v as number}%`, "Score"]} />
-                  <Radar dataKey="score" stroke="#84CC16" fill="#84CC16" fillOpacity={0.2} strokeWidth={2} />
+                  <Radar dataKey="score" stroke="#39C84A" fill="#39C84A" fillOpacity={0.2} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </>

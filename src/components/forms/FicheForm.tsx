@@ -94,7 +94,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#84CC16", borderBottom: "1px solid #1E1E2C" }}>
+      <h2 className="text-base font-bold pb-4" style={{ color: "#39C84A", borderBottom: "1px solid #1E1E2C" }}>
         Paramètres de la fiche
       </h2>
 
@@ -121,7 +121,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             type="button"
             onClick={() => setShowList((s) => !s)}
             className="flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-1.5 transition-colors"
-            style={{ color: "#84CC16", border: "1px solid #84CC1640", background: "#84CC1610" }}
+            style={{ color: "#39C84A", border: "1px solid #39C84A40", background: "#39C84A10" }}
           >
             <span>📋</span>
             <span>Lister les modules ({modules.length})</span>
@@ -146,13 +146,13 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
                       className="cursor-pointer transition-colors"
                       style={
                         form.module === m.module
-                          ? { background: "#84CC1614", color: "#84CC16" }
+                          ? { background: "#39C84A14", color: "#39C84A" }
                           : { borderBottom: "1px solid #1E1E2C" }
                       }
                     >
                       <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
                       <td className="px-3 py-2 font-medium text-white">{m.module}</td>
-                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#84CC16" }}>{m.mhg}h</td>
+                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#39C84A" }}>{m.mhg}h</td>
                     </tr>
                   ))}
                 </tbody>
@@ -180,7 +180,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             <label className="label flex items-center justify-between">
               <span>Intitulé module *</span>
               {mhgInfo !== null && (
-                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#84CC1614", color: "#84CC16" }}>
+                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#39C84A14", color: "#39C84A" }}>
                   M.H.G : {mhgInfo}h
                 </span>
               )}

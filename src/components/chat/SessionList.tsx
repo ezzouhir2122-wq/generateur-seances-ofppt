@@ -22,9 +22,9 @@ export default function SessionList({ sessions, activeId, onSelect, onNew, onDel
         <button
           onClick={onNew}
           className="w-full text-black text-sm font-medium py-2 rounded-lg transition-colors"
-          style={{ background: "#84CC16" }}
+          style={{ background: "#39C84A" }}
           onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#65A30D")}
-          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#84CC16")}
+          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#39C84A")}
         >
           + Nouvelle conversation
         </button>
@@ -40,14 +40,14 @@ export default function SessionList({ sessions, activeId, onSelect, onNew, onDel
               className="group flex items-start gap-2 px-3 py-2.5 cursor-pointer transition-colors"
               style={{
                 borderBottom: "1px solid #1E1E2C",
-                background: activeId === s.id ? "#84CC1610" : "transparent",
-                borderLeft: activeId === s.id ? "2px solid #84CC16" : "2px solid transparent",
+                background: activeId === s.id ? "#39C84A10" : "transparent",
+                borderLeft: activeId === s.id ? "2px solid #39C84A" : "2px solid transparent",
               }}
               onMouseEnter={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "#17171E"; }}
               onMouseLeave={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
             >
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium truncate" style={{ color: activeId === s.id ? "#84CC16" : "#9CA3AF" }}>{s.domaine}</div>
+                <div className="text-xs font-medium truncate" style={{ color: activeId === s.id ? "#39C84A" : "#9CA3AF" }}>{s.domaine}</div>
                 <div className="text-xs truncate mt-0.5" style={{ color: "#4B5563" }}>
                   {s.messages[0]?.content ?? "Nouvelle conversation"}
                 </div>
