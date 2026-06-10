@@ -71,6 +71,8 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
   const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
+  const [refListLoading, setRefListLoading] = useState(false);
+  const [refListError, setRefListError] = useState(false);
 
   const saveProfile = async () => {
     setSavingProfile(true);
@@ -97,10 +99,20 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
   }, []);
 
   const loadReferentiels = useCallback(async () => {
+    setRefListLoading(true);
+    setRefListError(false);
     try {
       const res = await fetch("/api/referentiel");
-      if (res.ok) setReferentiels(await res.json());
-    } catch {}
+      if (res.ok) {
+        setReferentiels(await res.json());
+      } else {
+        setRefListError(true);
+      }
+    } catch {
+      setRefListError(true);
+    } finally {
+      setRefListLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -206,6 +218,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
       setRefFile(null);
       if (refFileRef.current) refFileRef.current.value = "";
       toast.success("Référentiel importé avec succès");
+      loadReferentiels();
     } catch (err) {
       setRefError(err instanceof Error ? err.message : "Erreur lors de l'import");
     } finally {
@@ -473,13 +486,23 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
           {/* Référentiels importés */}
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#9CA3AF" }}>
               🗂️ Référentiels importés
             </h3>
 
-            {referentiels.length === 0 ? (
+            {refListLoading ? (
               <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
-                <p className="text-xs" style={{ color: "#4B5563" }}>Aucun référentiel importé</p>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>Chargement…</p>
+              </div>
+            ) : refListError ? (
+              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#2A1010", border: "1px solid #7F1D1D" }}>
+                <p className="text-xs text-red-400">Impossible de charger les référentiels</p>
+                <button onClick={loadReferentiels} className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>↺ Réessayer</button>
+              </div>
+            ) : referentiels.length === 0 ? (
+              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>Aucun référentiel importé</p>
+                <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>Importez un référentiel via la section ci-dessus</p>
               </div>
             ) : (
               <div className="space-y-2">
