@@ -26,37 +26,55 @@ function AssistantFAB() {
   if (pathname?.startsWith("/assistant")) return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2">
+    <div
+      style={{
+        position: "fixed",
+        bottom: "28px",
+        right: "28px",
+        zIndex: 9999,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-end",
+        gap: "10px",
+        pointerEvents: "none",
+      }}
+    >
       {/* Tooltip */}
       <div
-        className="pointer-events-none select-none transition-all duration-200"
         style={{
+          pointerEvents: "none",
+          userSelect: "none",
           opacity: hovered ? 1 : 0,
-          transform: hovered ? "translateY(0) scale(1)" : "translateY(6px) scale(0.95)",
+          transform: hovered ? "translateY(0) scale(1)" : "translateY(8px) scale(0.95)",
+          transition: "opacity 0.18s ease, transform 0.18s ease",
         }}
       >
         <div
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg whitespace-nowrap"
           style={{
-            background: "#17171E",
-            border: "1px solid #1E1E2C",
-            color: "#E5E7EB",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
+            background: "#111116",
+            border: "1px solid #84CC1640",
+            borderRadius: "10px",
+            padding: "8px 14px",
+            whiteSpace: "nowrap",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(132,204,22,0.1)",
           }}
         >
-          Assistant IA
-          <span
-            className="block text-[10px] font-normal mt-0.5"
-            style={{ color: "#84CC16" }}
-          >
-            Posez vos questions pédagogiques
-          </span>
+          <p style={{ color: "#F9FAFB", fontSize: "12px", fontWeight: 600, margin: 0 }}>Assistant IA</p>
+          <p style={{ color: "#84CC16", fontSize: "10px", fontWeight: 400, margin: "2px 0 0" }}>Posez vos questions pédagogiques</p>
         </div>
         {/* Arrow */}
-        <div className="flex justify-end pr-[22px]">
+        <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: "24px" }}>
           <div
-            className="w-2 h-2 rotate-45"
-            style={{ background: "#1E1E2C", marginTop: "-5px" }}
+            style={{
+              width: "8px",
+              height: "8px",
+              background: "#111116",
+              border: "1px solid #84CC1640",
+              borderTop: "none",
+              borderLeft: "none",
+              transform: "rotate(45deg)",
+              marginTop: "-5px",
+            }}
           />
         </div>
       </div>
@@ -66,42 +84,54 @@ function AssistantFAB() {
         href="/assistant"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="relative w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200"
+        aria-label="Assistant IA"
         style={{
-          background: hovered
-            ? "linear-gradient(135deg, #84CC16, #65a30d)"
-            : "linear-gradient(135deg, #6aab0d, #4d8a08)",
+          pointerEvents: "auto",
+          position: "relative",
+          width: "56px",
+          height: "56px",
+          borderRadius: "16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#84CC16",
           boxShadow: hovered
-            ? "0 8px 32px rgba(132, 204, 22, 0.45), 0 2px 8px rgba(0,0,0,0.4)"
-            : "0 4px 20px rgba(132, 204, 22, 0.25), 0 2px 6px rgba(0,0,0,0.3)",
-          transform: hovered ? "scale(1.08) translateY(-2px)" : "scale(1)",
+            ? "0 0 0 4px rgba(132,204,22,0.25), 0 12px 32px rgba(132,204,22,0.5)"
+            : "0 0 0 3px rgba(132,204,22,0.15), 0 6px 20px rgba(132,204,22,0.35)",
+          transform: hovered ? "scale(1.1) translateY(-3px)" : "scale(1)",
+          transition: "transform 0.2s ease, box-shadow 0.2s ease",
+          textDecoration: "none",
         }}
-        aria-label="Ouvrir l'assistant IA"
       >
         {/* Pulse ring */}
         {!hovered && (
           <span
-            className="absolute inset-0 rounded-2xl animate-ping"
-            style={{ background: "rgba(132, 204, 22, 0.2)", animationDuration: "2.5s" }}
+            className="animate-ping"
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: "16px",
+              background: "rgba(132,204,22,0.35)",
+              animationDuration: "2s",
+            }}
           />
         )}
-
         {/* Icon */}
         <svg
-          width="24"
-          height="24"
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
           fill="none"
           stroke="white"
-          strokeWidth="1.8"
+          strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          viewBox="0 0 24 24"
-          style={{ position: "relative", zIndex: 1 }}
+          style={{ position: "relative", zIndex: 1, filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.3))" }}
         >
-          <path d="M12 2a9 9 0 016.364 15.364L20 22l-4.636-1.636A9 9 0 1112 2z" />
-          <circle cx="8.5" cy="12" r="1" fill="white" stroke="none" />
+          <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+          <circle cx="9" cy="12" r="1" fill="white" stroke="none" />
           <circle cx="12" cy="12" r="1" fill="white" stroke="none" />
-          <circle cx="15.5" cy="12" r="1" fill="white" stroke="none" />
+          <circle cx="15" cy="12" r="1" fill="white" stroke="none" />
         </svg>
       </Link>
     </div>
