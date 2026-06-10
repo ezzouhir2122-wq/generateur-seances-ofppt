@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
 import AppShell from "@/components/ui/AppShell";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Competencia IA",
@@ -19,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="fr">
-      <body className={inter.className}>
+      <body className={`${font.variable} font-sans`}>
         <Providers>
           <AppShell user={session?.user ?? null} claudeKey={claudeKey} openaiKey={openaiKey}>
             {children}
