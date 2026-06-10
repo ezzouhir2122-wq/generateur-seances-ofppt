@@ -25,21 +25,35 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return null;
 
-        return { id: user.id, email: user.email, name: user.name };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          matricule: user.matricule ?? null,
+          etablissement: user.etablissement ?? null,
+        };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
+        token.matricule = user.matricule ?? null;
+        token.etablissement = user.etablissement ?? null;
+      }
+      if (trigger === "update" && session) {
+        token.matricule = session.user?.matricule ?? token.matricule;
+        token.etablissement = session.user?.etablissement ?? token.etablissement;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id as string;
       session.user.name = token.name as string;
+      session.user.matricule = token.matricule ?? null;
+      session.user.etablissement = token.etablissement ?? null;
       return session;
     },
   },
