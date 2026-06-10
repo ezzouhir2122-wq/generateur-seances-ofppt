@@ -89,6 +89,12 @@ const navSections = [
     ],
   },
   {
+    label: "SUIVI DES COMPÉTENCES",
+    items: [
+      { href: "/suivi", label: "Mes groupes", icon: <BarChartIcon />, exact: false },
+    ],
+  },
+  {
     label: "HISTORIQUE",
     items: [
       { href: "/historique", label: "Mes séances", icon: <ClockIcon />, exact: false },
@@ -99,12 +105,6 @@ const navSections = [
     label: "ASSISTANT",
     items: [
       { href: "/assistant", label: "Assistant IA", icon: <ChatIcon />, exact: false },
-    ],
-  },
-  {
-    label: "SUIVI DES COMPÉTENCES",
-    items: [
-      { href: "/suivi", label: "Mes groupes", icon: <BarChartIcon />, exact: false },
     ],
   },
 ];
