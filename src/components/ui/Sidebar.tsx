@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { read, utils } from "xlsx";
+import { read, utils, writeFile } from "xlsx";
 import { toast } from "sonner";
 
 interface Stats {
@@ -27,7 +27,7 @@ interface ReferentielItem {
     id: string;
     nom: string;
     code: string | null;
-    modules: { id: string; nom: string; code: string | null }[];
+    modules: { id: string; nom: string; code: string | null; mhg?: number | null }[];
   }[];
 }
 
@@ -239,6 +239,24 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
     await fetch(`/api/referentiel?secteurId=${secteurId}`, { method: "DELETE" });
     setReferentiels(prev => prev.filter(s => s.id !== secteurId));
     toast.success(`Secteur « ${nom} » supprimé`);
+  };
+
+  const exportSecteurExcel = (secteur: ReferentielItem) => {
+    const rows = secteur.filieres.flatMap((f) =>
+      f.modules.map((m) => ({
+        "Secteur": secteur.nom,
+        "Filière": f.nom,
+        "N° Module": m.code ?? "",
+        "Intitulé Module": m.nom,
+        "MHG (h)": m.mhg ?? "",
+      }))
+    );
+    if (rows.length === 0) { toast.error("Aucun module à exporter"); return; }
+    const ws = utils.json_to_sheet(rows);
+    ws["!cols"] = [{ wch: 22 }, { wch: 30 }, { wch: 12 }, { wch: 50 }, { wch: 10 }];
+    const wb = utils.book_new();
+    utils.book_append_sheet(wb, ws, "Référentiel");
+    writeFile(wb, `referentiel-${secteur.nom.replace(/\s+/g, "-").toLowerCase()}.xlsx`);
   };
 
   return (
@@ -528,15 +546,27 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                             </p>
                           </div>
                         </div>
-                        <button
-                          onClick={e => { e.stopPropagation(); deleteSecteur(secteur.id, secteur.nom); }}
-                          className="text-[10px] px-2 py-0.5 rounded transition-colors ml-2 shrink-0"
-                          style={{ color: "#EF4444", border: "1px solid transparent" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444410"; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
-                        >
-                          🗑
-                        </button>
+                        <div className="flex items-center gap-1 ml-2 shrink-0">
+                          <button
+                            onClick={e => { e.stopPropagation(); exportSecteurExcel(secteur); }}
+                            className="text-[10px] px-2 py-0.5 rounded transition-colors"
+                            style={{ color: "#39C84A", border: "1px solid transparent" }}
+                            title="Exporter Excel"
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#39C84A30"; (e.currentTarget as HTMLButtonElement).style.background = "#39C84A10"; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
+                          >
+                            ↓
+                          </button>
+                          <button
+                            onClick={e => { e.stopPropagation(); deleteSecteur(secteur.id, secteur.nom); }}
+                            className="text-[10px] px-2 py-0.5 rounded transition-colors"
+                            style={{ color: "#EF4444", border: "1px solid transparent" }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444410"; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
+                          >
+                            🗑
+                          </button>
+                        </div>
                       </button>
 
                       {/* Filières list */}
