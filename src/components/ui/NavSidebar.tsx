@@ -126,7 +126,7 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
       href={href}
       className="group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
       style={active
-        ? { background: "#84CC1614", color: "#84CC16" }
+        ? { background: "#39C84A14", color: "#39C84A" }
         : { color: "#6B7280" }
       }
       onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "#17171E"; (e.currentTarget as HTMLAnchorElement).style.color = "#D1D5DB"; } }}
@@ -135,10 +135,10 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
       {active && (
         <span
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-          style={{ background: "#84CC16" }}
+          style={{ background: "#39C84A" }}
         />
       )}
-      <span style={{ color: active ? "#84CC16" : "#4B5563", flexShrink: 0 }}>
+      <span style={{ color: active ? "#39C84A" : "#4B5563", flexShrink: 0 }}>
         {icon}
       </span>
       <span className="truncate">{label}</span>
@@ -173,7 +173,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           </div>
           <div className="min-w-0">
             <div className="text-white font-bold text-sm leading-tight tracking-wide">OFPPT</div>
-            <div className="text-[11px] font-medium leading-tight" style={{ color: "#84CC16" }}>Compétencia IA</div>
+            <div className="text-[11px] font-medium leading-tight" style={{ color: "#39C84A" }}>Compétencia IA</div>
           </div>
         </div>
       </div>
@@ -246,7 +246,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         >
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-black text-xs font-bold flex-shrink-0 select-none"
-            style={{ background: "#84CC16" }}
+            style={{ background: "#39C84A" }}
           >
             {initials}
           </div>

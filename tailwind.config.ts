@@ -14,10 +14,15 @@ const config: Config = {
       colors: {
         /* Design tokens — map to CSS vars */
         accent: {
-          DEFAULT: "#84CC16",
-          hover:   "#78B814",
-          dim:     "rgba(132,204,22,0.10)",
-          glow:    "rgba(132,204,22,0.22)",
+          DEFAULT: "#39C84A",
+          hover:   "#2FB340",
+          dim:     "rgba(57,200,74,0.10)",
+          glow:    "rgba(57,200,74,0.22)",
+        },
+        blue: {
+          DEFAULT: "#1F5DDB",
+          dim:     "rgba(31,93,219,0.12)",
+          glow:    "rgba(31,93,219,0.25)",
         },
         dark: {
           base:    "#08080D",
@@ -51,7 +56,7 @@ const config: Config = {
         "2xl": "24px",
       },
       boxShadow: {
-        accent: "0 4px 24px rgba(132,204,22,0.22)",
+        accent: "0 4px 24px rgba(57,200,74,0.22)",
         sm:     "0 1px 4px rgba(0,0,0,0.45)",
         md:     "0 4px 20px rgba(0,0,0,0.55)",
         lg:     "0 12px 48px rgba(0,0,0,0.65)",
