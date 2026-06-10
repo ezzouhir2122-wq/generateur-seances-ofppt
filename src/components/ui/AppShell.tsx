@@ -7,7 +7,12 @@ import { Toaster } from "sonner";
 
 interface AppShellProps {
   children: React.ReactNode;
-  user: { name?: string | null; email?: string | null } | null;
+  user: {
+    name?: string | null;
+    email?: string | null;
+    matricule?: string | null;
+    etablissement?: string | null;
+  } | null;
   claudeKey: boolean;
   openaiKey: boolean;
 }
