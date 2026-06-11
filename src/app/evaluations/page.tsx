@@ -57,7 +57,7 @@ export default function EvaluationsPage() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Génération d&apos;évaluations</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Génération d&apos;évaluations</h1>
         <p className="mt-1" style={{ color: "#9CA3AF" }}>
           QCM, exercices pratiques, examens et sessions de rattrapage générés automatiquement
         </p>
@@ -108,7 +108,7 @@ export default function EvaluationsPage() {
                   style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
                   <span className="text-2xl mt-0.5">{card.icon}</span>
                   <div>
-                    <p className="font-semibold text-sm text-white">{card.title}</p>
+                    <p className="font-semibold text-sm" style={{ color: "#374151" }}>{card.title}</p>
                     <p className="text-xs mt-1" style={{ color: "#4B5563" }}>{card.desc}</p>
                   </div>
                 </div>

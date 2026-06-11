@@ -45,7 +45,7 @@ export default async function HistoriquePage() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #E2E8F0" }}>
         <div>
-          <h1 className="text-2xl font-bold text-white">Mes séances</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Mes séances</h1>
           <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>
             {seances.length} séance{seances.length !== 1 ? "s" : ""} générée{seances.length !== 1 ? "s" : ""}
           </p>
@@ -82,7 +82,7 @@ export default async function HistoriquePage() {
                   {s.filiere.slice(0, 2).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-white group-hover:text-[#E8651A] transition-colors">
+                  <p className="font-semibold group-hover:text-[#E8651A] transition-colors" style={{ color: "#111827" }}>
                     {s.title}
                   </p>
                   <div className="flex gap-3 mt-1">

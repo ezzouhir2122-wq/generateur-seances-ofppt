@@ -41,8 +41,8 @@ function buildPrompt(p: SeanceParams): string {
   const niveauApp = p.niveauApprentissage ? NIVEAU_APP_LABELS[p.niveauApprentissage] : null;
   const mode = p.mode ? MODE_LABELS[p.mode] : "Présentiel";
 
-  const competenceSection = p.competence
-    ? `- Compétence ciblée : ${p.competence}\n`
+  const themeSection = p.competence
+    ? `- Thème / Compétence du cours : ${p.competence}\n`
     : "";
   const niveauAppSection = niveauApp
     ? `- Niveau d'apprentissage : ${niveauApp}\n`
@@ -50,18 +50,20 @@ function buildPrompt(p: SeanceParams): string {
   const modeSection = `- Mode de formation : ${mode}\n`;
 
   const adaptationsMode = p.mode === "distanciel"
-    ? `\n**Contexte distanciel :** Propose des activités synchrones (visioconférence) ET asynchrones (ressources auto-formatives). Indique les outils numériques recommandés (LMS, vidéos, quiz en ligne).`
+    ? `\n**Contexte distanciel :** Adapte les explications à l'auto-formation : sois autosuffisant, explicite chaque notion, et signale les points à approfondir en autonomie.`
     : p.mode === "hybride"
-    ? `\n**Contexte hybride :** Alterne entre activités en présentiel (pratique, manipulation) et distanciel (théorie, exercices). Indique clairement ce qui se fait en salle et ce qui se fait à distance.`
+    ? `\n**Contexte hybride :** Indique au fil du cours les notions à travailler en présentiel (pratique) et celles à étudier à distance (théorie).`
     : "";
 
   const adaptationsNiveau = niveauApp === "Débutant"
-    ? `\n**Niveau débutant :** Simplifie le vocabulaire, multiplie les exemples concrets, prévois plus de temps d'explication et des vérifications fréquentes de compréhension.`
+    ? `\n**Niveau débutant :** Simplifie le vocabulaire, définis chaque terme technique, multiplie les exemples concrets et progresse pas à pas.`
     : niveauApp === "Avancé"
-    ? `\n**Niveau avancé :** Propose des activités d'approfondissement, des études de cas complexes, une autonomie plus grande et des liens vers des ressources complémentaires.`
+    ? `\n**Niveau avancé :** Approfondis les notions, ajoute des cas complexes, des subtilités et des liens vers des concepts connexes.`
     : "";
 
-  return `Tu es un expert en ingénierie pédagogique OFPPT. Génère une séance pédagogique complète et structurée.
+  const theme = p.competence ? p.competence : moduleLabel;
+
+  return `Tu es un expert formateur OFPPT et concepteur de contenus pédagogiques. Rédige un COURS DÉTAILLÉ, complet et directement exploitable par les stagiaires.
 
 **Paramètres :**
 - Filière : ${p.filiere}
@@ -69,49 +71,45 @@ function buildPrompt(p: SeanceParams): string {
 - Durée : ${p.duree}
 - Niveau : ${niveauFull}
 - Type : ${typeLabel}
-${competenceSection}${niveauAppSection}${modeSection}- Objectifs pédagogiques : ${p.objectifs}
-${adaptationsMode}${adaptationsNiveau}
+${themeSection}${niveauAppSection}${modeSection}${adaptationsMode}${adaptationsNiveau}
+
+**Consignes de rédaction :**
+- NE génère AUCUNE section "Objectifs pédagogiques".
+- Rédige un véritable cours de fond (pas une fiche de déroulement) : définitions, explications approfondies, exemples détaillés et expliqués étape par étape.
+- Style clair, professionnel et pédagogique, adapté au niveau ${niveauFull}.
+- Utilise des listes, des tableaux et des formules quand c'est pertinent.
 
 **Format de sortie attendu (Markdown) :**
 
-# Fiche de Séance Pédagogique
+# ${theme}
 
 ## En-tête
 | Filière | Module | Durée | Niveau | Type | Mode |
 |---------|--------|-------|--------|------|------|
 | ${p.filiere} | ${moduleLabel} | ${p.duree} | ${niveauFull} | ${typeLabel} | ${mode} |
 
-## Compétence(s) ciblée(s)
-${p.competence ? p.competence : "..."}
+## Introduction
+(Mise en contexte du thème, son importance dans le métier et le module.)
 
-## Objectifs pédagogiques
-### Savoir (connaissances)
-...
-### Savoir-faire (compétences pratiques)
-...
-### Savoir-être (attitudes)
-...
+## 1. Définitions et concepts clés
+(Définitions précises et claires de chaque notion essentielle, avec la terminologie exacte.)
 
-## Prérequis
-...
+## 2. Développement
+### 2.1 ...
+### 2.2 ...
+### 2.3 ...
+(Développe le cœur du cours de façon progressive et structurée : principes, méthodes, règles, démonstrations. Sois exhaustif et précis.)
 
-## Activités pédagogiques
+## 3. Exemples expliqués
+### Exemple 1 — ...
+**Énoncé :** ...
+**Explication détaillée :** (résolution commentée, étape par étape)
+### Exemple 2 — ...
+**Énoncé :** ...
+**Explication détaillée :** ...
 
-| Étape | Activité Formateur | Activité Stagiaire | Durée | Supports / Ressources |
-|-------|-------------------|-------------------|-------|-----------------------|
-| ...   | ...               | ...               | ...   | ...                   |
+## 4. Synthèse — points clés à retenir
+(Récapitulatif des notions essentielles sous forme de liste à puces.)
 
-## Ressources et Supports
-### Supports pour le formateur
-...
-### Supports pour le stagiaire
-...${p.mode === "distanciel" || p.mode === "hybride" ? "\n### Ressources numériques\n..." : ""}
-
-## Évaluation
-### Évaluation formative (pendant la séance)
-...
-### Critères de réussite
-...
-
-Génère une séance réaliste, détaillée et directement utilisable par un formateur OFPPT.`;
+Génère un cours réaliste, riche et directement utilisable en formation OFPPT.`;
 }

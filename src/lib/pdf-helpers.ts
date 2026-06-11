@@ -37,12 +37,15 @@ export async function getLogoBase64(): Promise<string | null> {
   }
 }
 
+// Palette OFPPT moderne
+const OFPPT_NAVY: [number, number, number] = [0, 48, 135]; // #003087
+const OFPPT_ORANGE: [number, number, number] = [232, 101, 26]; // #E8651A
+
 export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
   const W = doc.internal.pageSize.getWidth();
-  const GREEN: [number, number, number] = [57, 200, 74];
 
-  // Bande verte supérieure
-  doc.setFillColor(...GREEN);
+  // Bande bleu marine supérieure
+  doc.setFillColor(...OFPPT_NAVY);
   doc.rect(0, 0, W, 3, "F");
 
   // Logo OFPPT (14×14 mm, à gauche)
@@ -54,10 +57,10 @@ export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
     }
   }
 
-  // "OFPPT — <Type>" en vert, centré
+  // "OFPPT — <Type>" en bleu marine, centré
   doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.setTextColor(...GREEN);
+  doc.setTextColor(...OFPPT_NAVY);
   doc.text(`OFPPT — ${opts.type}`, W / 2, 12, { align: "center" });
 
   // Titre du document, gris, centré
@@ -76,9 +79,9 @@ export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
   doc.setFontSize(7);
   doc.text(dateStr, W - 10, 12, { align: "right" });
 
-  // Ligne séparatrice
-  doc.setDrawColor(229, 231, 235);
-  doc.setLineWidth(0.3);
+  // Ligne séparatrice orange (accent OFPPT)
+  doc.setDrawColor(...OFPPT_ORANGE);
+  doc.setLineWidth(0.6);
   doc.line(10, 22, W - 10, 22);
 }
 
@@ -90,7 +93,6 @@ export function pdfFooter(
 ): void {
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const GREEN: [number, number, number] = [57, 200, 74];
   const footerY = H - 12;
 
   // Ligne séparatrice
@@ -98,8 +100,8 @@ export function pdfFooter(
   doc.setLineWidth(0.3);
   doc.line(10, footerY, W - 10, footerY);
 
-  // Bande verte inférieure
-  doc.setFillColor(...GREEN);
+  // Bande orange inférieure (accent OFPPT)
+  doc.setFillColor(...OFPPT_ORANGE);
   doc.rect(0, H - 2, W, 2, "F");
 
   doc.setFont("helvetica", "normal");

@@ -19,7 +19,6 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
     niveau: "TS",
     annee: "1ere-annee",
     type: "theorique",
-    objectifs: "",
     competence: "",
     niveauApprentissage: "intermediaire",
     mode: "presentiel",
@@ -76,7 +75,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.module || !form.objectifs) return;
+    if (!form.module) return;
     onGenerate(form);
   };
 
@@ -138,7 +137,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
                           }
                         >
                           <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
-                          <td className="px-3 py-2 font-medium text-white">{m.module}</td>
+                          <td className="px-3 py-2 font-medium" style={{ color: "#111827" }}>{m.module}</td>
                           <td className="px-3 py-2 text-right font-semibold" style={{ color: "#E8651A" }}>{m.mhg}h</td>
                         </tr>
                       ))}
@@ -258,29 +257,19 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
         </div>
       </div>
 
-      {/* Compétence ciblée */}
+      {/* Thème / Compétence du cours */}
       <div>
-        <label className="label">Compétence ciblée</label>
+        <label className="label">Thème ou compétence du cours</label>
         <textarea
           className="input-field resize-none"
           rows={2}
-          placeholder="Ex: Établir un bilan comptable selon les normes SYSCOA"
+          placeholder="Ex: Le bilan comptable et son équilibre selon les normes SYSCOA"
           value={form.competence ?? ""}
           onChange={set("competence")}
         />
-      </div>
-
-      {/* Objectifs */}
-      <div>
-        <label className="label">Objectifs pédagogiques *</label>
-        <textarea
-          className="input-field resize-none"
-          rows={3}
-          placeholder="Ex: À la fin de cette séance, le stagiaire sera capable de..."
-          value={form.objectifs}
-          onChange={set("objectifs")}
-          required
-        />
+        <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>
+          Précisez le thème pour cibler le cours détaillé (définition, développement, exemples).
+        </p>
       </div>
 
       {/* Niveau d'apprentissage */}

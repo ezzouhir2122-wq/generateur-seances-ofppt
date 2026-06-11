@@ -43,7 +43,7 @@ export default function SeancesPage() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Génération de séance</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Génération de séance</h1>
         <p className="mt-1" style={{ color: "#9CA3AF" }}>Remplissez le formulaire pour générer une séance complète en quelques secondes</p>
       </div>
 

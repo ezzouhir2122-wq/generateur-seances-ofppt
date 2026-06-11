@@ -11,7 +11,7 @@ export default function BibliothequePage() {
         </svg>
       </div>
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white mb-2">Bibliothèque Collaborative</h1>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: "#111827" }}>Bibliothèque Collaborative</h1>
         <p className="text-sm max-w-md" style={{ color: "#6B7280" }}>
           Partagez et découvrez des séances, évaluations et supports pédagogiques créés par les formateurs OFPPT.
           Recherchez par filière, module ou auteur, et notez les ressources les plus utiles.

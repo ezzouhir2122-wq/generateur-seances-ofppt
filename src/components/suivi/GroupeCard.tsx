@@ -11,7 +11,7 @@ export default function GroupeCard({ groupe, onDelete }: { groupe: GroupeSummary
     >
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="font-bold text-white text-sm">{groupe.nom}</h3>
+          <h3 className="font-bold text-sm" style={{ color: "#111827" }}>{groupe.nom}</h3>
           <p className="text-xs mt-1" style={{ color: "#E8651A" }}>{groupe.filiereNom}</p>
         </div>
         <span

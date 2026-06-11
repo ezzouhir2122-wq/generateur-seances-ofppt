@@ -13,7 +13,7 @@ export interface SeanceParams {
   niveau: string;
   annee?: string;
   type: "theorique" | "tp" | "ta";
-  objectifs: string;
+  objectifs?: string;
   competence?: string;
   niveauApprentissage?: "debutant" | "intermediaire" | "avance";
   mode?: "presentiel" | "distanciel" | "hybride";
@@ -44,43 +44,46 @@ function buildPrompt(p: SeanceParams): string {
   const anneeLabel = ANNEE_LABELS[p.annee ?? ""] ?? "";
   const niveauFull = anneeLabel ? `${niveauLabel} — ${anneeLabel}` : niveauLabel;
   const moduleLabel = p.codeModule ? `${p.codeModule} — ${p.module}` : p.module;
+  const typeLabel = p.type === "theorique" ? "Cours théorique" : p.type === "tp" ? "Travaux Pratiques" : "Travaux d'Application";
+  const theme = p.competence ? p.competence : moduleLabel;
 
-  return `Tu es un expert en ingénierie pédagogique OFPPT. Génère une séance pédagogique complète et structurée.
+  return `Tu es un expert formateur OFPPT. Rédige un COURS DÉTAILLÉ complet (SANS section "Objectifs pédagogiques").
 
 **Paramètres :**
 - Filière : ${p.filiere}
 - Module : ${moduleLabel}
 - Durée : ${p.duree}
 - Niveau : ${niveauFull}
-- Type de séance : ${p.type === "theorique" ? "Cours théorique" : p.type === "tp" ? "Travaux Pratiques" : "Travaux d'Application"}
-- Objectifs pédagogiques : ${p.objectifs}
+- Type : ${typeLabel}
+- Thème / Compétence : ${p.competence ?? "(thème général du module)"}
 
 **Format de sortie attendu (Markdown) :**
 
-# Fiche de Séance Pédagogique
+# ${theme}
 
 ## En-tête
 | Filière | Module | Durée | Niveau | Type |
 |---------|--------|-------|--------|------|
-| ${p.filiere} | ${moduleLabel} | ${p.duree} | ${niveauFull} | ... |
+| ${p.filiere} | ${moduleLabel} | ${p.duree} | ${niveauFull} | ${typeLabel} |
 
-## Objectif(s) de la séance
+## Introduction
+(Mise en contexte du thème.)
+
+## 1. Définitions et concepts clés
 ...
 
-## Prérequis
+## 2. Développement
+### 2.1 ...
+### 2.2 ...
+(Explications approfondies et progressives.)
+
+## 3. Exemples expliqués
+### Exemple 1 — ...
+**Énoncé :** ...
+**Explication détaillée :** ...
+
+## 4. Synthèse — points clés à retenir
 ...
 
-## Déroulement
-
-| Étape | Activité Formateur | Activité Stagiaire | Durée | Supports |
-|-------|-------------------|-------------------|-------|----------|
-| ...   | ...               | ...               | ...   | ...      |
-
-## Évaluation
-...
-
-## Matériel et Supports
-...
-
-Génère une séance réaliste, détaillée et directement utilisable par un formateur OFPPT.`;
+Génère un cours réaliste, riche et directement utilisable en formation OFPPT.`;
 }

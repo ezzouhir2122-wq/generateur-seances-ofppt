@@ -119,7 +119,7 @@ export default function ReferentielClient({ secteurs }: Props) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: "#F5F7FA", color: "#9CA3AF" }}>
         <div className="text-5xl mb-4">📚</div>
-        <h2 className="text-xl font-semibold text-white mb-2">Aucun référentiel importé</h2>
+        <h2 className="text-xl font-semibold mb-2" style={{ color: "#374151" }}>Aucun référentiel importé</h2>
         <p className="text-sm mb-6" style={{ color: "#4B5563" }}>Importez un référentiel depuis le panneau Paramètres</p>
         <Link href="/" className="text-sm px-4 py-2 rounded-lg font-medium text-black" style={{ background: "#E8651A" }}>
           ← Retour au tableau de bord
@@ -133,7 +133,7 @@ export default function ReferentielClient({ secteurs }: Props) {
       {/* Header */}
       <div className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between" style={{ background: "#FFFFFF", borderBottom: "1px solid #E2E8F0" }}>
         <div>
-          <h1 className="text-lg font-bold text-white">Référentiel pédagogique</h1>
+          <h1 className="text-lg font-bold" style={{ color: "#111827" }}>Référentiel pédagogique</h1>
           <p className="text-xs mt-0.5" style={{ color: "#4B5563" }}>
             {totalFilieres} filière{totalFilieres > 1 ? "s" : ""} · {totalModules} module{totalModules > 1 ? "s" : ""} · {totalMhg}h total
           </p>
@@ -232,7 +232,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                       <span className="font-mono text-xs" style={{ color: "#6B7280" }}>{row.code ?? "—"}</span>
                     </td>
                     <td className="px-4 py-2.5">
-                      <span className="text-xs text-white">{row.nom}</span>
+                      <span className="text-xs" style={{ color: "#374151" }}>{row.nom}</span>
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       {row.mhg != null ? (

@@ -142,7 +142,7 @@ export default function ProgressionTable({
               className="flex flex-col items-center py-16 rounded-2xl"
               style={{ border: "1px dashed #E2E8F0" }}
             >
-              <p className="text-sm mb-1 text-white">Aucune compétence référentiel</p>
+              <p className="text-sm mb-1" style={{ color: "#374151" }}>Aucune compétence référentiel</p>
               <p className="text-xs" style={{ color: "#6B7280" }}>
                 Importez le référentiel de cette filière via Modules &amp; Paramètres
               </p>

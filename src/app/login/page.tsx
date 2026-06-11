@@ -64,12 +64,12 @@ export default async function LoginPage({
             <div className="w-9 h-9 rounded-xl overflow-hidden">
               <Image src="/logo-ofppt.jpg" alt="OFPPT" width={36} height={36} className="object-cover w-full h-full" />
             </div>
-            <span className="text-white font-bold">Compétencia IA</span>
+            <span className="font-bold" style={{ color: "#111827" }}>Compétencia IA</span>
           </div>
 
           {/* Tabs */}
           <div className="flex rounded-xl mb-8 p-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
-            <button className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-colors" style={{ background: "#F8FAFC" }}>
+            <button className="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors" style={{ background: "#F8FAFC", color: "#111827" }}>
               Se connecter
             </button>
             <button className="flex-1 py-2.5 rounded-lg text-sm font-medium text-[#9CA3AF] cursor-default">
@@ -77,7 +77,7 @@ export default async function LoginPage({
             </button>
           </div>
 
-          <h2 className="text-2xl font-bold text-white mb-1">Content de te revoir</h2>
+          <h2 className="text-2xl font-bold mb-1" style={{ color: "#111827" }}>Content de te revoir</h2>
           <p className="text-[#9CA3AF] text-sm mb-7">
             Connectez-vous pour accéder à votre espace formateur.
           </p>

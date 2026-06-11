@@ -2,24 +2,24 @@ import type { SeanceFormData } from "@/types/seance";
 import type { FicheFormData } from "@/types/seance";
 
 export function buildSeancePrompt(data: SeanceFormData): string {
-  return `Tu es un expert en pédagogie OFPPT. Génère une séance pédagogique complète et structurée.
+  const theme = data.competence ? data.competence : data.module;
+  return `Tu es un expert formateur OFPPT. Rédige un COURS DÉTAILLÉ complet (SANS section "Objectifs pédagogiques").
 
 Filière : ${data.filiere}
 Module : ${data.module}
 Durée : ${data.duree}
 Niveau : ${data.niveau}
 Type : ${data.type}
-Objectifs : ${data.objectifs}
+Thème / Compétence : ${data.competence ?? "(thème général du module)"}
 
 Format la réponse en markdown avec les sections suivantes :
-## Informations générales
-## Objectifs pédagogiques
-## Déroulement de la séance
-### 1. Introduction (mise en situation)
-### 2. Développement
-### 3. Synthèse et évaluation
-## Ressources et matériel
-## Évaluation`;
+# ${theme}
+## En-tête (Filière | Module | Durée | Niveau | Type)
+## Introduction
+## 1. Définitions et concepts clés
+## 2. Développement (sous-parties 2.1, 2.2, 2.3 — explications approfondies)
+## 3. Exemples expliqués (Énoncé + Explication détaillée étape par étape)
+## 4. Synthèse — points clés à retenir`;
 }
 
 const FICHE_ANNEE_LABELS: Record<string, string> = {

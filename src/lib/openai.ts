@@ -29,12 +29,25 @@ function buildPrompt(p: SeanceParams): string {
   const anneeLabel = ANNEE_LABELS_OAI[p.annee ?? ""] ?? "";
   const niveauFull = anneeLabel ? `${niveauLabel} — ${anneeLabel}` : niveauLabel;
   const moduleLabel = p.codeModule ? `${p.codeModule} — ${p.module}` : p.module;
+  const typeLabel = p.type === "theorique" ? "Cours théorique" : p.type === "tp" ? "Travaux Pratiques" : "Travaux d'Application";
+  const theme = p.competence ? p.competence : moduleLabel;
 
-  return `Génère une fiche de séance pédagogique OFPPT complète en Markdown pour :
+  return `Rédige un COURS DÉTAILLÉ OFPPT complet en Markdown (PAS une fiche de déroulement, et SANS section "Objectifs pédagogiques") pour :
 - Filière : ${p.filiere}
 - Module : ${moduleLabel}
 - Durée : ${p.duree}
 - Niveau : ${niveauFull}
-- Type : ${p.type === "theorique" ? "Cours théorique" : p.type === "tp" ? "Travaux Pratiques" : "Travaux d'Application"}
-- Objectifs : ${p.objectifs}`;
+- Type : ${typeLabel}
+- Thème / Compétence : ${p.competence ?? "(thème général du module)"}
+
+Structure attendue :
+# ${theme}
+## En-tête (tableau : Filière | Module | Durée | Niveau | Type)
+## Introduction (mise en contexte)
+## 1. Définitions et concepts clés (définitions précises)
+## 2. Développement (sous-parties 2.1, 2.2, 2.3 — explications approfondies et progressives)
+## 3. Exemples expliqués (Énoncé + Explication détaillée étape par étape)
+## 4. Synthèse — points clés à retenir (liste à puces)
+
+Sois précis, professionnel et pédagogique. Adapte le niveau à : ${niveauFull}.`;
 }

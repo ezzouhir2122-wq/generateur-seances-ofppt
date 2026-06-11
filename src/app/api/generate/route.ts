@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   const params: SeanceParams = await req.json();
 
-  if (!params.filiere || !params.module || !params.objectifs) {
+  if (!params.filiere || !params.module) {
     return NextResponse.json({ error: "Paramètres manquants" }, { status: 400 });
   }
 
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
           duree: params.duree,
           niveau: niveauDb,
           type: params.type,
-          objectifs: params.objectifs,
+          objectifs: params.objectifs ?? params.competence ?? "",
           contenu,
           userId: session.user.id,
         },

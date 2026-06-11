@@ -143,8 +143,8 @@ export default function StagiairesManager({ groupeId, initialStagiaires }: Props
                     borderBottom: "1px solid #E2E8F0",
                   }}
                 >
-                  <td className="px-4 py-3 font-medium text-white">{s.nom}</td>
-                  <td className="px-4 py-3" style={{ color: "#E5E7EB" }}>{s.prenom}</td>
+                  <td className="px-4 py-3 font-medium" style={{ color: "#111827" }}>{s.nom}</td>
+                  <td className="px-4 py-3" style={{ color: "#374151" }}>{s.prenom}</td>
                   <td className="px-4 py-3 text-xs" style={{ color: "#6B7280" }}>{s.cne ?? "—"}</td>
                   <td className="px-4 py-3 text-xs" style={{ color: "#6B7280" }}>
                     {new Date(s.createdAt).toLocaleDateString("fr-MA")}

@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
         id: true,
         nom: true,
         code: true,
-        modules: { select: { id: true, nom: true, code: true }, orderBy: { nom: "asc" } },
+        modules: { select: { id: true, nom: true, code: true, mhg: true }, orderBy: { nom: "asc" } },
       },
       orderBy: { nom: "asc" },
     });

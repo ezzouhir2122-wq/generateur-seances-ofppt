@@ -151,7 +151,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
                       }
                     >
                       <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
-                      <td className="px-3 py-2 font-medium text-white">{m.module}</td>
+                      <td className="px-3 py-2 font-medium" style={{ color: "#111827" }}>{m.module}</td>
                       <td className="px-3 py-2 text-right font-semibold" style={{ color: "#E8651A" }}>{m.mhg}h</td>
                     </tr>
                   ))}

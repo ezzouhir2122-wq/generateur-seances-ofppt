@@ -109,7 +109,7 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
           ) : (
             <>
               <p className="text-xs mb-3" style={{ color: "#6B7280" }}>
-                Profil de <span className="text-white font-medium">{selectedStagiaire.prenom} {selectedStagiaire.nom}</span>
+                Profil de <span className="font-medium" style={{ color: "#E8651A" }}>{selectedStagiaire.prenom} {selectedStagiaire.nom}</span>
               </p>
               <ResponsiveContainer width="100%" height={230}>
                 <RadarChart data={radarData}>

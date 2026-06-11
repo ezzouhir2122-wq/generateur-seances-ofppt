@@ -4,7 +4,7 @@ export default function NouveauGroupePage() {
   return (
     <div className="max-w-lg mx-auto px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Nouveau groupe</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Nouveau groupe</h1>
         <p className="mt-1 text-sm" style={{ color: "#9CA3AF" }}>
           Créez un groupe de stagiaires pour commencer le suivi des compétences
         </p>

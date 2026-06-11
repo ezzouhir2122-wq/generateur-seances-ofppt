@@ -59,7 +59,7 @@ function FichesContent() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E2E8F0" }}>
-        <h1 className="text-2xl font-bold text-white">Fiches pédagogiques</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Fiches pédagogiques</h1>
         <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>Générez une fiche pédagogique complète au format OFPPT</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

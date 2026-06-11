@@ -192,7 +192,7 @@ export default function AssistantPage() {
         <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: "1px solid #E2E8F0", background: "#F8FAFC" }}>
           <div className="flex items-center justify-between mb-2.5">
             <div>
-              <h1 className="font-bold text-white text-sm">Assistant Pédagogique IA</h1>
+              <h1 className="font-bold text-sm" style={{ color: "#111827" }}>Assistant Pédagogique IA</h1>
               <p className="text-xs" style={{ color: "#6B7280" }}>
                 {module
                   ? <>Filière : <span style={{ color: "#E8651A" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#E8651A" }}>{module}</span></>

@@ -36,16 +36,14 @@ const config: Config = {
           DEFAULT: "#F59E0B",
           dim:     "rgba(245,158,11,0.10)",
         },
-        /* Legacy OFPPT palette */
+        /* OFPPT palette */
         ofppt: {
-          teal:       "#0B6B72",
-          tealhover:  "#0D7E88",
-          tealdark:   "#084F57",
-          navy:       "#1B3A6E",
-          green:      "#0B6B72",
-          lightgreen: "#0D7E88",
+          orange:     "#E8651A",
+          navy:       "#003087",
+          green:      "#E8651A",
+          lightgreen: "#FFA05C",
           gold:       "#C8A84B",
-          dark:       "#1a1a2e",
+          dark:       "#003087",
         },
       },
       borderRadius: {

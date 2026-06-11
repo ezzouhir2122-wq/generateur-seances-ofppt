@@ -68,7 +68,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
             >
               IA
             </div>
-            <h2 className="text-lg font-bold text-white mb-1">Assistant Pédagogique IA</h2>
+            <h2 className="text-lg font-bold mb-1" style={{ color: "#111827" }}>Assistant Pédagogique IA</h2>
             <p className="text-sm" style={{ color: "#6B7280" }}>
               Posez vos questions pédagogiques ou choisissez un exemple ci-dessous
             </p>

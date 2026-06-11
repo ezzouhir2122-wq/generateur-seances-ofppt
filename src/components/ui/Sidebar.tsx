@@ -202,7 +202,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
     try {
       const res = await fetch("/api/referentiel?mode=summary");
       if (!res.ok) throw new Error("Impossible de charger le référentiel");
-      const filieres: { id: string; nom: string; code: string | null; modules: { id: string; nom: string; code: string | null }[] }[] = await res.json();
+      const filieres: { id: string; nom: string; code: string | null; modules: { id: string; nom: string; code: string | null; mhg: number | null }[] }[] = await res.json();
 
       if (filieres.length === 0) {
         toast.error("Aucun référentiel importé — importez d'abord un référentiel pédagogique");
@@ -214,7 +214,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           groupe: f.nom,
           codeModule: m.code ?? "",
           module: m.nom,
-          mhg: 0,
+          mhg: m.mhg ?? 0,
         }))
       );
 
@@ -318,9 +318,9 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
         <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ borderBottom: "1px solid #E2E8F0", background: "#FFFFFF" }}>
           <div className="flex items-center gap-3">
             <Image src="/logo-ofppt.jpg" alt="OFPPT" width={32} height={32} className="rounded-full object-cover" />
-            <span className="font-semibold text-white">Paramètres & Modules</span>
+            <span className="font-semibold" style={{ color: "#111827" }}>Paramètres & Modules</span>
           </div>
-          <button onClick={onClose} className="text-[#9CA3AF] hover:text-white text-xl leading-none">✕</button>
+          <button onClick={onClose} className="text-[#9CA3AF] hover:text-gray-900 text-xl leading-none">✕</button>
         </div>
 
         {/* Contenu scrollable */}
@@ -334,7 +334,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 {user.name?.[0]?.toUpperCase() ?? "F"}
               </div>
               <div>
-                <p className="font-semibold text-white text-sm">{user.name ?? "Formateur"}</p>
+                <p className="font-semibold text-sm" style={{ color: "#111827" }}>{user.name ?? "Formateur"}</p>
                 <p className="text-xs" style={{ color: "#9CA3AF" }}>{user.email}</p>
               </div>
             </div>
@@ -420,7 +420,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFile} />
                 </label>
                 <div className="rounded-lg p-3 text-xs space-y-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
-                  <p className="font-semibold text-white">Format accepté :</p>
+                  <p className="font-semibold" style={{ color: "#374151" }}>Format accepté :</p>
                   <p style={{ color: "#9CA3AF" }}>Colonnes détectées automatiquement par nom d&apos;en-tête.</p>
                   <p style={{ color: "#9CA3AF" }}>Colonnes attendues :</p>
                   <div className="font-mono rounded px-2 py-1.5 mt-1 text-[10px] space-y-0.5" style={{ background: "#F5F7FA", border: "1px solid #E2E8F0", color: "#9CA3AF" }}>
@@ -450,7 +450,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                     <tbody>
                       {preview.data.slice(0, 5).map((row, i) => (
                         <tr key={i} style={{ borderBottom: "1px solid #E2E8F0", background: i % 2 === 0 ? "#F8FAFC" : "#F3F4F6" }}>
-                          <td className="px-2 py-1 font-medium whitespace-nowrap text-white">{row.groupe}</td>
+                          <td className="px-2 py-1 font-medium whitespace-nowrap" style={{ color: "#111827" }}>{row.groupe}</td>
                           <td className="px-2 py-1 whitespace-nowrap" style={{ color: "#9CA3AF" }}>{row.codeModule}</td>
                           <td className="px-2 py-1 max-w-[110px] truncate" style={{ color: "#9CA3AF" }}>{row.module}</td>
                           <td className="px-2 py-1 text-right whitespace-nowrap" style={{ color: "#E8651A" }}>{row.mhg}h</td>
@@ -521,7 +521,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             ) : (
               <div className="space-y-2">
                 <div className="rounded-lg px-3 py-2" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
-                  <p className="text-xs font-semibold text-white truncate">📄 {refFile.name}</p>
+                  <p className="text-xs font-semibold truncate" style={{ color: "#111827" }}>📄 {refFile.name}</p>
                   <p className="text-[10px]" style={{ color: "#9CA3AF" }}>{(refFile.size / 1024).toFixed(0)} Ko</p>
                 </div>
                 <div className="flex gap-2">
@@ -553,7 +553,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             )}
 
             <div className="mt-3 rounded-lg p-3 text-xs space-y-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
-              <p className="font-semibold text-white">Formats acceptés :</p>
+              <p className="font-semibold" style={{ color: "#374151" }}>Formats acceptés :</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 {["PDF", "DOCX", "Excel", "MD"].map((f) => (
                   <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #E8651A40", color: "#E8651A" }}>{f}</span>
@@ -601,7 +601,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-[10px] transition-transform duration-200" style={{ transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", color: "#4B5563" }}>▶</span>
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-white truncate">{secteur.nom}</p>
+                            <p className="text-xs font-semibold truncate" style={{ color: "#111827" }}>{secteur.nom}</p>
                             <p className="text-[10px]" style={{ color: "#4B5563" }}>
                               {secteur.filieres.length} filière{secteur.filieres.length > 1 ? "s" : ""} · {totalModules} module{totalModules > 1 ? "s" : ""}
                             </p>

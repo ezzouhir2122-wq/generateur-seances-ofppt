@@ -136,7 +136,7 @@ export default async function DashboardPage() {
         <p className="text-sm mb-1 font-medium" style={{ color: "#E8651A" }}>
           {greeting}, {userName} 👋
         </p>
-        <h1 className="text-3xl font-bold text-white">Tableau de bord</h1>
+        <h1 className="text-3xl font-bold" style={{ color: "#111827" }}>Tableau de bord</h1>
         <p className="mt-1 text-sm" style={{ color: "#6B7280" }}>
           {now.toLocaleDateString("fr-FR", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
         </p>
@@ -239,7 +239,7 @@ export default async function DashboardPage() {
 
         {/* Activité par filière */}
         <div className="rounded-2xl p-6" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
-          <h2 className="font-semibold text-white text-sm mb-5">Activité par filière</h2>
+          <h2 className="font-semibold text-sm mb-5" style={{ color: "#374151" }}>Activité par filière</h2>
           {seancesParFiliere.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 gap-3">
               <svg width="32" height="32" fill="none" stroke="#2D2D3A" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -256,7 +256,7 @@ export default async function DashboardPage() {
                 return (
                   <div key={f.filiere}>
                     <div className="flex justify-between items-center text-xs mb-1.5">
-                      <span className="font-medium text-white truncate max-w-[65%]">{f.filiere}</span>
+                      <span className="font-medium truncate max-w-[65%]" style={{ color: "#111827" }}>{f.filiere}</span>
                       <span style={{ color: "#6B7280" }}>{count} séance{count > 1 ? "s" : ""} · {pct}%</span>
                     </div>
                     <div className="h-2 rounded-full overflow-hidden" style={{ background: "#E2E8F0" }}>
@@ -274,7 +274,7 @@ export default async function DashboardPage() {
 
         {/* Activités récentes */}
         <div className="rounded-2xl p-6" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
-          <h2 className="font-semibold text-white text-sm mb-5">Activités récentes</h2>
+          <h2 className="font-semibold text-sm mb-5" style={{ color: "#374151" }}>Activités récentes</h2>
           {recentSeances.length === 0 && recentFiches.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 gap-3">
               <svg width="32" height="32" fill="none" stroke="#2D2D3A" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -292,7 +292,7 @@ export default async function DashboardPage() {
                   <li key={s.id}>
                     <Link href={`/historique/${s.id}`} className="flex items-start gap-2.5 text-sm group" style={{ color: "#9CA3AF" }}>
                       <span className="mt-0.5 shrink-0" style={{ color: "#E8651A" }}>⚡</span>
-                      <span className="line-clamp-1 group-hover:text-white transition-colors">
+                      <span className="line-clamp-1 group-hover:text-[#E8651A] transition-colors">
                         {s.title || `${s.filiere} — ${s.module}`}
                       </span>
                     </Link>
@@ -302,7 +302,7 @@ export default async function DashboardPage() {
                   <li key={f.id}>
                     <Link href={`/fiches/${f.id}`} className="flex items-start gap-2.5 text-sm group" style={{ color: "#9CA3AF" }}>
                       <span className="mt-0.5 shrink-0">📋</span>
-                      <span className="line-clamp-1 group-hover:text-white transition-colors">
+                      <span className="line-clamp-1 group-hover:text-[#E8651A] transition-colors">
                         {f.titre || f.module}
                       </span>
                     </Link>
@@ -325,7 +325,7 @@ export default async function DashboardPage() {
       {/* ── Quick actions + Suivi widget ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="rounded-2xl p-6" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
-          <h2 className="font-semibold text-white text-sm mb-4">Accès rapide</h2>
+          <h2 className="font-semibold text-sm mb-4" style={{ color: "#374151" }}>Accès rapide</h2>
           <div className="space-y-2">
             {quickActions.map((item) => (
               <QuickActionLink key={item.href} {...item} />

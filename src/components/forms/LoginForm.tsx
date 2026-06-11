@@ -41,7 +41,7 @@ export default function LoginForm({ error }: { error?: string }) {
       )}
 
       <div>
-        <label className="block text-sm font-semibold text-white mb-1.5" htmlFor="email">
+        <label className="block text-sm font-semibold mb-1.5" style={{ color: "#374151" }} htmlFor="email">
           Courriel professionnel
         </label>
         <div className="relative">
@@ -65,7 +65,7 @@ export default function LoginForm({ error }: { error?: string }) {
       </div>
 
       <div>
-        <label className="block text-sm font-semibold text-white mb-1.5" htmlFor="password">
+        <label className="block text-sm font-semibold mb-1.5" style={{ color: "#374151" }} htmlFor="password">
           Mot de passe
         </label>
         <div className="relative">

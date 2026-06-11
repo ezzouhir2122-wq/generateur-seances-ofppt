@@ -27,7 +27,7 @@ export default function SuiviPage() {
     <div className="max-w-6xl mx-auto px-6 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Suivi des Compétences</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Suivi des Compétences</h1>
           <p className="mt-1 text-sm" style={{ color: "#9CA3AF" }}>Gérez vos groupes et suivez la progression par compétence</p>
         </div>
         <Link
@@ -49,7 +49,7 @@ export default function SuiviPage() {
           style={{ border: "1px dashed #E2E8F0" }}
         >
           <div className="text-4xl mb-3">👥</div>
-          <p className="text-white font-medium mb-1">Aucun groupe créé</p>
+          <p className="font-medium mb-1" style={{ color: "#374151" }}>Aucun groupe créé</p>
           <p className="text-sm mb-4" style={{ color: "#6B7280" }}>Créez votre premier groupe pour commencer le suivi</p>
           <Link
             href="/suivi/nouveau"

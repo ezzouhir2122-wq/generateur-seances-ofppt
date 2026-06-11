@@ -11,7 +11,7 @@ export default function CorrectionIAPage() {
         </svg>
       </div>
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white mb-2">Correction IA</h1>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: "#111827" }}>Correction IA</h1>
         <p className="text-sm max-w-sm" style={{ color: "#6B7280" }}>
           Importez une copie (PDF, DOCX ou image) — l&apos;IA la corrige, attribue une note et génère un rapport de feedback détaillé.
         </p>
