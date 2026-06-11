@@ -75,7 +75,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#39C84A", borderBottom: "1px solid #1E1E2C" }}>
+      <h2 className="text-base font-bold pb-4" style={{ color: "#E8651A", borderBottom: "1px solid #E2E8F0" }}>
         Paramètres de l&apos;évaluation
       </h2>
 
@@ -89,15 +89,15 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
               className="flex items-start gap-2.5 p-3 rounded-xl cursor-pointer transition-colors"
               style={
                 form.type === t.value
-                  ? { border: "1px solid #39C84A40", background: "#39C84A14" }
-                  : { border: "1px solid #1E1E2C", background: "#17171E" }
+                  ? { border: "1px solid #E8651A40", background: "#E8651A14" }
+                  : { border: "1px solid #E2E8F0", background: "#F3F4F6" }
               }
             >
               <input type="radio" name="type" value={t.value} className="hidden" checked={form.type === t.value}
                 onChange={() => setForm(prev => ({ ...prev, type: t.value }))} />
               <span className="text-lg leading-none mt-0.5">{t.icon}</span>
               <div>
-                <p className="text-sm font-semibold" style={{ color: form.type === t.value ? "#39C84A" : "#fff" }}>{t.label}</p>
+                <p className="text-sm font-semibold" style={{ color: form.type === t.value ? "#E8651A" : "#fff" }}>{t.label}</p>
                 <p className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>{t.desc}</p>
               </div>
             </label>
@@ -126,7 +126,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
         <div className="grid grid-cols-3 gap-4">
           <div>
             <label className="label">Code module</label>
-            <input type="text" className="input-field font-mono text-sm" style={{ background: "#17171E", color: "#4B5563" }}
+            <input type="text" className="input-field font-mono text-sm" style={{ background: "#F3F4F6", color: "#4B5563" }}
               value={form.codeModule ?? ""} readOnly placeholder="—" />
           </div>
           <div className="col-span-2">
@@ -197,8 +197,8 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
                 <label key={n} className="flex-1 rounded-lg py-2 text-sm text-center cursor-pointer transition-colors"
                   style={
                     form.nbExercices === n
-                      ? { border: "1px solid #39C84A40", background: "#39C84A14", color: "#39C84A", fontWeight: 600 }
-                      : { border: "1px solid #1E1E2C", color: "#9CA3AF" }
+                      ? { border: "1px solid #E8651A40", background: "#E8651A14", color: "#E8651A", fontWeight: 600 }
+                      : { border: "1px solid #E2E8F0", color: "#9CA3AF" }
                   }>
                   <input type="radio" name="nbExercices" className="hidden" checked={form.nbExercices === n}
                     onChange={() => setForm(prev => ({ ...prev, nbExercices: n }))} />

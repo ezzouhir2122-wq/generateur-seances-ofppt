@@ -7,16 +7,16 @@ export default function GroupeCard({ groupe, onDelete }: { groupe: GroupeSummary
   return (
     <div
       className="rounded-2xl p-5 flex flex-col gap-3"
-      style={{ background: "#111116", border: "1px solid #1E1E2C" }}
+      style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}
     >
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-bold text-white text-sm">{groupe.nom}</h3>
-          <p className="text-xs mt-1" style={{ color: "#39C84A" }}>{groupe.filiereNom}</p>
+          <p className="text-xs mt-1" style={{ color: "#E8651A" }}>{groupe.filiereNom}</p>
         </div>
         <span
           className="text-xs px-2 py-1 rounded-full font-medium"
-          style={{ background: "#39C84A14", color: "#39C84A", border: "1px solid #39C84A30" }}
+          style={{ background: "#E8651A14", color: "#E8651A", border: "1px solid #E8651A30" }}
         >
           {groupe.annee}
         </span>
@@ -34,23 +34,23 @@ export default function GroupeCard({ groupe, onDelete }: { groupe: GroupeSummary
         <Link
           href={`/suivi/${groupe.id}`}
           className="flex-1 text-center text-xs py-2 rounded-xl font-medium transition-colors"
-          style={{ background: "#39C84A18", color: "#39C84A", border: "1px solid #39C84A30" }}
+          style={{ background: "#E8651A18", color: "#E8651A", border: "1px solid #E8651A30" }}
         >
           Voir progression
         </Link>
         <Link
           href={`/suivi/${groupe.id}/stagiaires`}
           className="text-xs py-2 px-3 rounded-xl transition-colors"
-          style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
+          style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}
         >
           Stagiaires
         </Link>
         <button
           onClick={() => onDelete(groupe.id)}
           className="text-xs py-2 px-3 rounded-xl transition-colors"
-          style={{ border: "1px solid #1E1E2C", color: "#6B7280" }}
+          style={{ border: "1px solid #E2E8F0", color: "#6B7280" }}
           onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#7F1D1D"; (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#1E1E2C"; (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E2E8F0"; (e.currentTarget as HTMLButtonElement).style.color = "#6B7280"; }}
         >
           ✕
         </button>

@@ -9,7 +9,7 @@ export default async function LoginPage({
   const params = await searchParams;
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#0A0A0F" }}>
+    <div className="min-h-screen flex" style={{ background: "#F5F7FA" }}>
 
       {/* Côté gauche — branding */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 px-16 py-16" style={{ background: "#0D0D14" }}>
@@ -21,13 +21,13 @@ export default async function LoginPage({
         </div>
 
         <div>
-          <div className="inline-flex items-center gap-2 border border-[#39C84A]/40 rounded-full px-4 py-1.5 mb-6">
-            <span className="text-[#39C84A] text-xs">✦</span>
-            <span className="text-[#39C84A] text-xs font-medium">Génération pédagogique · OFPPT</span>
+          <div className="inline-flex items-center gap-2 border border-[#E8651A]/40 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-[#E8651A] text-xs">✦</span>
+            <span className="text-[#E8651A] text-xs font-medium">Génération pédagogique · OFPPT</span>
           </div>
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
             Transformez vos<br />
-            <span className="text-[#39C84A]">séances en quelques</span><br />
+            <span className="text-[#E8651A]">séances en quelques</span><br />
             secondes.
           </h1>
           <p className="text-[#9CA3AF] text-base leading-relaxed max-w-sm">
@@ -68,8 +68,8 @@ export default async function LoginPage({
           </div>
 
           {/* Tabs */}
-          <div className="flex rounded-xl mb-8 p-1" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
-            <button className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-colors" style={{ background: "#111116" }}>
+          <div className="flex rounded-xl mb-8 p-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
+            <button className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition-colors" style={{ background: "#F8FAFC" }}>
               Se connecter
             </button>
             <button className="flex-1 py-2.5 rounded-lg text-sm font-medium text-[#9CA3AF] cursor-default">

@@ -14,12 +14,12 @@ interface Props {
 }
 
 const tooltipStyle = {
-  contentStyle: { background: "#12121E", border: "1px solid #1E1E2C", color: "#E5E7EB", fontSize: 12, borderRadius: 8 },
-  cursor: { fill: "#39C84A10" },
+  contentStyle: { background: "#12121E", border: "1px solid #E2E8F0", color: "#E5E7EB", fontSize: 12, borderRadius: 8 },
+  cursor: { fill: "#E8651A10" },
 };
 
 function pctColor(v: number): string {
-  return v >= 75 ? "#39C84A" : v >= 50 ? "#F59E0B" : "#EF4444";
+  return v >= 75 ? "#E8651A" : v >= 50 ? "#F59E0B" : "#EF4444";
 }
 
 function shortLabel(titre: string, max = 14): string {
@@ -50,7 +50,7 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
   return (
     <div
       className="rounded-2xl p-5"
-      style={{ background: "#111116", border: "1px solid #1E1E2C" }}
+      style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}
     >
       {/* Tabs */}
       <div className="flex gap-2 mb-5">
@@ -61,8 +61,8 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
             className="px-3 py-1.5 text-xs rounded-lg font-medium transition-colors"
             style={
               tab === t
-                ? { background: "#39C84A18", color: "#39C84A", border: "1px solid #39C84A30" }
-                : { border: "1px solid #1E1E2C", color: "#6B7280" }
+                ? { background: "#E8651A18", color: "#E8651A", border: "1px solid #E8651A30" }
+                : { border: "1px solid #E2E8F0", color: "#6B7280" }
             }
           >
             {t === "groupe" ? "Moyenne groupe" : "Profil stagiaire"}
@@ -113,10 +113,10 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
               </p>
               <ResponsiveContainer width="100%" height={230}>
                 <RadarChart data={radarData}>
-                  <PolarGrid stroke="#1E1E2C" />
+                  <PolarGrid stroke="#E2E8F0" />
                   <PolarAngleAxis dataKey="competence" tick={{ fill: "#6B7280", fontSize: 9 }} />
                   <Tooltip {...tooltipStyle} formatter={(v) => [`${v as number}%`, "Score"]} />
-                  <Radar dataKey="score" stroke="#39C84A" fill="#39C84A" fillOpacity={0.2} strokeWidth={2} />
+                  <Radar dataKey="score" stroke="#E8651A" fill="#E8651A" fillOpacity={0.2} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </>

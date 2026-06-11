@@ -55,7 +55,7 @@ export default function GroupeForm() {
 
   const inputStyle = {
     background: "#12121E",
-    border: "1px solid #1E1E2C",
+    border: "1px solid #E2E8F0",
     color: "#E5E7EB",
     borderRadius: "12px",
     padding: "10px 14px",
@@ -115,7 +115,7 @@ export default function GroupeForm() {
           type="button"
           onClick={() => router.back()}
           className="flex-1 py-2.5 text-sm rounded-xl transition-colors"
-          style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
+          style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}
         >
           Annuler
         </button>
@@ -123,7 +123,7 @@ export default function GroupeForm() {
           type="submit"
           disabled={loading}
           className="flex-1 py-2.5 text-sm font-semibold rounded-xl transition-colors"
-          style={{ background: loading ? "#4B5563" : "#39C84A", color: "#0B0B14" }}
+          style={{ background: loading ? "#4B5563" : "#E8651A", color: "#0B0B14" }}
         >
           {loading ? "Création…" : "Créer le groupe"}
         </button>

@@ -17,14 +17,14 @@ interface Props {
 
 export default function SessionList({ sessions, activeId, onSelect, onNew, onDelete }: Props) {
   return (
-    <div className="w-56 flex-shrink-0 flex flex-col h-full" style={{ borderRight: "1px solid #1E1E2C", background: "#0D0D12" }}>
-      <div className="p-3" style={{ borderBottom: "1px solid #1E1E2C" }}>
+    <div className="w-56 flex-shrink-0 flex flex-col h-full" style={{ borderRight: "1px solid #E2E8F0", background: "#FFFFFF" }}>
+      <div className="p-3" style={{ borderBottom: "1px solid #E2E8F0" }}>
         <button
           onClick={onNew}
           className="w-full text-black text-sm font-medium py-2 rounded-lg transition-colors"
-          style={{ background: "#39C84A" }}
+          style={{ background: "#E8651A" }}
           onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#65A30D")}
-          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#39C84A")}
+          onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#E8651A")}
         >
           + Nouvelle conversation
         </button>
@@ -39,15 +39,15 @@ export default function SessionList({ sessions, activeId, onSelect, onNew, onDel
               onClick={() => onSelect(s.id)}
               className="group flex items-start gap-2 px-3 py-2.5 cursor-pointer transition-colors"
               style={{
-                borderBottom: "1px solid #1E1E2C",
-                background: activeId === s.id ? "#39C84A10" : "transparent",
-                borderLeft: activeId === s.id ? "2px solid #39C84A" : "2px solid transparent",
+                borderBottom: "1px solid #E2E8F0",
+                background: activeId === s.id ? "#E8651A10" : "transparent",
+                borderLeft: activeId === s.id ? "2px solid #E8651A" : "2px solid transparent",
               }}
-              onMouseEnter={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "#17171E"; }}
+              onMouseEnter={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "#F3F4F6"; }}
               onMouseLeave={e => { if (activeId !== s.id) (e.currentTarget as HTMLDivElement).style.background = "transparent"; }}
             >
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium truncate" style={{ color: activeId === s.id ? "#39C84A" : "#9CA3AF" }}>{s.domaine}</div>
+                <div className="text-xs font-medium truncate" style={{ color: activeId === s.id ? "#E8651A" : "#9CA3AF" }}>{s.domaine}</div>
                 <div className="text-xs truncate mt-0.5" style={{ color: "#4B5563" }}>
                   {s.messages[0]?.content ?? "Nouvelle conversation"}
                 </div>

@@ -55,8 +55,8 @@ export default function LoginForm({ error }: { error?: string }) {
             id="email"
             name="email"
             type="email"
-            className="w-full rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#39C84A]/30 focus:border-[#39C84A]"
-            style={{ background: "#1A1A24", border: "1px solid #1E1E2C" }}
+            className="w-full rounded-lg pl-10 pr-4 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E8651A]/30 focus:border-[#E8651A]"
+            style={{ background: "#1A1A24", border: "1px solid #E2E8F0" }}
             placeholder="vous@entreprise.com"
             required
             autoComplete="email"
@@ -80,8 +80,8 @@ export default function LoginForm({ error }: { error?: string }) {
             id="password"
             name="password"
             type={showPassword ? "text" : "password"}
-            className="w-full rounded-lg pl-10 pr-16 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#39C84A]/30 focus:border-[#39C84A]"
-            style={{ background: "#1A1A24", border: "1px solid #1E1E2C" }}
+            className="w-full rounded-lg pl-10 pr-16 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#E8651A]/30 focus:border-[#E8651A]"
+            style={{ background: "#1A1A24", border: "1px solid #E2E8F0" }}
             placeholder="••••••••"
             required
             autoComplete="current-password"
@@ -98,7 +98,7 @@ export default function LoginForm({ error }: { error?: string }) {
 
       <div className="flex items-center justify-between pt-1">
         <label className="flex items-center gap-2 cursor-pointer">
-          <input type="checkbox" className="w-4 h-4 rounded" style={{ accentColor: "#39C84A" }} />
+          <input type="checkbox" className="w-4 h-4 rounded" style={{ accentColor: "#E8651A" }} />
           <span className="text-xs text-[#9CA3AF]">Afficher le mot de passe</span>
         </label>
         <span className="text-xs text-[#9CA3AF] cursor-default">Mot de passe oublié ?</span>
@@ -108,9 +108,9 @@ export default function LoginForm({ error }: { error?: string }) {
         type="submit"
         disabled={isLoading}
         className="w-full font-bold py-3 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide flex items-center justify-center gap-2"
-        style={{ background: "#39C84A", color: "#000000" }}
+        style={{ background: "#E8651A", color: "#000000" }}
         onMouseEnter={e => !isLoading && ((e.target as HTMLButtonElement).style.background = "#65A30D")}
-        onMouseLeave={e => !isLoading && ((e.target as HTMLButtonElement).style.background = "#39C84A")}
+        onMouseLeave={e => !isLoading && ((e.target as HTMLButtonElement).style.background = "#E8651A")}
       >
         {isLoading ? (
           <>

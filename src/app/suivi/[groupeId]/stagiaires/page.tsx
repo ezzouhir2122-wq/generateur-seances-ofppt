@@ -36,7 +36,7 @@ export default async function StagiairesPage({ params }: { params: Promise<{ gro
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white">{groupe.nom}</h1>
-          <p className="mt-1 text-sm" style={{ color: "#39C84A" }}>
+          <p className="mt-1 text-sm" style={{ color: "#E8651A" }}>
             {filiere?.nom ?? groupe.filiere} · {groupe.annee}
           </p>
         </div>

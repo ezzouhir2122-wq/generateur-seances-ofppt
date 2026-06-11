@@ -11,7 +11,7 @@ interface Props {
 }
 
 const tooltipStyle = {
-  contentStyle: { background: "#12121E", border: "1px solid #1E1E2C", color: "#E5E7EB", fontSize: 11, borderRadius: 8 },
+  contentStyle: { background: "#12121E", border: "1px solid #E2E8F0", color: "#E5E7EB", fontSize: 11, borderRadius: 8 },
 };
 
 export default function DashboardSuiviWidget({ competences, stagiaires, groupesCount }: Props) {
@@ -27,10 +27,10 @@ export default function DashboardSuiviWidget({ competences, stagiaires, groupesC
 
   if (groupesCount === 0) {
     return (
-      <div className="rounded-2xl p-5 flex flex-col items-center justify-center py-10" style={{ background: "#111116", border: "1px solid #1E1E2C" }}>
+      <div className="rounded-2xl p-5 flex flex-col items-center justify-center py-10" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
         <p className="text-sm font-medium text-white mb-1">Suivi des Compétences</p>
         <p className="text-xs mb-3" style={{ color: "#6B7280" }}>Aucun groupe créé</p>
-        <Link href="/suivi/nouveau" className="text-xs font-medium" style={{ color: "#39C84A" }}>
+        <Link href="/suivi/nouveau" className="text-xs font-medium" style={{ color: "#E8651A" }}>
           Créer un groupe →
         </Link>
       </div>
@@ -38,10 +38,10 @@ export default function DashboardSuiviWidget({ competences, stagiaires, groupesC
   }
 
   return (
-    <div className="rounded-2xl p-5" style={{ background: "#111116", border: "1px solid #1E1E2C" }}>
+    <div className="rounded-2xl p-5" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-bold text-white text-sm">Suivi des Compétences</h2>
-        <Link href="/suivi" className="text-xs font-medium" style={{ color: "#39C84A" }}>Voir tout →</Link>
+        <Link href="/suivi" className="text-xs font-medium" style={{ color: "#E8651A" }}>Voir tout →</Link>
       </div>
       <div className="flex gap-4 mb-4 text-xs" style={{ color: "#6B7280" }}>
         <span><span className="text-white font-semibold">{groupesCount}</span> groupe{groupesCount > 1 ? "s" : ""}</span>
@@ -55,7 +55,7 @@ export default function DashboardSuiviWidget({ competences, stagiaires, groupesC
             <Tooltip {...tooltipStyle} formatter={(v) => [`${v as number}%`, "Moy."]} />
             <Bar dataKey="val" radius={[3, 3, 0, 0]} maxBarSize={30}>
               {barData.map((entry, i) => (
-                <Cell key={i} fill={entry.val >= 75 ? "#39C84A" : entry.val >= 50 ? "#F59E0B" : "#EF4444"} />
+                <Cell key={i} fill={entry.val >= 75 ? "#E8651A" : entry.val >= 50 ? "#F59E0B" : "#EF4444"} />
               ))}
             </Bar>
           </BarChart>

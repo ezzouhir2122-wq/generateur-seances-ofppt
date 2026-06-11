@@ -189,20 +189,20 @@ export default function AssistantPage() {
 
       <div className="flex-1 flex flex-col h-full overflow-hidden">
         {/* Header */}
-        <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: "1px solid #1E1E2C", background: "#111116" }}>
+        <div className="px-5 py-3 flex-shrink-0" style={{ borderBottom: "1px solid #E2E8F0", background: "#F8FAFC" }}>
           <div className="flex items-center justify-between mb-2.5">
             <div>
               <h1 className="font-bold text-white text-sm">Assistant Pédagogique IA</h1>
               <p className="text-xs" style={{ color: "#6B7280" }}>
                 {module
-                  ? <>Filière : <span style={{ color: "#39C84A" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#39C84A" }}>{module}</span></>
-                  : <>Filière : <span style={{ color: "#39C84A" }}>{filiere || "—"}</span></>
+                  ? <>Filière : <span style={{ color: "#E8651A" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#E8651A" }}>{module}</span></>
+                  : <>Filière : <span style={{ color: "#E8651A" }}>{filiere || "—"}</span></>
                 }
               </p>
             </div>
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold"
-              style={{ background: "#39C84A" }}
+              style={{ background: "#E8651A" }}
             >
               IA
             </div>
@@ -217,8 +217,8 @@ export default function AssistantPage() {
                 className="text-[11px] px-2.5 py-1 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
                 style={
                   filiere === f
-                    ? { background: "#39C84A18", color: "#39C84A", borderColor: "#39C84A40" }
-                    : { borderColor: "#1E1E2C", color: "#6B7280" }
+                    ? { background: "#E8651A18", color: "#E8651A", borderColor: "#E8651A40" }
+                    : { borderColor: "#E2E8F0", color: "#6B7280" }
                 }
               >
                 {f}
@@ -235,7 +235,7 @@ export default function AssistantPage() {
                 style={
                   module === ""
                     ? { background: "#3B82F618", color: "#3B82F6", borderColor: "#3B82F640" }
-                    : { borderColor: "#17171E", color: "#4B5563" }
+                    : { borderColor: "#F3F4F6", color: "#4B5563" }
                 }
               >
                 Tous modules
@@ -248,7 +248,7 @@ export default function AssistantPage() {
                   style={
                     module === m.nom
                       ? { background: "#3B82F618", color: "#3B82F6", borderColor: "#3B82F640" }
-                      : { borderColor: "#17171E", color: "#4B5563" }
+                      : { borderColor: "#F3F4F6", color: "#4B5563" }
                   }
                 >
                   {m.code ? `${m.code} — ${m.nom}` : m.nom}

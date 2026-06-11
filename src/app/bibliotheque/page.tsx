@@ -3,9 +3,9 @@ export default function BibliothequePage() {
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6">
       <div
         className="w-16 h-16 rounded-2xl flex items-center justify-center"
-        style={{ background: "#39C84A18", border: "1px solid #39C84A30" }}
+        style={{ background: "#E8651A18", border: "1px solid #E8651A30" }}
       >
-        <svg width="32" height="32" fill="none" stroke="#39C84A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <svg width="32" height="32" fill="none" stroke="#E8651A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
           <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
         </svg>
@@ -22,7 +22,7 @@ export default function BibliothequePage() {
           <span
             key={f}
             className="text-xs px-3 py-1.5 rounded-full"
-            style={{ background: "#111116", color: "#9CA3AF", border: "1px solid #1E1E2C" }}
+            style={{ background: "#F8FAFC", color: "#9CA3AF", border: "1px solid #E2E8F0" }}
           >
             {f}
           </span>
@@ -30,7 +30,7 @@ export default function BibliothequePage() {
       </div>
       <div
         className="text-xs font-semibold px-3 py-1.5 rounded-full"
-        style={{ background: "#1E1E2C", color: "#39C84A", border: "1px solid #39C84A40" }}
+        style={{ background: "#E2E8F0", color: "#E8651A", border: "1px solid #E8651A40" }}
       >
         Bientôt disponible
       </div>

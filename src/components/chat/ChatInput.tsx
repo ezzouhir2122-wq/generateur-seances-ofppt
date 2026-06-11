@@ -34,7 +34,7 @@ export default function ChatInput({ onSend, disabled }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="px-4 py-3 flex-shrink-0" style={{ borderTop: "1px solid #1E1E2C", background: "#111116" }}>
+    <form onSubmit={handleSubmit} className="px-4 py-3 flex-shrink-0" style={{ borderTop: "1px solid #E2E8F0", background: "#F8FAFC" }}>
       <div className="flex gap-2 items-end">
         <textarea
           ref={textareaRef}
@@ -45,14 +45,14 @@ export default function ChatInput({ onSend, disabled }: Props) {
           rows={1}
           disabled={disabled}
           placeholder="Posez votre question pédagogique… (Entrée pour envoyer)"
-          className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#4B5563] focus:outline-none focus:ring-2 focus:ring-[#39C84A]/30 focus:border-[#39C84A] transition-colors disabled:opacity-50"
-          style={{ minHeight: "42px", maxHeight: "120px", background: "#1A1A24", border: "1px solid #1E1E2C" }}
+          className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#4B5563] focus:outline-none focus:ring-2 focus:ring-[#E8651A]/30 focus:border-[#E8651A] transition-colors disabled:opacity-50"
+          style={{ minHeight: "42px", maxHeight: "120px", background: "#1A1A24", border: "1px solid #E2E8F0" }}
         />
         <button
           type="submit"
           disabled={disabled || !value.trim()}
           className="w-10 h-10 disabled:opacity-40 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 text-black font-bold"
-          style={{ background: "#39C84A" }}
+          style={{ background: "#E8651A" }}
         >
           <svg className="w-4 h-4 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

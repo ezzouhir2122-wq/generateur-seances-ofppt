@@ -33,7 +33,7 @@ export default function SuiviPage() {
         <Link
           href="/suivi/nouveau"
           className="px-4 py-2 text-sm font-semibold rounded-xl transition-colors"
-          style={{ background: "#39C84A", color: "#0B0B14" }}
+          style={{ background: "#E8651A", color: "#0B0B14" }}
         >
           + Nouveau groupe
         </Link>
@@ -41,12 +41,12 @@ export default function SuiviPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <div className="w-8 h-8 border-4 border-[#39C84A] border-t-transparent rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-[#E8651A] border-t-transparent rounded-full animate-spin" />
         </div>
       ) : groupes.length === 0 ? (
         <div
           className="flex flex-col items-center justify-center py-24 rounded-2xl"
-          style={{ border: "1px dashed #1E1E2C" }}
+          style={{ border: "1px dashed #E2E8F0" }}
         >
           <div className="text-4xl mb-3">👥</div>
           <p className="text-white font-medium mb-1">Aucun groupe créé</p>
@@ -54,7 +54,7 @@ export default function SuiviPage() {
           <Link
             href="/suivi/nouveau"
             className="px-4 py-2 text-sm font-semibold rounded-xl"
-            style={{ background: "#39C84A", color: "#0B0B14" }}
+            style={{ background: "#E8651A", color: "#0B0B14" }}
           >
             Créer un groupe
           </Link>

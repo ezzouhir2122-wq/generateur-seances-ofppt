@@ -46,14 +46,14 @@ export default async function GroupeDetailPage({ params }: { params: Promise<{ g
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-white">{groupe.nom}</h1>
-          <p className="mt-1 text-sm" style={{ color: "#39C84A" }}>
+          <p className="mt-1 text-sm" style={{ color: "#E8651A" }}>
             {filiereNom} · {groupe.annee}
           </p>
         </div>
         <Link
           href={`/suivi/${groupe.id}/stagiaires`}
           className="px-4 py-2 text-sm rounded-xl transition-colors"
-          style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
+          style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}
         >
           Gérer les stagiaires
         </Link>
@@ -72,7 +72,7 @@ export default async function GroupeDetailPage({ params }: { params: Promise<{ g
             })(),
           },
         ].map((stat) => (
-          <div key={stat.label} className="rounded-2xl p-4" style={{ background: "#111116", border: "1px solid #1E1E2C" }}>
+          <div key={stat.label} className="rounded-2xl p-4" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
             <p className="text-xl font-bold text-white">{stat.value}</p>
             <p className="text-xs mt-1" style={{ color: "#6B7280" }}>{stat.label}</p>
           </div>

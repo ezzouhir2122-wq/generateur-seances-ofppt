@@ -312,10 +312,10 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
         className={`fixed top-0 right-0 h-full w-[380px] shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
-        style={{ background: "#111116", borderLeft: "1px solid #1E1E2C" }}
+        style={{ background: "#F8FAFC", borderLeft: "1px solid #E2E8F0" }}
       >
         {/* Header */}
-        <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ borderBottom: "1px solid #1E1E2C", background: "#0D0D12" }}>
+        <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ borderBottom: "1px solid #E2E8F0", background: "#FFFFFF" }}>
           <div className="flex items-center gap-3">
             <Image src="/logo-ofppt.jpg" alt="OFPPT" width={32} height={32} className="rounded-full object-cover" />
             <span className="font-semibold text-white">Paramètres & Modules</span>
@@ -327,10 +327,10 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
         <div className="flex-1 overflow-y-auto" style={{ borderTop: "none" }}>
 
           {/* Profil */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>👤 Profil</h3>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-black" style={{ background: "#39C84A" }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-black" style={{ background: "#E8651A" }}>
                 {user.name?.[0]?.toUpperCase() ?? "F"}
               </div>
               <div>
@@ -354,7 +354,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 value={matricule}
                 onChange={e => setMatricule(e.target.value)}
                 className="w-full text-xs px-3 py-2 rounded-lg outline-none"
-                style={{ background: "#17171E", border: "1px solid #1E1E2C", color: "#E5E7EB" }}
+                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#E5E7EB" }}
               />
               <input
                 type="text"
@@ -362,13 +362,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 value={etablissement}
                 onChange={e => setEtablissement(e.target.value)}
                 className="w-full text-xs px-3 py-2 rounded-lg outline-none"
-                style={{ background: "#17171E", border: "1px solid #1E1E2C", color: "#E5E7EB" }}
+                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#E5E7EB" }}
               />
               <button
                 onClick={saveProfile}
                 disabled={savingProfile}
                 className="w-full text-xs py-2 rounded-lg font-medium text-black disabled:opacity-50 transition-colors"
-                style={{ background: "#39C84A" }}
+                style={{ background: "#E8651A" }}
               >
                 {savingProfile ? "Sauvegarde…" : "Sauvegarder le profil"}
               </button>
@@ -376,13 +376,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Import Excel — en haut pour accès rapide */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>📋 Affectation des modules</h3>
             <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Préremplissez automatiquement les formulaires via le référentiel ou un fichier Excel.</p>
 
             {stats.modulesCount > 0 && !preview && (
-              <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between" style={{ background: "#39C84A14", border: "1px solid #39C84A30" }}>
-                <span className="text-sm" style={{ color: "#39C84A" }}>
+              <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between" style={{ background: "#E8651A14", border: "1px solid #E8651A30" }}>
+                <span className="text-sm" style={{ color: "#E8651A" }}>
                   <span className="font-semibold">{stats.modulesCount} modules</span> — <span className="font-semibold">{stats.filieresCount} groupes</span>
                 </span>
                 <button onClick={resetModules} className="text-xs" style={{ color: "#EF4444" }}>🗑 Vider</button>
@@ -410,36 +410,36 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
                 {/* Séparateur */}
                 <div className="flex items-center gap-2 py-1">
-                  <div className="flex-1 h-px" style={{ background: "#1E1E2C" }} />
+                  <div className="flex-1 h-px" style={{ background: "#E2E8F0" }} />
                   <span className="text-[10px]" style={{ color: "#374151" }}>ou</span>
-                  <div className="flex-1 h-px" style={{ background: "#1E1E2C" }} />
+                  <div className="flex-1 h-px" style={{ background: "#E2E8F0" }} />
                 </div>
 
-                <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#39C84A" }}>
+                <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#E8651A" }}>
                   <span>📥</span> Importer fichier Excel (.xlsx)
                   <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFile} />
                 </label>
-                <div className="rounded-lg p-3 text-xs space-y-1" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                <div className="rounded-lg p-3 text-xs space-y-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
                   <p className="font-semibold text-white">Format accepté :</p>
                   <p style={{ color: "#9CA3AF" }}>Colonnes détectées automatiquement par nom d&apos;en-tête.</p>
                   <p style={{ color: "#9CA3AF" }}>Colonnes attendues :</p>
-                  <div className="font-mono rounded px-2 py-1.5 mt-1 text-[10px] space-y-0.5" style={{ background: "#0A0A0F", border: "1px solid #1E1E2C", color: "#9CA3AF" }}>
-                    <p>• <span className="font-semibold" style={{ color: "#39C84A" }}>Filière</span></p>
-                    <p>• <span className="font-semibold" style={{ color: "#39C84A" }}>Code Module</span></p>
-                    <p>• <span className="font-semibold" style={{ color: "#39C84A" }}>Intitulé module</span></p>
-                    <p>• <span className="font-semibold" style={{ color: "#39C84A" }}>Masse horaire</span></p>
+                  <div className="font-mono rounded px-2 py-1.5 mt-1 text-[10px] space-y-0.5" style={{ background: "#F5F7FA", border: "1px solid #E2E8F0", color: "#9CA3AF" }}>
+                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Filière</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Code Module</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Intitulé module</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Masse horaire</span></p>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="rounded-lg p-3" style={{ background: "#39C84A14", border: "1px solid #39C84A30" }}>
-                  <p className="text-sm font-semibold" style={{ color: "#39C84A" }}>{preview.rows} ligne{preview.rows > 1 ? "s" : ""} détectée{preview.rows > 1 ? "s" : ""}</p>
+                <div className="rounded-lg p-3" style={{ background: "#E8651A14", border: "1px solid #E8651A30" }}>
+                  <p className="text-sm font-semibold" style={{ color: "#E8651A" }}>{preview.rows} ligne{preview.rows > 1 ? "s" : ""} détectée{preview.rows > 1 ? "s" : ""}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>Aperçu des 5 premières lignes :</p>
                 </div>
-                <div className="overflow-x-auto rounded-lg" style={{ border: "1px solid #1E1E2C" }}>
+                <div className="overflow-x-auto rounded-lg" style={{ border: "1px solid #E2E8F0" }}>
                   <table className="w-full text-xs">
-                    <thead style={{ background: "#17171E", borderBottom: "1px solid #1E1E2C" }}>
+                    <thead style={{ background: "#F3F4F6", borderBottom: "1px solid #E2E8F0" }}>
                       <tr>
                         <th className="px-2 py-1.5 text-left font-semibold whitespace-nowrap" style={{ color: "#4B5563" }}>Filière</th>
                         <th className="px-2 py-1.5 text-left font-semibold whitespace-nowrap" style={{ color: "#4B5563" }}>Code</th>
@@ -449,11 +449,11 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                     </thead>
                     <tbody>
                       {preview.data.slice(0, 5).map((row, i) => (
-                        <tr key={i} style={{ borderBottom: "1px solid #1E1E2C", background: i % 2 === 0 ? "#111116" : "#17171E" }}>
+                        <tr key={i} style={{ borderBottom: "1px solid #E2E8F0", background: i % 2 === 0 ? "#F8FAFC" : "#F3F4F6" }}>
                           <td className="px-2 py-1 font-medium whitespace-nowrap text-white">{row.groupe}</td>
                           <td className="px-2 py-1 whitespace-nowrap" style={{ color: "#9CA3AF" }}>{row.codeModule}</td>
                           <td className="px-2 py-1 max-w-[110px] truncate" style={{ color: "#9CA3AF" }}>{row.module}</td>
-                          <td className="px-2 py-1 text-right whitespace-nowrap" style={{ color: "#39C84A" }}>{row.mhg}h</td>
+                          <td className="px-2 py-1 text-right whitespace-nowrap" style={{ color: "#E8651A" }}>{row.mhg}h</td>
                         </tr>
                       ))}
                       {preview.rows > 5 && (
@@ -467,14 +467,14 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                     onClick={confirmImport}
                     disabled={importing}
                     className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 font-medium"
-                    style={{ background: "#39C84A" }}
+                    style={{ background: "#E8651A" }}
                   >
                     {importing ? "Import en cours…" : "✅ Confirmer l'import"}
                   </button>
                   <button
                     onClick={() => { setPreview(null); if (fileRef.current) fileRef.current.value = ""; }}
                     className="flex-1 text-sm py-2 rounded-lg transition-colors"
-                    style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
+                    style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}
                   >
                     Annuler
                   </button>
@@ -484,13 +484,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Référentiel Pédagogique */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>📚 Référentiel Pédagogique OFPPT</h3>
             <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Importez un référentiel (PDF, DOCX, Excel) — l&apos;IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
 
             {refResult && (
-              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#39C84A14", border: "1px solid #39C84A30" }}>
-                <p className="text-sm font-semibold" style={{ color: "#39C84A" }}>✅ Importé avec succès</p>
+              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#E8651A14", border: "1px solid #E8651A30" }}>
+                <p className="text-sm font-semibold" style={{ color: "#E8651A" }}>✅ Importé avec succès</p>
                 <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
                   <span className="font-medium">{refResult.filiere}</span> · {refResult.secteur}
                 </p>
@@ -508,7 +508,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             )}
 
             {!refFile ? (
-              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#39C84A" }}>
+              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#E8651A" }}>
                 <span>📥</span> Importer un référentiel
                 <input
                   ref={refFileRef}
@@ -520,7 +520,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
               </label>
             ) : (
               <div className="space-y-2">
-                <div className="rounded-lg px-3 py-2" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+                <div className="rounded-lg px-3 py-2" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
                   <p className="text-xs font-semibold text-white truncate">📄 {refFile.name}</p>
                   <p className="text-[10px]" style={{ color: "#9CA3AF" }}>{(refFile.size / 1024).toFixed(0)} Ko</p>
                 </div>
@@ -529,7 +529,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                     onClick={uploadReferentiel}
                     disabled={refUploading}
                     className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
-                    style={{ background: "#39C84A" }}
+                    style={{ background: "#E8651A" }}
                   >
                     {refUploading ? (
                       <>
@@ -541,7 +541,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <button
                     onClick={() => { setRefFile(null); if (refFileRef.current) refFileRef.current.value = ""; }}
                     className="px-3 text-sm rounded-lg transition-colors"
-                    style={{ border: "1px solid #1E1E2C", color: "#9CA3AF" }}
+                    style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}
                   >
                     ✕
                   </button>
@@ -552,11 +552,11 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
               </div>
             )}
 
-            <div className="mt-3 rounded-lg p-3 text-xs space-y-1" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+            <div className="mt-3 rounded-lg p-3 text-xs space-y-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
               <p className="font-semibold text-white">Formats acceptés :</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 {["PDF", "DOCX", "Excel", "MD"].map((f) => (
-                  <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#0A0A0F", border: "1px solid #84CC1440", color: "#39C84A" }}>{f}</span>
+                  <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #E8651A40", color: "#E8651A" }}>{f}</span>
                 ))}
               </div>
               <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>L&apos;IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
@@ -564,13 +564,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Référentiels importés */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#9CA3AF" }}>
               🗂️ Référentiels importés
             </h3>
 
             {refListLoading ? (
-              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
                 <p className="text-xs" style={{ color: "#9CA3AF" }}>Chargement…</p>
               </div>
             ) : refListError ? (
@@ -579,7 +579,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 <button onClick={loadReferentiels} className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>↺ Réessayer</button>
               </div>
             ) : referentiels.length === 0 ? (
-              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
+              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
                 <p className="text-xs" style={{ color: "#9CA3AF" }}>Aucun référentiel importé</p>
                 <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>Importez un référentiel via la section ci-dessus</p>
               </div>
@@ -589,14 +589,14 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   const totalModules = secteur.filieres.reduce((acc, f) => acc + f.modules.length, 0);
                   const isExpanded = expandedSecteur === secteur.id;
                   return (
-                    <div key={secteur.id} className="rounded-lg overflow-hidden" style={{ border: "1px solid #1E1E2C" }}>
+                    <div key={secteur.id} className="rounded-lg overflow-hidden" style={{ border: "1px solid #E2E8F0" }}>
                       {/* Secteur header */}
                       <button
                         onClick={() => setExpandedSecteur(isExpanded ? null : secteur.id)}
                         className="w-full flex items-center justify-between px-3 py-2.5 text-left transition-colors"
-                        style={{ background: "#17171E" }}
-                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "#1E1E2C"}
-                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "#17171E"}
+                        style={{ background: "#F3F4F6" }}
+                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "#E2E8F0"}
+                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "#F3F4F6"}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-[10px] transition-transform duration-200" style={{ transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", color: "#4B5563" }}>▶</span>
@@ -611,9 +611,9 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                           <button
                             onClick={e => { e.stopPropagation(); exportSecteurExcel(secteur); }}
                             className="text-[10px] px-2 py-0.5 rounded transition-colors"
-                            style={{ color: "#39C84A", border: "1px solid transparent" }}
+                            style={{ color: "#E8651A", border: "1px solid transparent" }}
                             title="Exporter Excel"
-                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#39C84A30"; (e.currentTarget as HTMLButtonElement).style.background = "#39C84A10"; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E8651A30"; (e.currentTarget as HTMLButtonElement).style.background = "#E8651A10"; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
                           >
                             ↓
@@ -632,19 +632,19 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
                       {/* Filières list */}
                       {isExpanded && (
-                        <div style={{ borderTop: "1px solid #1E1E2C" }}>
+                        <div style={{ borderTop: "1px solid #E2E8F0" }}>
                           {secteur.filieres.map((filiere, idx) => (
                             <div
                               key={filiere.id}
                               className="px-3 py-2"
                               style={{
-                                borderTop: idx > 0 ? "1px solid #17171E" : undefined,
-                                background: "#111116",
+                                borderTop: idx > 0 ? "1px solid #F3F4F6" : undefined,
+                                background: "#F8FAFC",
                               }}
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
-                                  <p className="text-xs font-medium truncate" style={{ color: "#39C84A" }}>
+                                  <p className="text-xs font-medium truncate" style={{ color: "#E8651A" }}>
                                     {filiere.code ? <span className="font-mono text-[10px] mr-1.5" style={{ color: "#4B5563" }}>{filiere.code}</span> : null}
                                     {filiere.nom}
                                   </p>
@@ -658,7 +658,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                                         <span
                                           key={mod.id}
                                           className="text-[9px] px-1.5 py-0.5 rounded"
-                                          style={{ background: "#17171E", color: "#6B7280", border: "1px solid #1E1E2C", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+                                          style={{ background: "#F3F4F6", color: "#6B7280", border: "1px solid #E2E8F0", maxWidth: "100%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
                                           title={mod.nom}
                                         >
                                           {mod.code ? `${mod.code} · ` : ""}{mod.nom.length > 28 ? mod.nom.slice(0, 28) + "…" : mod.nom}
@@ -680,7 +680,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Stats */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>📊 Statistiques</h3>
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -688,8 +688,8 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 { label: "Modules", value: stats.modulesCount },
                 { label: "Groupes", value: stats.filieresCount },
               ].map((s) => (
-                <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: "#17171E", border: "1px solid #1E1E2C" }}>
-                  <p className="text-2xl font-bold" style={{ color: "#39C84A" }}>{s.value}</p>
+                <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
+                  <p className="text-2xl font-bold" style={{ color: "#E8651A" }}>{s.value}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>{s.label}</p>
                 </div>
               ))}
@@ -697,18 +697,18 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Paramètres API */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🔑 Paramètres API</h3>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span style={{ color: "#9CA3AF" }}>Claude API</span>
-                <span className="font-medium" style={{ color: claudeKey ? "#39C84A" : "#EF4444" }}>
+                <span className="font-medium" style={{ color: claudeKey ? "#E8651A" : "#EF4444" }}>
                   {claudeKey ? "✅ Configuré" : "❌ Manquant"}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span style={{ color: "#9CA3AF" }}>OpenAI API</span>
-                <span className="font-medium" style={{ color: openaiKey ? "#39C84A" : "#EF4444" }}>
+                <span className="font-medium" style={{ color: openaiKey ? "#E8651A" : "#EF4444" }}>
                   {openaiKey ? "✅ Configuré" : "❌ Manquant"}
                 </span>
               </div>
@@ -721,17 +721,17 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           </section>
 
           {/* Navigation */}
-          <section className="px-5 py-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
+          <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🧭 Navigation</h3>
             <div className="space-y-1">
               <Link href="/" onClick={onClose} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-colors" style={{ color: "#9CA3AF" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#39C84A"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#E8651A"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
               >
                 <span>📝</span> Nouvelle séance
               </Link>
               <Link href="/historique" onClick={onClose} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-colors" style={{ color: "#9CA3AF" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#39C84A"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#E8651A"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
               >
                 <span>📂</span> Mes séances
@@ -750,7 +750,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 "Planification annuelle automatique",
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2 text-sm" style={{ color: "#4B5563" }}>
-                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: "#1E1E2C" }} />
+                  <span className="w-2 h-2 rounded-full shrink-0" style={{ background: "#E2E8F0" }} />
                   {item}
                 </div>
               ))}

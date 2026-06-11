@@ -58,20 +58,20 @@ function FichesContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #1E1E2C" }}>
+      <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E2E8F0" }}>
         <h1 className="text-2xl font-bold text-white">Fiches pédagogiques</h1>
         <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>Générez une fiche pédagogique complète au format OFPPT</p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FicheForm onGenerate={handleGenerate} isLoading={isLoading} defaultValues={defaultValues} />
         <div className="card">
-          <div className="flex items-center justify-between pb-4 mb-4" style={{ borderBottom: "1px solid #1E1E2C" }}>
-            <h2 className="text-base font-bold" style={{ color: "#39C84A" }}>Fiche générée</h2>
+          <div className="flex items-center justify-between pb-4 mb-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
+            <h2 className="text-base font-bold" style={{ color: "#E8651A" }}>Fiche générée</h2>
             {ficheId && (
               <button
                 onClick={() => router.push(`/fiches/${ficheId}`)}
                 className="text-sm hover:underline"
-                style={{ color: "#39C84A" }}
+                style={{ color: "#E8651A" }}
               >
                 Voir le détail →
               </button>

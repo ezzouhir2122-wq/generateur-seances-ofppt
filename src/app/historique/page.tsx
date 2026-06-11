@@ -43,7 +43,7 @@ export default async function HistoriquePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #1E1E2C" }}>
+      <div className="flex items-center justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #E2E8F0" }}>
         <div>
           <h1 className="text-2xl font-bold text-white">Mes séances</h1>
           <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>
@@ -56,7 +56,7 @@ export default async function HistoriquePage() {
       </div>
 
       {seances.length === 0 ? (
-        <div className="card flex flex-col items-center justify-center py-20 gap-3" style={{ borderStyle: "dashed", borderColor: "#1E1E2C" }}>
+        <div className="card flex flex-col items-center justify-center py-20 gap-3" style={{ borderStyle: "dashed", borderColor: "#E2E8F0" }}>
           <div className="text-4xl">📄</div>
           <p className="text-sm" style={{ color: "#9CA3AF" }}>Aucune séance sauvegardée pour l&apos;instant</p>
           <Link href="/seances" className="btn-primary text-sm mt-2">
@@ -70,19 +70,19 @@ export default async function HistoriquePage() {
               key={s.id}
               href={`/historique/${s.id}`}
               className="card flex items-center justify-between group transition-all duration-200"
-              style={{ borderColor: "#1E1E2C" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#39C84A40")}
-              onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#1E1E2C")}
+              style={{ borderColor: "#E2E8F0" }}
+              onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#E8651A40")}
+              onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#E2E8F0")}
             >
               <div className="flex items-start gap-4">
                 <div
                   className="w-10 h-10 rounded-lg flex items-center justify-center font-bold text-sm shrink-0"
-                  style={{ background: "#39C84A14", color: "#39C84A" }}
+                  style={{ background: "#E8651A14", color: "#E8651A" }}
                 >
                   {s.filiere.slice(0, 2).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-white group-hover:text-[#39C84A] transition-colors">
+                  <p className="font-semibold text-white group-hover:text-[#E8651A] transition-colors">
                     {s.title}
                   </p>
                   <div className="flex gap-3 mt-1">

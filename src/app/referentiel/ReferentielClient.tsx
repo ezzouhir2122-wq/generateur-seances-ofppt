@@ -117,11 +117,11 @@ export default function ReferentielClient({ secteurs }: Props) {
 
   if (secteurs.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: "#0A0A0F", color: "#9CA3AF" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: "#F5F7FA", color: "#9CA3AF" }}>
         <div className="text-5xl mb-4">📚</div>
         <h2 className="text-xl font-semibold text-white mb-2">Aucun référentiel importé</h2>
         <p className="text-sm mb-6" style={{ color: "#4B5563" }}>Importez un référentiel depuis le panneau Paramètres</p>
-        <Link href="/" className="text-sm px-4 py-2 rounded-lg font-medium text-black" style={{ background: "#39C84A" }}>
+        <Link href="/" className="text-sm px-4 py-2 rounded-lg font-medium text-black" style={{ background: "#E8651A" }}>
           ← Retour au tableau de bord
         </Link>
       </div>
@@ -129,9 +129,9 @@ export default function ReferentielClient({ secteurs }: Props) {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#0A0A0F" }}>
+    <div className="min-h-screen" style={{ background: "#F5F7FA" }}>
       {/* Header */}
-      <div className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between" style={{ background: "#0D0D12", borderBottom: "1px solid #1E1E2C" }}>
+      <div className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between" style={{ background: "#FFFFFF", borderBottom: "1px solid #E2E8F0" }}>
         <div>
           <h1 className="text-lg font-bold text-white">Référentiel pédagogique</h1>
           <p className="text-xs mt-0.5" style={{ color: "#4B5563" }}>
@@ -141,7 +141,7 @@ export default function ReferentielClient({ secteurs }: Props) {
         <button
           onClick={exportFiltered}
           className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg font-medium text-black transition-opacity hover:opacity-90"
-          style={{ background: "#39C84A" }}
+          style={{ background: "#E8651A" }}
         >
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -151,7 +151,7 @@ export default function ReferentielClient({ secteurs }: Props) {
       </div>
 
       {/* Filters */}
-      <div className="px-6 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: "1px solid #1E1E2C" }}>
+      <div className="px-6 py-3 flex items-center gap-3 flex-wrap" style={{ borderBottom: "1px solid #E2E8F0" }}>
         {/* Search */}
         <div className="relative">
           <svg className="absolute left-2.5 top-1/2 -translate-y-1/2" width="13" height="13" fill="none" stroke="#4B5563" strokeWidth="2" viewBox="0 0 24 24">
@@ -163,7 +163,7 @@ export default function ReferentielClient({ secteurs }: Props) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-8 pr-3 py-1.5 text-xs rounded-lg outline-none"
-            style={{ background: "#17171E", border: "1px solid #1E1E2C", color: "#E5E7EB", width: "220px" }}
+            style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#E5E7EB", width: "220px" }}
           />
         </div>
 
@@ -173,7 +173,7 @@ export default function ReferentielClient({ secteurs }: Props) {
             onClick={() => setSelectedSecteur("all")}
             className="text-xs px-3 py-1.5 rounded-lg transition-colors"
             style={selectedSecteur === "all"
-              ? { background: "#39C84A14", color: "#39C84A", border: "1px solid #39C84A40" }
+              ? { background: "#E8651A14", color: "#E8651A", border: "1px solid #E8651A40" }
               : { color: "#6B7280", border: "1px solid transparent" }}
           >
             Tous
@@ -184,7 +184,7 @@ export default function ReferentielClient({ secteurs }: Props) {
               onClick={() => setSelectedSecteur(s.id)}
               className="text-xs px-3 py-1.5 rounded-lg transition-colors"
               style={selectedSecteur === s.id
-                ? { background: "#39C84A14", color: "#39C84A", border: "1px solid #39C84A40" }
+                ? { background: "#E8651A14", color: "#E8651A", border: "1px solid #E8651A40" }
                 : { color: "#6B7280", border: "1px solid transparent" }}
             >
               {s.nom}
@@ -199,10 +199,10 @@ export default function ReferentielClient({ secteurs }: Props) {
 
       {/* Table */}
       <div className="px-6 py-4">
-        <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #1E1E2C" }}>
+        <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #E2E8F0" }}>
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ background: "#111116", borderBottom: "1px solid #1E1E2C" }}>
+              <tr style={{ background: "#F8FAFC", borderBottom: "1px solid #E2E8F0" }}>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "#4B5563", width: "22%" }}>Filière</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "#4B5563", width: "12%" }}>N° Module</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "#4B5563" }}>Intitulé du module</th>
@@ -220,10 +220,10 @@ export default function ReferentielClient({ secteurs }: Props) {
                 filtered.map((row, i) => (
                   <tr
                     key={row.id}
-                    style={{ borderBottom: "1px solid #1A1A26", background: i % 2 === 0 ? "#0D0D12" : "#111116" }}
+                    style={{ borderBottom: "1px solid #E5E7EB", background: i % 2 === 0 ? "#FFFFFF" : "#F8FAFC" }}
                   >
                     <td className="px-4 py-2.5">
-                      <span className="text-xs font-medium" style={{ color: "#39C84A" }}>{row.filiere}</span>
+                      <span className="text-xs font-medium" style={{ color: "#E8651A" }}>{row.filiere}</span>
                       {row.filiereCode && (
                         <span className="ml-1.5 text-[10px] font-mono" style={{ color: "#4B5563" }}>{row.filiereCode}</span>
                       )}
@@ -236,7 +236,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       {row.mhg != null ? (
-                        <span className="text-xs font-semibold" style={{ color: "#39C84A" }}>{row.mhg}h</span>
+                        <span className="text-xs font-semibold" style={{ color: "#E8651A" }}>{row.mhg}h</span>
                       ) : (
                         <span className="text-xs" style={{ color: "#374151" }}>—</span>
                       )}
@@ -252,7 +252,7 @@ export default function ReferentielClient({ secteurs }: Props) {
         {filtered.length > 0 && (
           <div className="mt-3 flex items-center justify-end gap-2">
             <span className="text-xs" style={{ color: "#4B5563" }}>Total MHG affiché :</span>
-            <span className="text-xs font-semibold" style={{ color: "#39C84A" }}>
+            <span className="text-xs font-semibold" style={{ color: "#E8651A" }}>
               {filtered.reduce((acc, r) => acc + (r.mhg ?? 0), 0)}h
             </span>
           </div>

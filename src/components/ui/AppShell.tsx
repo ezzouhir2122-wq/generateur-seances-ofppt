@@ -51,8 +51,8 @@ function AssistantFAB() {
       >
         <div
           style={{
-            background: "#111116",
-            border: "1px solid #39C84A40",
+            background: "#F8FAFC",
+            border: "1px solid #E8651A40",
             borderRadius: "10px",
             padding: "8px 14px",
             whiteSpace: "nowrap",
@@ -60,7 +60,7 @@ function AssistantFAB() {
           }}
         >
           <p style={{ color: "#F9FAFB", fontSize: "12px", fontWeight: 600, margin: 0 }}>Assistant IA</p>
-          <p style={{ color: "#39C84A", fontSize: "10px", fontWeight: 400, margin: "2px 0 0" }}>Posez vos questions pédagogiques</p>
+          <p style={{ color: "#E8651A", fontSize: "10px", fontWeight: 400, margin: "2px 0 0" }}>Posez vos questions pédagogiques</p>
         </div>
         {/* Arrow */}
         <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: "24px" }}>
@@ -68,8 +68,8 @@ function AssistantFAB() {
             style={{
               width: "8px",
               height: "8px",
-              background: "#111116",
-              border: "1px solid #39C84A40",
+              background: "#F8FAFC",
+              border: "1px solid #E8651A40",
               borderTop: "none",
               borderLeft: "none",
               transform: "rotate(45deg)",
@@ -94,7 +94,7 @@ function AssistantFAB() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#39C84A",
+          background: "#E8651A",
           boxShadow: hovered
             ? "0 0 0 4px rgba(57,200,74,0.25), 0 12px 32px rgba(57,200,74,0.5)"
             : "0 0 0 3px rgba(57,200,74,0.15), 0 6px 20px rgba(57,200,74,0.35)",
@@ -149,7 +149,7 @@ export default function AppShell({ children, user, claudeKey, openaiKey }: AppSh
       <div className="flex h-screen overflow-hidden">
         <NavSidebar user={user} onSettingsClick={() => setDashOpen(true)} />
         <div className="flex-1 flex flex-col overflow-hidden relative">
-          <main className="flex-1 overflow-y-auto" style={{ background: "#0A0A0F" }}>
+          <main className="flex-1 overflow-y-auto" style={{ background: "#F5F7FA" }}>
             {children}
           </main>
         </div>

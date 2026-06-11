@@ -9,7 +9,7 @@ export default function NouveauGroupePage() {
           Créez un groupe de stagiaires pour commencer le suivi des compétences
         </p>
       </div>
-      <div className="rounded-2xl p-6" style={{ background: "#111116", border: "1px solid #1E1E2C" }}>
+      <div className="rounded-2xl p-6" style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
         <GroupeForm />
       </div>
     </div>

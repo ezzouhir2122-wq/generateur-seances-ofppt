@@ -73,7 +73,7 @@ export default function EvaluationsPage() {
         <div className={contenu ? "col-span-1" : "lg:col-span-3"}>
           {isLoading && (
             <div className="card flex flex-col items-center justify-center py-20 gap-4">
-              <div className="w-10 h-10 border-4 border-[#39C84A] border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-4 border-[#E8651A] border-t-transparent rounded-full animate-spin" />
               <p className="text-sm" style={{ color: "#9CA3AF" }}>Génération de l&apos;évaluation en cours…</p>
             </div>
           )}
@@ -105,7 +105,7 @@ export default function EvaluationsPage() {
                 { icon: "🔄", title: "Session de rattrapage", desc: "Sujet de rattrapage ciblant les compétences essentielles, avec corrigé." },
               ].map(card => (
                 <div key={card.title} className="flex items-start gap-4 p-4 rounded-xl"
-                  style={{ background: "#111116", border: "1px solid #1E1E2C" }}>
+                  style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
                   <span className="text-2xl mt-0.5">{card.icon}</span>
                   <div>
                     <p className="font-semibold text-sm text-white">{card.title}</p>

@@ -94,7 +94,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#39C84A", borderBottom: "1px solid #1E1E2C" }}>
+      <h2 className="text-base font-bold pb-4" style={{ color: "#E8651A", borderBottom: "1px solid #E2E8F0" }}>
         Paramètres de la fiche
       </h2>
 
@@ -121,7 +121,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             type="button"
             onClick={() => setShowList((s) => !s)}
             className="flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-1.5 transition-colors"
-            style={{ color: "#39C84A", border: "1px solid #39C84A40", background: "#39C84A10" }}
+            style={{ color: "#E8651A", border: "1px solid #E8651A40", background: "#E8651A10" }}
           >
             <span>📋</span>
             <span>Lister les modules ({modules.length})</span>
@@ -129,9 +129,9 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
           </button>
 
           {showList && (
-            <div className="mt-2 rounded-lg overflow-hidden" style={{ border: "1px solid #1E1E2C" }}>
+            <div className="mt-2 rounded-lg overflow-hidden" style={{ border: "1px solid #E2E8F0" }}>
               <table className="w-full text-sm">
-                <thead style={{ background: "#17171E", borderBottom: "1px solid #1E1E2C" }}>
+                <thead style={{ background: "#F3F4F6", borderBottom: "1px solid #E2E8F0" }}>
                   <tr>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide w-24" style={{ color: "#4B5563" }}>Code</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide" style={{ color: "#4B5563" }}>Intitulé module</th>
@@ -146,13 +146,13 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
                       className="cursor-pointer transition-colors"
                       style={
                         form.module === m.module
-                          ? { background: "#39C84A14", color: "#39C84A" }
-                          : { borderBottom: "1px solid #1E1E2C" }
+                          ? { background: "#E8651A14", color: "#E8651A" }
+                          : { borderBottom: "1px solid #E2E8F0" }
                       }
                     >
                       <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
                       <td className="px-3 py-2 font-medium text-white">{m.module}</td>
-                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#39C84A" }}>{m.mhg}h</td>
+                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#E8651A" }}>{m.mhg}h</td>
                     </tr>
                   ))}
                 </tbody>
@@ -170,7 +170,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             <input
               type="text"
               className="input-field font-mono text-sm tracking-wide"
-              style={{ background: "#17171E", color: "#4B5563" }}
+              style={{ background: "#F3F4F6", color: "#4B5563" }}
               value={form.codeModule ?? ""}
               readOnly
               placeholder="—"
@@ -180,7 +180,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             <label className="label flex items-center justify-between">
               <span>Intitulé module *</span>
               {mhgInfo !== null && (
-                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#39C84A14", color: "#39C84A" }}>
+                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#E8651A14", color: "#E8651A" }}>
                   M.H.G : {mhgInfo}h
                 </span>
               )}

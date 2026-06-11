@@ -19,9 +19,9 @@ const SUGGESTIONS = [
   {
     category: "Préparation",
     icon: "⚡",
-    accent: "#39C84A",
-    bg: "#39C84A12",
-    border: "#39C84A30",
+    accent: "#E8651A",
+    bg: "#E8651A12",
+    border: "#E8651A30",
     desc: "Planification & contenu",
     prompt: "Prépare une séance de 2 heures sur les réseaux informatiques pour des stagiaires de niveau technicien.",
   },
@@ -56,7 +56,7 @@ const SUGGESTIONS = [
 
 export default function ChatWindow({ messages, isLoading, onSuggestionClick }: Props) {
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ background: "#0A0A0F" }}>
+    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4" style={{ background: "#F5F7FA" }}>
 
       {messages.length === 0 && (
         <div className="flex flex-col items-center justify-center h-full gap-8 py-8">
@@ -64,7 +64,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
           <div className="text-center">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 text-black font-bold text-lg"
-              style={{ background: "#39C84A" }}
+              style={{ background: "#E8651A" }}
             >
               IA
             </div>
@@ -110,7 +110,7 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
           {msg.role === "assistant" && (
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold mr-2 mt-1 flex-shrink-0"
-              style={{ background: "#39C84A" }}
+              style={{ background: "#E8651A" }}
             >
               IA
             </div>
@@ -119,15 +119,15 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
             className="max-w-[75%] rounded-2xl px-4 py-3 text-sm"
             style={
               msg.role === "user"
-                ? { background: "#39C84A18", color: "#FFFFFF", borderRadius: "16px 4px 16px 16px", border: "1px solid #39C84A30" }
-                : { background: "#111116", color: "#E5E7EB", borderRadius: "4px 16px 16px 16px", border: "1px solid #1E1E2C" }
+                ? { background: "#E8651A18", color: "#FFFFFF", borderRadius: "16px 4px 16px 16px", border: "1px solid #E8651A30" }
+                : { background: "#F8FAFC", color: "#E5E7EB", borderRadius: "4px 16px 16px 16px", border: "1px solid #E2E8F0" }
             }
           >
             {msg.role === "assistant" ? (
               <div className="prose prose-sm max-w-none prose-invert prose-p:my-1 prose-headings:my-2">
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                 {msg.streaming && (
-                  <span className="inline-block w-1.5 h-4 animate-pulse ml-0.5 align-middle" style={{ background: "#39C84A" }} />
+                  <span className="inline-block w-1.5 h-4 animate-pulse ml-0.5 align-middle" style={{ background: "#E8651A" }} />
                 )}
               </div>
             ) : (
@@ -141,18 +141,18 @@ export default function ChatWindow({ messages, isLoading, onSuggestionClick }: P
         <div className="flex justify-start">
           <div
             className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold mr-2 mt-1 flex-shrink-0"
-            style={{ background: "#39C84A" }}
+            style={{ background: "#E8651A" }}
           >
             IA
           </div>
           <div
             className="rounded-2xl px-4 py-3"
-            style={{ background: "#111116", border: "1px solid #1E1E2C", borderRadius: "4px 16px 16px 16px" }}
+            style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "4px 16px 16px 16px" }}
           >
             <div className="flex gap-1.5 items-center">
-              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#39C84A", animationDelay: "0ms" }} />
-              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#39C84A", animationDelay: "150ms" }} />
-              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#39C84A", animationDelay: "300ms" }} />
+              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#E8651A", animationDelay: "0ms" }} />
+              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#E8651A", animationDelay: "150ms" }} />
+              <div className="w-2 h-2 rounded-full animate-bounce" style={{ background: "#E8651A", animationDelay: "300ms" }} />
             </div>
           </div>
         </div>
