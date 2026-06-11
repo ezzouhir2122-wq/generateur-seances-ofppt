@@ -27,9 +27,6 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
     type: "theorique",
     niveau: "TS",
     annee: "1ere-annee",
-    objectifsSavoir: "",
-    objectifsSavoirFaire: "",
-    objectifsSavoirEtre: "",
     prerequis: "",
     ...defaultValues,
   });
@@ -264,19 +261,15 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
         </div>
       </div>
 
-      {/* Objectifs */}
-      <div>
-        <label className="label">Objectif — Savoir *</label>
-        <textarea className="input-field resize-none" rows={2} placeholder="Connaissances théoriques à acquérir" value={form.objectifsSavoir} onChange={set("objectifsSavoir")} required />
+      {/* Objectifs — générés automatiquement par l'IA */}
+      <div className="rounded-lg px-3 py-2.5 flex items-start gap-2" style={{ background: "#E8651A10", border: "1px solid #E8651A30" }}>
+        <span>✨</span>
+        <p className="text-xs" style={{ color: "#4B5563" }}>
+          Les <strong>objectifs pédagogiques</strong> (Savoir, Savoir-faire, Savoir-être) sont
+          générés automatiquement et insérés dans la fiche PDF.
+        </p>
       </div>
-      <div>
-        <label className="label">Objectif — Savoir-faire *</label>
-        <textarea className="input-field resize-none" rows={2} placeholder="Compétences pratiques à développer" value={form.objectifsSavoirFaire} onChange={set("objectifsSavoirFaire")} required />
-      </div>
-      <div>
-        <label className="label">Objectif — Savoir-être</label>
-        <textarea className="input-field resize-none" rows={2} placeholder="Attitudes et comportements professionnels (optionnel)" value={form.objectifsSavoirEtre} onChange={set("objectifsSavoirEtre")} />
-      </div>
+
       <div>
         <label className="label">Prérequis des stagiaires</label>
         <textarea className="input-field resize-none" rows={2} placeholder="Connaissances préalables requises (optionnel)" value={form.prerequis} onChange={set("prerequis")} />

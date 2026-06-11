@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
   const data: FicheFormData & { seanceSourceId?: string } = await req.json();
 
-  if (!data.filiere || !data.module || !data.intitule || !data.objectifsSavoir) {
+  if (!data.filiere || !data.module || !data.intitule) {
     return NextResponse.json({ error: "Champs obligatoires manquants" }, { status: 400 });
   }
 
@@ -62,9 +62,9 @@ export async function POST(req: Request) {
       duree: data.duree,
       niveau: niveauDb,
       type: data.type,
-      objectifsSavoir: data.objectifsSavoir,
-      objectifsSavoirFaire: data.objectifsSavoirFaire,
-      objectifsSavoirEtre: data.objectifsSavoirEtre,
+      objectifsSavoir: data.objectifsSavoir ?? "",
+      objectifsSavoirFaire: data.objectifsSavoirFaire ?? "",
+      objectifsSavoirEtre: data.objectifsSavoirEtre ?? "",
       prerequis: data.prerequis,
       contenu,
       userId: session.user.id,

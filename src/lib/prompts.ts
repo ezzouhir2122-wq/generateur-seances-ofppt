@@ -44,19 +44,16 @@ Durée : ${data.duree}
 Type : ${data.type}
 Niveau : ${niveauFull}
 
-Objectifs pédagogiques :
-- Savoir : ${data.objectifsSavoir}
-- Savoir-faire : ${data.objectifsSavoirFaire}
-- Savoir-être : ${data.objectifsSavoirEtre || "Non spécifié"}
+Prérequis des stagiaires : ${data.prerequis || "À déterminer selon le module"}
 
-Prérequis des stagiaires : ${data.prerequis || "Aucun prérequis particulier"}
+**IMPORTANT — Objectifs pédagogiques :** Tu dois FORMULER TOI-MÊME des objectifs pédagogiques pertinents et réalistes, déduits de la filière, du module, de l'intitulé de la séance, du type et du niveau. Rédige-les selon la taxonomie OFPPT (verbes d'action mesurables, commençant par « À la fin de la séance, le stagiaire sera capable de… ») répartis en trois catégories : Savoir (connaissances), Savoir-faire (compétences pratiques) et Savoir-être (attitudes professionnelles).
 
 Génère une fiche pédagogique structurée en markdown avec exactement ces sections :
 ## En-tête
 (Tableau récapitulatif : Établissement OFPPT | Filière | Module | Formateur | Durée | Date | Niveau | Type)
 
 ## Objectifs pédagogiques
-(Tableau à 3 colonnes : Savoir | Savoir-faire | Savoir-être)
+(Tableau à 3 colonnes : Savoir | Savoir-faire | Savoir-être — objectifs que TU as formulés)
 
 ## Déroulement de la séance
 (Tableau détaillé avec colonnes : Phase | Durée | Activités formateur | Activités stagiaires | Supports/Méthodes)

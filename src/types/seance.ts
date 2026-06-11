@@ -57,8 +57,8 @@ export interface FicheFormData {
   type: string;
   niveau: "T" | "TS";
   annee: "1ere-annee" | "2eme-annee" | "3eme-annee";
-  objectifsSavoir: string;
-  objectifsSavoirFaire: string;
-  objectifsSavoirEtre: string;
+  objectifsSavoir?: string;
+  objectifsSavoirFaire?: string;
+  objectifsSavoirEtre?: string;
   prerequis: string;
 }
