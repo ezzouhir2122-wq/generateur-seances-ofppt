@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     async start(controller) {
       try {
         const response = anthropic.messages.stream({
-          model: "claude-opus-4-5",
+          model: "claude-opus-4-8",
           max_tokens: 2048,
           system: buildChatSystemPrompt(domaine ?? "Général", moduleName, modulesContext),
           messages: history,
