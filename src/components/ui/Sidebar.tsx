@@ -330,7 +330,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>👤 Profil</h3>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-black" style={{ background: "#E8651A" }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-black" style={{ background: "#0A4DA8" }}>
                 {user.name?.[0]?.toUpperCase() ?? "F"}
               </div>
               <div>
@@ -368,7 +368,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 onClick={saveProfile}
                 disabled={savingProfile}
                 className="w-full text-xs py-2 rounded-lg font-medium text-black disabled:opacity-50 transition-colors"
-                style={{ background: "#E8651A" }}
+                style={{ background: "#0A4DA8" }}
               >
                 {savingProfile ? "Sauvegarde…" : "Sauvegarder le profil"}
               </button>
@@ -381,8 +381,8 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Préremplissez automatiquement les formulaires via le référentiel ou un fichier Excel.</p>
 
             {stats.modulesCount > 0 && !preview && (
-              <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between" style={{ background: "#E8651A14", border: "1px solid #E8651A30" }}>
-                <span className="text-sm" style={{ color: "#E8651A" }}>
+              <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between" style={{ background: "#0A4DA814", border: "1px solid #0A4DA830" }}>
+                <span className="text-sm" style={{ color: "#0A4DA8" }}>
                   <span className="font-semibold">{stats.modulesCount} modules</span> — <span className="font-semibold">{stats.filieresCount} groupes</span>
                 </span>
                 <button onClick={resetModules} className="text-xs" style={{ color: "#EF4444" }}>🗑 Vider</button>
@@ -415,7 +415,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <div className="flex-1 h-px" style={{ background: "#E2E8F0" }} />
                 </div>
 
-                <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#E8651A" }}>
+                <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#0A4DA8" }}>
                   <span>📥</span> Importer fichier Excel (.xlsx)
                   <input ref={fileRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFile} />
                 </label>
@@ -424,17 +424,17 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                   <p style={{ color: "#9CA3AF" }}>Colonnes détectées automatiquement par nom d&apos;en-tête.</p>
                   <p style={{ color: "#9CA3AF" }}>Colonnes attendues :</p>
                   <div className="font-mono rounded px-2 py-1.5 mt-1 text-[10px] space-y-0.5" style={{ background: "#F5F7FA", border: "1px solid #E2E8F0", color: "#9CA3AF" }}>
-                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Filière</span></p>
-                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Code Module</span></p>
-                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Intitulé module</span></p>
-                    <p>• <span className="font-semibold" style={{ color: "#E8651A" }}>Masse horaire</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#0A4DA8" }}>Filière</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#0A4DA8" }}>Code Module</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#0A4DA8" }}>Intitulé module</span></p>
+                    <p>• <span className="font-semibold" style={{ color: "#0A4DA8" }}>Masse horaire</span></p>
                   </div>
                 </div>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="rounded-lg p-3" style={{ background: "#E8651A14", border: "1px solid #E8651A30" }}>
-                  <p className="text-sm font-semibold" style={{ color: "#E8651A" }}>{preview.rows} ligne{preview.rows > 1 ? "s" : ""} détectée{preview.rows > 1 ? "s" : ""}</p>
+                <div className="rounded-lg p-3" style={{ background: "#0A4DA814", border: "1px solid #0A4DA830" }}>
+                  <p className="text-sm font-semibold" style={{ color: "#0A4DA8" }}>{preview.rows} ligne{preview.rows > 1 ? "s" : ""} détectée{preview.rows > 1 ? "s" : ""}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>Aperçu des 5 premières lignes :</p>
                 </div>
                 <div className="overflow-x-auto rounded-lg" style={{ border: "1px solid #E2E8F0" }}>
@@ -453,7 +453,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                           <td className="px-2 py-1 font-medium whitespace-nowrap" style={{ color: "#111827" }}>{row.groupe}</td>
                           <td className="px-2 py-1 whitespace-nowrap" style={{ color: "#9CA3AF" }}>{row.codeModule}</td>
                           <td className="px-2 py-1 max-w-[110px] truncate" style={{ color: "#9CA3AF" }}>{row.module}</td>
-                          <td className="px-2 py-1 text-right whitespace-nowrap" style={{ color: "#E8651A" }}>{row.mhg}h</td>
+                          <td className="px-2 py-1 text-right whitespace-nowrap" style={{ color: "#0A4DA8" }}>{row.mhg}h</td>
                         </tr>
                       ))}
                       {preview.rows > 5 && (
@@ -467,7 +467,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                     onClick={confirmImport}
                     disabled={importing}
                     className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 font-medium"
-                    style={{ background: "#E8651A" }}
+                    style={{ background: "#0A4DA8" }}
                   >
                     {importing ? "Import en cours…" : "✅ Confirmer l'import"}
                   </button>
@@ -489,8 +489,8 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Importez un référentiel (PDF, DOCX, Excel) — l&apos;IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
 
             {refResult && (
-              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#E8651A14", border: "1px solid #E8651A30" }}>
-                <p className="text-sm font-semibold" style={{ color: "#E8651A" }}>✅ Importé avec succès</p>
+              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#0A4DA814", border: "1px solid #0A4DA830" }}>
+                <p className="text-sm font-semibold" style={{ color: "#0A4DA8" }}>✅ Importé avec succès</p>
                 <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>
                   <span className="font-medium">{refResult.filiere}</span> · {refResult.secteur}
                 </p>
@@ -508,7 +508,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             )}
 
             {!refFile ? (
-              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#E8651A" }}>
+              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#0A4DA8" }}>
                 <span>📥</span> Importer un référentiel
                 <input
                   ref={refFileRef}
@@ -529,7 +529,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                     onClick={uploadReferentiel}
                     disabled={refUploading}
                     className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
-                    style={{ background: "#E8651A" }}
+                    style={{ background: "#0A4DA8" }}
                   >
                     {refUploading ? (
                       <>
@@ -556,7 +556,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
               <p className="font-semibold" style={{ color: "#374151" }}>Formats acceptés :</p>
               <div className="flex gap-2 flex-wrap mt-1">
                 {["PDF", "DOCX", "Excel", "MD"].map((f) => (
-                  <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #E8651A40", color: "#E8651A" }}>{f}</span>
+                  <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #0A4DA840", color: "#0A4DA8" }}>{f}</span>
                 ))}
               </div>
               <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>L&apos;IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
@@ -611,9 +611,9 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                           <button
                             onClick={e => { e.stopPropagation(); exportSecteurExcel(secteur); }}
                             className="text-[10px] px-2 py-0.5 rounded transition-colors"
-                            style={{ color: "#E8651A", border: "1px solid transparent" }}
+                            style={{ color: "#0A4DA8", border: "1px solid transparent" }}
                             title="Exporter Excel"
-                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#E8651A30"; (e.currentTarget as HTMLButtonElement).style.background = "#E8651A10"; }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#0A4DA830"; (e.currentTarget as HTMLButtonElement).style.background = "#0A4DA810"; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
                           >
                             ↓
@@ -644,7 +644,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                             >
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0">
-                                  <p className="text-xs font-medium truncate" style={{ color: "#E8651A" }}>
+                                  <p className="text-xs font-medium truncate" style={{ color: "#0A4DA8" }}>
                                     {filiere.code ? <span className="font-mono text-[10px] mr-1.5" style={{ color: "#4B5563" }}>{filiere.code}</span> : null}
                                     {filiere.nom}
                                   </p>
@@ -689,7 +689,7 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
                 { label: "Groupes", value: stats.filieresCount },
               ].map((s) => (
                 <div key={s.label} className="rounded-xl p-3 text-center" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
-                  <p className="text-2xl font-bold" style={{ color: "#E8651A" }}>{s.value}</p>
+                  <p className="text-2xl font-bold" style={{ color: "#0A4DA8" }}>{s.value}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#9CA3AF" }}>{s.label}</p>
                 </div>
               ))}
@@ -702,13 +702,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span style={{ color: "#9CA3AF" }}>Claude API</span>
-                <span className="font-medium" style={{ color: claudeKey ? "#E8651A" : "#EF4444" }}>
+                <span className="font-medium" style={{ color: claudeKey ? "#0A4DA8" : "#EF4444" }}>
                   {claudeKey ? "✅ Configuré" : "❌ Manquant"}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span style={{ color: "#9CA3AF" }}>OpenAI API</span>
-                <span className="font-medium" style={{ color: openaiKey ? "#E8651A" : "#EF4444" }}>
+                <span className="font-medium" style={{ color: openaiKey ? "#0A4DA8" : "#EF4444" }}>
                   {openaiKey ? "✅ Configuré" : "❌ Manquant"}
                 </span>
               </div>
@@ -725,13 +725,13 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🧭 Navigation</h3>
             <div className="space-y-1">
               <Link href="/" onClick={onClose} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-colors" style={{ color: "#9CA3AF" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#E8651A"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#0A4DA8"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
               >
                 <span>📝</span> Nouvelle séance
               </Link>
               <Link href="/historique" onClick={onClose} className="flex items-center gap-2 text-sm px-3 py-2 rounded-lg transition-colors" style={{ color: "#9CA3AF" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#E8651A"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#0A4DA8"; (e.currentTarget as HTMLAnchorElement).style.background = "#84CC1410"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = "#9CA3AF"; (e.currentTarget as HTMLAnchorElement).style.background = ""; }}
               >
                 <span>📂</span> Mes séances

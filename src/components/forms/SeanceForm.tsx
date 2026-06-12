@@ -85,7 +85,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#E8651A", borderBottom: "1px solid #E2E8F0" }}>
+      <h2 className="text-base font-bold pb-4" style={{ color: "#0A4DA8", borderBottom: "1px solid #E2E8F0" }}>
         Paramètres de la séance
       </h2>
 
@@ -107,7 +107,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
                 type="button"
                 onClick={() => setShowList((s) => !s)}
                 className="flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-1.5 transition-colors"
-              style={{ color: "#E8651A", border: "1px solid #E8651A40", background: "#E8651A10" }}
+              style={{ color: "#0A4DA8", border: "1px solid #0A4DA840", background: "#0A4DA810" }}
               >
                 <span>📋</span>
                 <span>Lister les modules ({modules.length})</span>
@@ -132,13 +132,13 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
                           className="cursor-pointer transition-colors"
                           style={
                             form.module === m.module
-                              ? { background: "#E8651A14", color: "#E8651A" }
+                              ? { background: "#0A4DA814", color: "#0A4DA8" }
                               : { borderBottom: "1px solid #E2E8F0" }
                           }
                         >
                           <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
                           <td className="px-3 py-2 font-medium" style={{ color: "#111827" }}>{m.module}</td>
-                          <td className="px-3 py-2 text-right font-semibold" style={{ color: "#E8651A" }}>{m.mhg}h</td>
+                          <td className="px-3 py-2 text-right font-semibold" style={{ color: "#0A4DA8" }}>{m.mhg}h</td>
                         </tr>
                       ))}
                     </tbody>
@@ -246,7 +246,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               className="flex-1 rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors"
               style={
                 form.type === t.value
-                  ? { border: "1px solid #E8651A40", background: "#E8651A14", color: "#E8651A", fontWeight: 600 }
+                  ? { border: "1px solid #0A4DA840", background: "#0A4DA814", color: "#0A4DA8", fontWeight: 600 }
                   : { border: "1px solid #E2E8F0", color: "#9CA3AF" }
               }
             >
@@ -286,7 +286,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               className="flex-1 rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors"
               style={
                 form.niveauApprentissage === n.value
-                  ? { border: "1px solid #E8651A40", background: "#E8651A14", color: "#E8651A", fontWeight: 600 }
+                  ? { border: "1px solid #0A4DA840", background: "#0A4DA814", color: "#0A4DA8", fontWeight: 600 }
                   : { border: "1px solid #E2E8F0", color: "#9CA3AF" }
               }
             >
@@ -318,7 +318,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
               className="flex-1 rounded-lg px-3 py-2.5 text-sm text-center cursor-pointer transition-colors"
               style={
                 form.mode === m.value
-                  ? { border: "1px solid #E8651A40", background: "#E8651A14", color: "#E8651A", fontWeight: 600 }
+                  ? { border: "1px solid #0A4DA840", background: "#0A4DA814", color: "#0A4DA8", fontWeight: 600 }
                   : { border: "1px solid #E2E8F0", color: "#9CA3AF" }
               }
             >

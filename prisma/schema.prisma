@@ -21,6 +21,9 @@ model User {
   fiches        Fiche[]
   chatSessions  ChatSession[]
   groupes       Groupe[]
+  sharedResources  SharedResource[]
+  resourceLikes    ResourceLike[]
+  resourceComments ResourceComment[]
 }
 
 model UserModule {
@@ -125,13 +128,14 @@ model RefModule {
 }
 
 model Competence {
-  id           String                  @id @default(cuid())
-  titre        String
-  moduleId     String
-  module       RefModule               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  objectifs    Objectif[]
-  progressions ProgressionCompetence[]
-  createdAt    DateTime                @default(now())
+  id               String                  @id @default(cuid())
+  titre            String
+  moduleId         String
+  module           RefModule               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  objectifs        Objectif[]
+  progressions     ProgressionCompetence[]
+  groupeSelections GroupeCompetence[]
+  createdAt        DateTime                @default(now())
 }
 
 model Objectif {
@@ -154,16 +158,32 @@ model CriterePerformance {
 // ─── Suivi des Compétences ────────────────────────────────────────────────────
 
 model Groupe {
-  id         String      @id @default(cuid())
-  nom        String
-  filiere    String      // stores Filiere.id
-  annee      String      // ex: "2024-2025"
-  userId     String
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  stagiaires Stagiaire[]
-  createdAt  DateTime    @default(now())
+  id          String             @id @default(cuid())
+  nom         String
+  filiere     String             // stores Filiere.id
+  annee       String             // ex: "2024-2025"
+  userId      String
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stagiaires  Stagiaire[]
+  competences GroupeCompetence[]
+  createdAt   DateTime           @default(now())
 
   @@index([userId])
+}
+
+// Compétences sélectionnées pour l'évaluation d'un groupe.
+// Si un groupe n'a aucune ligne ici, le suivi affiche toutes les
+// compétences de sa filière (rétro-compatibilité).
+model GroupeCompetence {
+  id           String     @id @default(cuid())
+  groupeId     String
+  groupe       Groupe     @relation(fields: [groupeId], references: [id], onDelete: Cascade)
+  competenceId String
+  competence   Competence @relation(fields: [competenceId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([groupeId, competenceId])
+  @@index([groupeId])
 }
 
 model Stagiaire {
@@ -190,4 +210,56 @@ model ProgressionCompetence {
   updatedAt    DateTime   @updatedAt
 
   @@unique([stagiaireId, competenceId])
+}
+
+// ─── Bibliothèque Collaborative ───────────────────────────────────────────────
+
+model SharedResource {
+  id          String   @id @default(cuid())
+  type        String   // SEANCE | FICHE | EVALUATION | FICHIER
+  titre       String
+  description String?  @db.Text
+  filiere     String?
+  module      String?
+  niveau      String?
+  contenu     String?  @db.Text   // markdown figé (séance/fiche/évaluation)
+  fileUrl     String?            // upload (Vercel Blob)
+  fileName    String?
+  fileType    String?
+  fileSize    Int?
+  authorId    String
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorName  String
+  createdAt   DateTime @default(now())
+  likes       ResourceLike[]
+  comments    ResourceComment[]
+
+  @@index([type])
+  @@index([filiere])
+  @@index([createdAt])
+}
+
+model ResourceLike {
+  id         String         @id @default(cuid())
+  resourceId String
+  resource   SharedResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime       @default(now())
+
+  @@unique([resourceId, userId])
+  @@index([resourceId])
+}
+
+model ResourceComment {
+  id         String         @id @default(cuid())
+  resourceId String
+  resource   SharedResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  authorName String
+  contenu    String         @db.Text
+  createdAt  DateTime       @default(now())
+
+  @@index([resourceId])
 }

@@ -15,11 +15,11 @@ interface Props {
 
 const tooltipStyle = {
   contentStyle: { background: "#12121E", border: "1px solid #E2E8F0", color: "#E5E7EB", fontSize: 12, borderRadius: 8 },
-  cursor: { fill: "#E8651A10" },
+  cursor: { fill: "#0A4DA810" },
 };
 
 function pctColor(v: number): string {
-  return v >= 75 ? "#E8651A" : v >= 50 ? "#F59E0B" : "#EF4444";
+  return v >= 75 ? "#0A4DA8" : v >= 50 ? "#F59E0B" : "#EF4444";
 }
 
 function shortLabel(titre: string, max = 14): string {
@@ -61,7 +61,7 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
             className="px-3 py-1.5 text-xs rounded-lg font-medium transition-colors"
             style={
               tab === t
-                ? { background: "#E8651A18", color: "#E8651A", border: "1px solid #E8651A30" }
+                ? { background: "#0A4DA818", color: "#0A4DA8", border: "1px solid #0A4DA830" }
                 : { border: "1px solid #E2E8F0", color: "#6B7280" }
             }
           >
@@ -109,14 +109,14 @@ export default function ProgressionCharts({ competences, stagiaires, selectedSta
           ) : (
             <>
               <p className="text-xs mb-3" style={{ color: "#6B7280" }}>
-                Profil de <span className="font-medium" style={{ color: "#E8651A" }}>{selectedStagiaire.prenom} {selectedStagiaire.nom}</span>
+                Profil de <span className="font-medium" style={{ color: "#0A4DA8" }}>{selectedStagiaire.prenom} {selectedStagiaire.nom}</span>
               </p>
               <ResponsiveContainer width="100%" height={230}>
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="#E2E8F0" />
                   <PolarAngleAxis dataKey="competence" tick={{ fill: "#6B7280", fontSize: 9 }} />
                   <Tooltip {...tooltipStyle} formatter={(v) => [`${v as number}%`, "Score"]} />
-                  <Radar dataKey="score" stroke="#E8651A" fill="#E8651A" fillOpacity={0.2} strokeWidth={2} />
+                  <Radar dataKey="score" stroke="#0A4DA8" fill="#0A4DA8" fillOpacity={0.2} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </>

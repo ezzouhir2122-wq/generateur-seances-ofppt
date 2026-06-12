@@ -39,7 +39,7 @@ export async function getLogoBase64(): Promise<string | null> {
 
 // Palette OFPPT moderne
 const OFPPT_NAVY: [number, number, number] = [0, 48, 135]; // #003087
-const OFPPT_ORANGE: [number, number, number] = [232, 101, 26]; // #E8651A
+const OFPPT_ORANGE: [number, number, number] = [10, 77, 168]; // #0A4DA8
 
 export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
   const W = doc.internal.pageSize.getWidth();

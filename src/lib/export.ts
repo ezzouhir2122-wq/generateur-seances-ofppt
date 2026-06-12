@@ -7,7 +7,7 @@ export async function exportToPPT(contenu: string, titre: string): Promise<void>
   const prs = new PptxGenJS();
   prs.layout = "LAYOUT_WIDE";
 
-  const GREEN = "39C84A";
+  const BRAND = "003087"; // bleu marine OFPPT
   const DARK = "0B0B14";
   const CARD = "12121E";
   const TEXT = "E5E7EB";
@@ -17,10 +17,10 @@ export async function exportToPPT(contenu: string, titre: string): Promise<void>
   // ── Slide 1 : Page de garde ──
   const cover = prs.addSlide();
   cover.background = { color: DARK };
-  cover.addShape("rect" as never, { x: 0, y: 0, w: 10, h: 0.12, fill: { color: GREEN }, line: { color: GREEN } });
-  cover.addShape("rect" as never, { x: 0, y: 7.38, w: 10, h: 0.12, fill: { color: GREEN }, line: { color: GREEN } });
+  cover.addShape("rect" as never, { x: 0, y: 0, w: 10, h: 0.12, fill: { color: BRAND }, line: { color: BRAND } });
+  cover.addShape("rect" as never, { x: 0, y: 7.38, w: 10, h: 0.12, fill: { color: BRAND }, line: { color: BRAND } });
   cover.addShape("rect" as never, { x: 1, y: 1.5, w: 8, h: 4.2, fill: { color: CARD }, line: { color: BORDER } });
-  cover.addText("OFPPT", { x: 1.2, y: 1.75, w: 7.6, h: 0.45, fontSize: 11, color: GREEN, bold: true, align: "center" });
+  cover.addText("OFPPT", { x: 1.2, y: 1.75, w: 7.6, h: 0.45, fontSize: 11, color: BRAND, bold: true, align: "center" });
   cover.addText("Fiche de Séance Pédagogique", { x: 1.2, y: 2.25, w: 7.6, h: 0.38, fontSize: 10, color: MUTED, align: "center" });
   cover.addText(titre, {
     x: 1.2, y: 2.78, w: 7.6, h: 1.8,
@@ -34,8 +34,8 @@ export async function exportToPPT(contenu: string, titre: string): Promise<void>
   // ── Helper : frame commun pour chaque diapo ──
   const addFrame = (slide: ReturnType<typeof prs.addSlide>, sectionTitle: string) => {
     slide.background = { color: DARK };
-    slide.addShape("rect" as never, { x: 0, y: 0, w: 10, h: 0.09, fill: { color: GREEN }, line: { color: GREEN } });
-    slide.addText(sectionTitle, { x: 0.4, y: 0.18, w: 8.5, h: 0.6, fontSize: 17, bold: true, color: GREEN });
+    slide.addShape("rect" as never, { x: 0, y: 0, w: 10, h: 0.09, fill: { color: BRAND }, line: { color: BRAND } });
+    slide.addText(sectionTitle, { x: 0.4, y: 0.18, w: 8.5, h: 0.6, fontSize: 17, bold: true, color: BRAND });
     slide.addShape("rect" as never, { x: 0.4, y: 0.85, w: 9.2, h: 0.02, fill: { color: BORDER }, line: { color: BORDER } });
     slide.addText("Compétencia IA — OFPPT", { x: 0.4, y: 7.15, w: 9.2, h: 0.28, fontSize: 8, color: MUTED });
   };
@@ -283,17 +283,17 @@ export function exportProgressionPDF(
     const startX = 14;
     let y = 28;
 
-    // En-tête tableau
-    doc.setFillColor(18, 18, 30);
+    // En-tête tableau (charte OFPPT : navy + texte blanc)
+    doc.setFillColor(0, 48, 135);
     doc.rect(startX, y, 40, 7, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(7);
-    doc.setTextColor(57, 200, 74);
+    doc.setTextColor(255, 255, 255);
     doc.text("Stagiaire", startX + 1, y + 5);
 
     competences.forEach((c, i) => {
       const x = startX + 40 + i * colWidth;
-      doc.setFillColor(18, 18, 30);
+      doc.setFillColor(0, 48, 135);
       doc.rect(x, y, colWidth, 7, "F");
       const label = c.titre.length > 12 ? c.titre.slice(0, 12) + "…" : c.titre;
       doc.text(label, x + 1, y + 5);
@@ -307,10 +307,10 @@ export function exportProgressionPDF(
         doc.addPage();
         y = 28;
       }
-      const bg: [number, number, number] = idx % 2 === 0 ? [12, 12, 20] : [18, 18, 30];
+      const bg: [number, number, number] = idx % 2 === 0 ? [248, 250, 252] : [240, 242, 245];
       doc.setFillColor(...bg);
       doc.rect(startX, y, 40 + competences.length * colWidth, 6, "F");
-      doc.setTextColor(220, 220, 220);
+      doc.setTextColor(31, 41, 55);
       doc.text(`${s.prenom} ${s.nom}`, startX + 1, y + 4.5);
 
       competences.forEach((c, i) => {

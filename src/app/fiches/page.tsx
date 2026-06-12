@@ -66,12 +66,12 @@ function FichesContent() {
         <FicheForm onGenerate={handleGenerate} isLoading={isLoading} defaultValues={defaultValues} />
         <div className="card">
           <div className="flex items-center justify-between pb-4 mb-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
-            <h2 className="text-base font-bold" style={{ color: "#E8651A" }}>Fiche générée</h2>
+            <h2 className="text-base font-bold" style={{ color: "#0A4DA8" }}>Fiche générée</h2>
             {ficheId && (
               <button
                 onClick={() => router.push(`/fiches/${ficheId}`)}
                 className="text-sm hover:underline"
-                style={{ color: "#E8651A" }}
+                style={{ color: "#0A4DA8" }}
               >
                 Voir le détail →
               </button>

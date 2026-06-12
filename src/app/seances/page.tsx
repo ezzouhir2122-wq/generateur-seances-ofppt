@@ -57,7 +57,7 @@ export default function SeancesPage() {
         <div className={contenu ? "col-span-1" : "lg:col-span-3"}>
           {isLoading && (
             <div className="card flex flex-col items-center justify-center py-20 gap-4">
-              <div className="w-10 h-10 border-4 border-[#E8651A] border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-4 border-[#0A4DA8] border-t-transparent rounded-full animate-spin" />
               <p className="text-sm" style={{ color: "#9CA3AF" }}>Génération de la séance en cours...</p>
             </div>
           )}
@@ -80,7 +80,7 @@ export default function SeancesPage() {
 
           {!isLoading && !contenu && !error && (
             <div className="card flex flex-col items-center justify-center py-20 gap-3" style={{ borderStyle: "dashed", borderColor: "#E2E8F0" }}>
-              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: "#E8651A14" }}>
+              <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: "#0A4DA814" }}>
                 📄
               </div>
               <p className="text-sm" style={{ color: "#4B5563" }}>La séance générée apparaîtra ici</p>

@@ -195,14 +195,14 @@ export default function AssistantPage() {
               <h1 className="font-bold text-sm" style={{ color: "#111827" }}>Assistant Pédagogique IA</h1>
               <p className="text-xs" style={{ color: "#6B7280" }}>
                 {module
-                  ? <>Filière : <span style={{ color: "#E8651A" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#E8651A" }}>{module}</span></>
-                  : <>Filière : <span style={{ color: "#E8651A" }}>{filiere || "—"}</span></>
+                  ? <>Filière : <span style={{ color: "#0A4DA8" }}>{filiere}</span> &mdash; Module : <span style={{ color: "#0A4DA8" }}>{module}</span></>
+                  : <>Filière : <span style={{ color: "#0A4DA8" }}>{filiere || "—"}</span></>
                 }
               </p>
             </div>
             <div
               className="w-7 h-7 rounded-full flex items-center justify-center text-black text-xs font-bold"
-              style={{ background: "#E8651A" }}
+              style={{ background: "#0A4DA8" }}
             >
               IA
             </div>
@@ -217,7 +217,7 @@ export default function AssistantPage() {
                 className="text-[11px] px-2.5 py-1 rounded-full border transition-all whitespace-nowrap flex-shrink-0"
                 style={
                   filiere === f
-                    ? { background: "#E8651A18", color: "#E8651A", borderColor: "#E8651A40" }
+                    ? { background: "#0A4DA818", color: "#0A4DA8", borderColor: "#0A4DA840" }
                     : { borderColor: "#E2E8F0", color: "#6B7280" }
                 }
               >

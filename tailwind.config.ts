@@ -12,37 +12,32 @@ const config: Config = {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       colors: {
-        /* Design tokens — map to CSS vars */
+        /* Design tokens — charte OFPPT (bleu dominant) */
         accent: {
-          DEFAULT: "#39C84A",
-          hover:   "#2FB340",
-          dim:     "rgba(57,200,74,0.10)",
-          glow:    "rgba(57,200,74,0.22)",
+          DEFAULT: "#0A4DA8",   // bleu interactif primaire
+          hover:   "#083C82",
+          dim:     "rgba(10,77,168,0.10)",
+          glow:    "rgba(10,77,168,0.22)",
+          orange:  "#E8651A",   // accent secondaire
         },
         blue: {
-          DEFAULT: "#1F5DDB",
-          dim:     "rgba(31,93,219,0.12)",
-          glow:    "rgba(31,93,219,0.25)",
-        },
-        dark: {
-          base:    "#08080D",
-          surface: "#0E0E16",
-          raised:  "#14141E",
-          overlay: "#1A1A26",
-          input:   "#0C0C14",
-          border:  "rgba(255,255,255,0.055)",
+          DEFAULT: "#003087",   // bleu marine institutionnel
+          dim:     "rgba(0,48,135,0.12)",
+          glow:    "rgba(0,48,135,0.25)",
         },
         amber: {
           DEFAULT: "#F59E0B",
           dim:     "rgba(245,158,11,0.10)",
         },
-        /* OFPPT palette */
+        /* Palette OFPPT */
         ofppt: {
           orange:     "#E8651A",
           navy:       "#003087",
-          green:      "#E8651A",
+          blue:       "#0A4DA8",
+          green:      "#003087",   // alias historique → repointé navy (titres/liens)
           lightgreen: "#FFA05C",
           gold:       "#C8A84B",
+          teal:       "#0B6B72",
           dark:       "#003087",
         },
       },
@@ -54,10 +49,10 @@ const config: Config = {
         "2xl": "24px",
       },
       boxShadow: {
-        accent: "0 4px 24px rgba(57,200,74,0.22)",
-        sm:     "0 1px 4px rgba(0,0,0,0.45)",
-        md:     "0 4px 20px rgba(0,0,0,0.55)",
-        lg:     "0 12px 48px rgba(0,0,0,0.65)",
+        accent: "0 4px 24px rgba(10,77,168,0.22)",
+        sm:     "0 1px 4px rgba(0,0,0,0.07)",
+        md:     "0 4px 20px rgba(0,0,0,0.10)",
+        lg:     "0 12px 48px rgba(0,0,0,0.14)",
       },
       transitionTimingFunction: {
         smooth: "cubic-bezier(0.4, 0, 0.2, 1)",

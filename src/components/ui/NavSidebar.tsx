@@ -135,7 +135,7 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
       href={href}
       className="group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
       style={active
-        ? { background: "rgba(232,101,26,0.25)", color: "#FFA05C" }
+        ? { background: "rgba(143,184,255,0.18)", color: "#8FB8FF" }
         : { color: "rgba(255,255,255,0.65)" }
       }
       onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "#FFFFFF"; } }}
@@ -144,10 +144,10 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
       {active && (
         <span
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-          style={{ background: "#FFA05C" }}
+          style={{ background: "#8FB8FF" }}
         />
       )}
-      <span style={{ color: active ? "#FFA05C" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
+      <span style={{ color: active ? "#8FB8FF" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
         {icon}
       </span>
       <span className="truncate">{label}</span>

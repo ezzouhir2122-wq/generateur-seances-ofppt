@@ -14,14 +14,14 @@ export default function EvaluationResult({ contenu, typeLabel, onExportPDF, onEx
   return (
     <div className="card space-y-4">
       <div className="flex items-center justify-between pb-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
-        <h2 className="text-base font-bold" style={{ color: "#E8651A" }}>{typeLabel} généré</h2>
+        <h2 className="text-base font-bold" style={{ color: "#0A4DA8" }}>{typeLabel} généré</h2>
         <div className="flex gap-2">
           <button
             onClick={onExportPDF}
             className="px-3 py-1.5 text-xs rounded-lg transition-colors font-medium"
-            style={{ border: "1px solid #E8651A40", color: "#E8651A", background: "#E8651A10" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#E8651A20")}
-            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#E8651A10")}
+            style={{ border: "1px solid #0A4DA840", color: "#0A4DA8", background: "#0A4DA810" }}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#0A4DA820")}
+            onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#0A4DA810")}
           >
             Exporter PDF
           </button>
@@ -38,7 +38,7 @@ export default function EvaluationResult({ contenu, typeLabel, onExportPDF, onEx
             onClick={onReset}
             className="px-3 py-1.5 text-xs rounded-lg transition-colors"
             style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}
-            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#E8651A40")}
+            onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#0A4DA840")}
             onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#E2E8F0")}
           >
             Nouvelle évaluation
@@ -48,7 +48,7 @@ export default function EvaluationResult({ contenu, typeLabel, onExportPDF, onEx
 
       <div
         id="evaluation-content"
-        className="prose prose-sm max-w-none prose-invert prose-headings:text-[#E8651A] prose-table:text-sm"
+        className="prose prose-sm max-w-none prose-invert prose-headings:text-[#0A4DA8] prose-table:text-sm"
       >
         <ReactMarkdown>{contenu}</ReactMarkdown>
       </div>

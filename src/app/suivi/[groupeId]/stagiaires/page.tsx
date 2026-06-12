@@ -26,9 +26,9 @@ export default async function StagiairesPage({ params }: { params: Promise<{ gro
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
       <div className="flex items-center gap-2 mb-6 text-sm" style={{ color: "#6B7280" }}>
-        <Link href="/suivi" className="hover:text-[#E8651A] transition-colors">Suivi</Link>
+        <Link href="/suivi" className="hover:text-[#0A4DA8] transition-colors">Suivi</Link>
         <span>/</span>
-        <Link href={`/suivi/${groupe.id}`} className="hover:text-[#E8651A] transition-colors">{groupe.nom}</Link>
+        <Link href={`/suivi/${groupe.id}`} className="hover:text-[#0A4DA8] transition-colors">{groupe.nom}</Link>
         <span>/</span>
         <span style={{ color: "#111827" }}>Stagiaires</span>
       </div>
@@ -36,7 +36,7 @@ export default async function StagiairesPage({ params }: { params: Promise<{ gro
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>{groupe.nom}</h1>
-          <p className="mt-1 text-sm" style={{ color: "#E8651A" }}>
+          <p className="mt-1 text-sm" style={{ color: "#0A4DA8" }}>
             {filiere?.nom ?? groupe.filiere} · {groupe.annee}
           </p>
         </div>

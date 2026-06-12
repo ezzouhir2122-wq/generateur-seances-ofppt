@@ -79,14 +79,14 @@ export default function StagiairesManager({ groupeId, initialStagiaires }: Props
         <button
           onClick={() => setShowModal(true)}
           className="px-4 py-2 text-sm font-semibold rounded-xl"
-          style={{ background: "#E8651A", color: "#0B0B14" }}
+          style={{ background: "#0A4DA8", color: "#0B0B14" }}
         >
           + Ajouter un stagiaire
         </button>
 
         <label
           className="px-4 py-2 text-sm font-medium rounded-xl cursor-pointer transition-colors"
-          style={{ border: "1px solid #E8651A40", color: "#E8651A", background: "#E8651A10" }}
+          style={{ border: "1px solid #0A4DA840", color: "#0A4DA8", background: "#0A4DA810" }}
         >
           {importing ? "Import en cours…" : "Importer Excel"}
           <input type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} disabled={importing} />
@@ -105,9 +105,9 @@ export default function StagiairesManager({ groupeId, initialStagiaires }: Props
           <span
             className="text-xs px-3 py-2 rounded-xl"
             style={{
-              background: importMsg.startsWith("✓") ? "#E8651A14" : "#7F1D1D20",
-              color: importMsg.startsWith("✓") ? "#E8651A" : "#EF4444",
-              border: `1px solid ${importMsg.startsWith("✓") ? "#E8651A30" : "#7F1D1D40"}`,
+              background: importMsg.startsWith("✓") ? "#0A4DA814" : "#7F1D1D20",
+              color: importMsg.startsWith("✓") ? "#0A4DA8" : "#EF4444",
+              border: `1px solid ${importMsg.startsWith("✓") ? "#0A4DA830" : "#7F1D1D40"}`,
             }}
           >
             {importMsg}
@@ -191,7 +191,7 @@ export default function StagiairesManager({ groupeId, initialStagiaires }: Props
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowModal(false)} className="flex-1 py-2 text-sm rounded-xl" style={{ border: "1px solid #E2E8F0", color: "#9CA3AF" }}>Annuler</button>
-                <button type="submit" disabled={saving} className="flex-1 py-2 text-sm font-semibold rounded-xl" style={{ background: "#E8651A", color: "#0B0B14" }}>
+                <button type="submit" disabled={saving} className="flex-1 py-2 text-sm font-semibold rounded-xl" style={{ background: "#0A4DA8", color: "#0B0B14" }}>
                   {saving ? "Ajout…" : "Ajouter"}
                 </button>
               </div>

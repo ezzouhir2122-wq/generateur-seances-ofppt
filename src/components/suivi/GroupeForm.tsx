@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FiliereOption } from "@/types/suivi";
+import CompetenceSelector, { CompetenceModuleGroup } from "@/components/suivi/CompetenceSelector";
 
 const ANNEES = ["2024-2025", "2025-2026", "2026-2027", "2027-2028"];
 
@@ -14,6 +15,11 @@ export default function GroupeForm() {
   const [filieres, setFilieres] = useState<FiliereOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Sélection des compétences
+  const [compGroups, setCompGroups] = useState<CompetenceModuleGroup[]>([]);
+  const [compLoading, setCompLoading] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
 
   useEffect(() => {
     fetch("/api/referentiel")
@@ -30,6 +36,20 @@ export default function GroupeForm() {
       .catch(() => {});
   }, []);
 
+  // Charger les compétences de la filière choisie (tout sélectionné par défaut)
+  useEffect(() => {
+    if (!filiereId) { setCompGroups([]); setSelected([]); return; }
+    setCompLoading(true);
+    fetch(`/api/competences?filiereId=${filiereId}`)
+      .then((r) => r.json())
+      .then((groups: CompetenceModuleGroup[]) => {
+        setCompGroups(groups);
+        setSelected(groups.flatMap((g) => g.competences.map((c) => c.id)));
+      })
+      .catch(() => { setCompGroups([]); setSelected([]); })
+      .finally(() => setCompLoading(false));
+  }, [filiereId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nom || !filiereId || !annee) { setError("Tous les champs sont requis"); return; }
@@ -39,7 +59,7 @@ export default function GroupeForm() {
     const res = await fetch("/api/groupes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom, filiereId, annee }),
+      body: JSON.stringify({ nom, filiereId, annee, competenceIds: selected }),
     });
 
     if (!res.ok) {
@@ -54,9 +74,9 @@ export default function GroupeForm() {
   };
 
   const inputStyle = {
-    background: "#12121E",
+    background: "#FFFFFF",
     border: "1px solid #E2E8F0",
-    color: "#E5E7EB",
+    color: "#111827",
     borderRadius: "12px",
     padding: "10px 14px",
     fontSize: "14px",
@@ -108,6 +128,20 @@ export default function GroupeForm() {
         </select>
       </div>
 
+      {filiereId && (
+        <div>
+          <label className="block text-xs font-medium mb-2" style={{ color: "#9CA3AF" }}>
+            Compétences à évaluer
+          </label>
+          <CompetenceSelector
+            groups={compGroups}
+            selected={selected}
+            onChange={setSelected}
+            loading={compLoading}
+          />
+        </div>
+      )}
+
       {error && <p className="text-xs text-red-400">{error}</p>}
 
       <div className="flex gap-3 pt-2">
@@ -123,7 +157,7 @@ export default function GroupeForm() {
           type="submit"
           disabled={loading}
           className="flex-1 py-2.5 text-sm font-semibold rounded-xl transition-colors"
-          style={{ background: loading ? "#4B5563" : "#E8651A", color: "#0B0B14" }}
+          style={{ background: loading ? "#4B5563" : "#0A4DA8", color: "#FFFFFF" }}
         >
           {loading ? "Création…" : "Créer le groupe"}
         </button>

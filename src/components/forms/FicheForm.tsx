@@ -91,7 +91,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
 
   return (
     <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#E8651A", borderBottom: "1px solid #E2E8F0" }}>
+      <h2 className="text-base font-bold pb-4" style={{ color: "#0A4DA8", borderBottom: "1px solid #E2E8F0" }}>
         Paramètres de la fiche
       </h2>
 
@@ -118,7 +118,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             type="button"
             onClick={() => setShowList((s) => !s)}
             className="flex items-center gap-2 text-sm font-medium rounded-lg px-3 py-1.5 transition-colors"
-            style={{ color: "#E8651A", border: "1px solid #E8651A40", background: "#E8651A10" }}
+            style={{ color: "#0A4DA8", border: "1px solid #0A4DA840", background: "#0A4DA810" }}
           >
             <span>📋</span>
             <span>Lister les modules ({modules.length})</span>
@@ -143,13 +143,13 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
                       className="cursor-pointer transition-colors"
                       style={
                         form.module === m.module
-                          ? { background: "#E8651A14", color: "#E8651A" }
+                          ? { background: "#0A4DA814", color: "#0A4DA8" }
                           : { borderBottom: "1px solid #E2E8F0" }
                       }
                     >
                       <td className="px-3 py-2 font-mono text-xs" style={{ color: "#4B5563" }}>{m.codeModule || "—"}</td>
                       <td className="px-3 py-2 font-medium" style={{ color: "#111827" }}>{m.module}</td>
-                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#E8651A" }}>{m.mhg}h</td>
+                      <td className="px-3 py-2 text-right font-semibold" style={{ color: "#0A4DA8" }}>{m.mhg}h</td>
                     </tr>
                   ))}
                 </tbody>
@@ -177,7 +177,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
             <label className="label flex items-center justify-between">
               <span>Intitulé module *</span>
               {mhgInfo !== null && (
-                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#E8651A14", color: "#E8651A" }}>
+                <span className="text-[10px] font-normal px-2 py-0.5 rounded-full" style={{ background: "#0A4DA814", color: "#0A4DA8" }}>
                   M.H.G : {mhgInfo}h
                 </span>
               )}
@@ -262,7 +262,7 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
       </div>
 
       {/* Objectifs — générés automatiquement par l'IA */}
-      <div className="rounded-lg px-3 py-2.5 flex items-start gap-2" style={{ background: "#E8651A10", border: "1px solid #E8651A30" }}>
+      <div className="rounded-lg px-3 py-2.5 flex items-start gap-2" style={{ background: "#0A4DA810", border: "1px solid #0A4DA830" }}>
         <span>✨</span>
         <p className="text-xs" style={{ color: "#4B5563" }}>
           Les <strong>objectifs pédagogiques</strong> (Savoir, Savoir-faire, Savoir-être) sont

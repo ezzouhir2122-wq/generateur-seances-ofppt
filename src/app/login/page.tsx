@@ -21,13 +21,13 @@ export default async function LoginPage({
         </div>
 
         <div>
-          <div className="inline-flex items-center gap-2 border border-[#E8651A]/40 rounded-full px-4 py-1.5 mb-6">
-            <span className="text-[#E8651A] text-xs">✦</span>
-            <span className="text-[#E8651A] text-xs font-medium">Génération pédagogique · OFPPT</span>
+          <div className="inline-flex items-center gap-2 border border-[#0A4DA8]/40 rounded-full px-4 py-1.5 mb-6">
+            <span className="text-[#0A4DA8] text-xs">✦</span>
+            <span className="text-[#0A4DA8] text-xs font-medium">Génération pédagogique · OFPPT</span>
           </div>
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
             Transformez vos<br />
-            <span className="text-[#E8651A]">séances en quelques</span><br />
+            <span className="text-[#0A4DA8]">séances en quelques</span><br />
             secondes.
           </h1>
           <p className="text-[#9CA3AF] text-base leading-relaxed max-w-sm">

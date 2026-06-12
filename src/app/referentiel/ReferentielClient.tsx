@@ -121,7 +121,7 @@ export default function ReferentielClient({ secteurs }: Props) {
         <div className="text-5xl mb-4">📚</div>
         <h2 className="text-xl font-semibold mb-2" style={{ color: "#374151" }}>Aucun référentiel importé</h2>
         <p className="text-sm mb-6" style={{ color: "#4B5563" }}>Importez un référentiel depuis le panneau Paramètres</p>
-        <Link href="/" className="text-sm px-4 py-2 rounded-lg font-medium text-black" style={{ background: "#E8651A" }}>
+        <Link href="/" className="text-sm px-4 py-2 rounded-lg font-medium text-black" style={{ background: "#0A4DA8" }}>
           ← Retour au tableau de bord
         </Link>
       </div>
@@ -141,7 +141,7 @@ export default function ReferentielClient({ secteurs }: Props) {
         <button
           onClick={exportFiltered}
           className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg font-medium text-black transition-opacity hover:opacity-90"
-          style={{ background: "#E8651A" }}
+          style={{ background: "#0A4DA8" }}
         >
           <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
             <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
@@ -173,7 +173,7 @@ export default function ReferentielClient({ secteurs }: Props) {
             onClick={() => setSelectedSecteur("all")}
             className="text-xs px-3 py-1.5 rounded-lg transition-colors"
             style={selectedSecteur === "all"
-              ? { background: "#E8651A14", color: "#E8651A", border: "1px solid #E8651A40" }
+              ? { background: "#0A4DA814", color: "#0A4DA8", border: "1px solid #0A4DA840" }
               : { color: "#6B7280", border: "1px solid transparent" }}
           >
             Tous
@@ -184,7 +184,7 @@ export default function ReferentielClient({ secteurs }: Props) {
               onClick={() => setSelectedSecteur(s.id)}
               className="text-xs px-3 py-1.5 rounded-lg transition-colors"
               style={selectedSecteur === s.id
-                ? { background: "#E8651A14", color: "#E8651A", border: "1px solid #E8651A40" }
+                ? { background: "#0A4DA814", color: "#0A4DA8", border: "1px solid #0A4DA840" }
                 : { color: "#6B7280", border: "1px solid transparent" }}
             >
               {s.nom}
@@ -223,7 +223,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                     style={{ borderBottom: "1px solid #E5E7EB", background: i % 2 === 0 ? "#FFFFFF" : "#F8FAFC" }}
                   >
                     <td className="px-4 py-2.5">
-                      <span className="text-xs font-medium" style={{ color: "#E8651A" }}>{row.filiere}</span>
+                      <span className="text-xs font-medium" style={{ color: "#0A4DA8" }}>{row.filiere}</span>
                       {row.filiereCode && (
                         <span className="ml-1.5 text-[10px] font-mono" style={{ color: "#4B5563" }}>{row.filiereCode}</span>
                       )}
@@ -236,7 +236,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                     </td>
                     <td className="px-4 py-2.5 text-right">
                       {row.mhg != null ? (
-                        <span className="text-xs font-semibold" style={{ color: "#E8651A" }}>{row.mhg}h</span>
+                        <span className="text-xs font-semibold" style={{ color: "#0A4DA8" }}>{row.mhg}h</span>
                       ) : (
                         <span className="text-xs" style={{ color: "#374151" }}>—</span>
                       )}
@@ -252,7 +252,7 @@ export default function ReferentielClient({ secteurs }: Props) {
         {filtered.length > 0 && (
           <div className="mt-3 flex items-center justify-end gap-2">
             <span className="text-xs" style={{ color: "#4B5563" }}>Total MHG affiché :</span>
-            <span className="text-xs font-semibold" style={{ color: "#E8651A" }}>
+            <span className="text-xs font-semibold" style={{ color: "#0A4DA8" }}>
               {filtered.reduce((acc, r) => acc + (r.mhg ?? 0), 0)}h
             </span>
           </div>

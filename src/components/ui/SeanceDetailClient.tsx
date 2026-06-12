@@ -76,7 +76,7 @@ export default function SeanceDetailClient({ seance }: { seance: Seance }) {
           </button>
           <Link
             href={`/fiches?from=${seance.id}`}
-            className="text-sm border border-[#E8651A] text-[#E8651A] hover:bg-[#E8651A] hover:text-white px-3 py-1.5 rounded-lg transition-colors"
+            className="text-sm border border-[#0A4DA8] text-[#0A4DA8] hover:bg-[#0A4DA8] hover:text-white px-3 py-1.5 rounded-lg transition-colors"
           >
             📋 Créer une fiche
           </Link>

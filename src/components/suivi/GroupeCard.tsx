@@ -12,11 +12,11 @@ export default function GroupeCard({ groupe, onDelete }: { groupe: GroupeSummary
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-bold text-sm" style={{ color: "#111827" }}>{groupe.nom}</h3>
-          <p className="text-xs mt-1" style={{ color: "#E8651A" }}>{groupe.filiereNom}</p>
+          <p className="text-xs mt-1" style={{ color: "#0A4DA8" }}>{groupe.filiereNom}</p>
         </div>
         <span
           className="text-xs px-2 py-1 rounded-full font-medium"
-          style={{ background: "#E8651A14", color: "#E8651A", border: "1px solid #E8651A30" }}
+          style={{ background: "#0A4DA814", color: "#0A4DA8", border: "1px solid #0A4DA830" }}
         >
           {groupe.annee}
         </span>
@@ -34,7 +34,7 @@ export default function GroupeCard({ groupe, onDelete }: { groupe: GroupeSummary
         <Link
           href={`/suivi/${groupe.id}`}
           className="flex-1 text-center text-xs py-2 rounded-xl font-medium transition-colors"
-          style={{ background: "#E8651A18", color: "#E8651A", border: "1px solid #E8651A30" }}
+          style={{ background: "#0A4DA818", color: "#0A4DA8", border: "1px solid #0A4DA830" }}
         >
           Voir progression
         </Link>

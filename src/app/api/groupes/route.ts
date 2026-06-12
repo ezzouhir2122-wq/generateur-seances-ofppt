@@ -30,13 +30,28 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
 
-  const { nom, filiereId, annee } = await req.json();
+  const { nom, filiereId, annee, competenceIds } = await req.json();
   if (!nom || !filiereId || !annee)
     return NextResponse.json({ error: "Champs requis manquants" }, { status: 400 });
 
   const groupe = await prisma.groupe.create({
     data: { nom, filiere: filiereId, annee, userId: session.user.id },
   });
+
+  // Compétences sélectionnées pour l'évaluation (optionnel).
+  // On valide que les compétences appartiennent bien à la filière du groupe.
+  if (Array.isArray(competenceIds) && competenceIds.length > 0) {
+    const valides = await prisma.competence.findMany({
+      where: { id: { in: competenceIds }, module: { filiereId } },
+      select: { id: true },
+    });
+    if (valides.length > 0) {
+      await prisma.groupeCompetence.createMany({
+        data: valides.map((c) => ({ groupeId: groupe.id, competenceId: c.id })),
+        skipDuplicates: true,
+      });
+    }
+  }
 
   return NextResponse.json(groupe, { status: 201 });
 }

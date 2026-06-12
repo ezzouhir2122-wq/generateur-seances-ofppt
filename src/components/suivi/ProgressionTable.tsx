@@ -16,8 +16,8 @@ interface Props {
 }
 
 function pctBadgeStyle(v: number | undefined): React.CSSProperties {
-  if (v === undefined) return { color: "#4B5563", background: "#12121E" };
-  if (v >= 75) return { color: "#E8651A", background: "#E8651A14" };
+  if (v === undefined) return { color: "#9CA3AF", background: "#F3F4F6" };
+  if (v >= 75) return { color: "#0A4DA8", background: "#0A4DA814" };
   if (v >= 50) return { color: "#F59E0B", background: "#F59E0B14" };
   return { color: "#EF4444", background: "#EF444414" };
 }
@@ -93,14 +93,14 @@ export default function ProgressionTable({
         <button
           onClick={() => exportProgressionExcel(groupeNom, competences, stagiaires)}
           className="px-3 py-2 text-xs font-medium rounded-xl transition-colors"
-          style={{ border: "1px solid #E8651A40", color: "#E8651A", background: "#E8651A10" }}
+          style={{ border: "1px solid #0A4DA840", color: "#0A4DA8", background: "#0A4DA810" }}
         >
           Export Excel
         </button>
         <button
           onClick={() => exportProgressionPDF(groupeNom, filiereNom, annee, competences, stagiaires, formateur)}
           className="px-3 py-2 text-xs font-medium rounded-xl transition-colors"
-          style={{ border: "1px solid #E8651A40", color: "#E8651A", background: "#E8651A10" }}
+          style={{ border: "1px solid #0A4DA840", color: "#0A4DA8", background: "#0A4DA810" }}
         >
           Export PDF
         </button>
@@ -123,9 +123,9 @@ export default function ProgressionTable({
           <span
             className="text-xs px-3 py-2 rounded-xl"
             style={{
-              background: importMsg.startsWith("✓") ? "#E8651A14" : "#7F1D1D20",
-              color: importMsg.startsWith("✓") ? "#E8651A" : "#EF4444",
-              border: `1px solid ${importMsg.startsWith("✓") ? "#E8651A30" : "#7F1D1D40"}`,
+              background: importMsg.startsWith("✓") ? "#0A4DA814" : "#7F1D1D20",
+              color: importMsg.startsWith("✓") ? "#0A4DA8" : "#EF4444",
+              border: `1px solid ${importMsg.startsWith("✓") ? "#0A4DA830" : "#7F1D1D40"}`,
             }}
           >
             {importMsg}
@@ -151,8 +151,8 @@ export default function ProgressionTable({
             <div className="overflow-x-auto rounded-2xl" style={{ border: "1px solid #E2E8F0" }}>
               <table className="text-xs min-w-full">
                 <thead>
-                  <tr style={{ background: "#12121E", borderBottom: "1px solid #E2E8F0" }}>
-                    <th className="px-4 py-3 text-left font-semibold sticky left-0 z-10" style={{ color: "#6B7280", background: "#12121E", minWidth: 140 }}>
+                  <tr style={{ background: "#F3F4F6", borderBottom: "1px solid #E2E8F0" }}>
+                    <th className="px-4 py-3 text-left font-semibold sticky left-0 z-10" style={{ color: "#4B5563", background: "#F3F4F6", minWidth: 140 }}>
                       Stagiaire
                     </th>
                     {competences.map((c) => (
@@ -172,7 +172,7 @@ export default function ProgressionTable({
                   {stagiaires.length === 0 ? (
                     <tr>
                       <td colSpan={competences.length + 1} className="text-center py-10" style={{ color: "#4B5563" }}>
-                        Aucun stagiaire. <a href={`/suivi/${groupeId}/stagiaires`} className="underline" style={{ color: "#E8651A" }}>Ajouter des stagiaires →</a>
+                        Aucun stagiaire. <a href={`/suivi/${groupeId}/stagiaires`} className="underline" style={{ color: "#0A4DA8" }}>Ajouter des stagiaires →</a>
                       </td>
                     </tr>
                   ) : (
@@ -182,12 +182,12 @@ export default function ProgressionTable({
                         onClick={() => setSelectedId(s.id === selectedId ? null : s.id)}
                         className="cursor-pointer transition-colors"
                         style={{
-                          background: s.id === selectedId ? "#E8651A10" : i % 2 === 0 ? "#FFFFFF" : "#F8FAFC",
+                          background: s.id === selectedId ? "#0A4DA810" : i % 2 === 0 ? "#FFFFFF" : "#F8FAFC",
                           borderBottom: "1px solid #E2E8F0",
-                          outline: s.id === selectedId ? "1px solid #E8651A30" : "none",
+                          outline: s.id === selectedId ? "1px solid #0A4DA830" : "none",
                         }}
                       >
-                        <td className="px-4 py-2.5 font-medium sticky left-0 z-10" style={{ background: "inherit", color: s.id === selectedId ? "#E8651A" : "#E5E7EB" }}>
+                        <td className="px-4 py-2.5 font-medium sticky left-0 z-10" style={{ background: "inherit", color: s.id === selectedId ? "#0A4DA8" : "#374151" }}>
                           {s.prenom} {s.nom}
                         </td>
                         {competences.map((c) => {

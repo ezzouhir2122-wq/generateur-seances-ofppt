@@ -56,10 +56,10 @@ function AssistantFAB() {
             borderRadius: "10px",
             padding: "8px 14px",
             whiteSpace: "nowrap",
-            boxShadow: "0 8px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(57,200,74,0.1)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(232,101,26,0.12)",
           }}
         >
-          <p style={{ color: "#F9FAFB", fontSize: "12px", fontWeight: 600, margin: 0 }}>Assistant IA</p>
+          <p style={{ color: "#111827", fontSize: "12px", fontWeight: 600, margin: 0 }}>Assistant IA</p>
           <p style={{ color: "#E8651A", fontSize: "10px", fontWeight: 400, margin: "2px 0 0" }}>Posez vos questions pédagogiques</p>
         </div>
         {/* Arrow */}
@@ -96,8 +96,8 @@ function AssistantFAB() {
           justifyContent: "center",
           background: "#E8651A",
           boxShadow: hovered
-            ? "0 0 0 4px rgba(57,200,74,0.25), 0 12px 32px rgba(57,200,74,0.5)"
-            : "0 0 0 3px rgba(57,200,74,0.15), 0 6px 20px rgba(57,200,74,0.35)",
+            ? "0 0 0 4px rgba(232,101,26,0.25), 0 12px 32px rgba(232,101,26,0.5)"
+            : "0 0 0 3px rgba(232,101,26,0.15), 0 6px 20px rgba(232,101,26,0.35)",
           transform: hovered ? "scale(1.1) translateY(-3px)" : "scale(1)",
           transition: "transform 0.2s ease, box-shadow 0.2s ease",
           textDecoration: "none",
@@ -111,7 +111,7 @@ function AssistantFAB() {
               position: "absolute",
               inset: 0,
               borderRadius: "16px",
-              background: "rgba(57,200,74,0.35)",
+              background: "rgba(232,101,26,0.35)",
               animationDuration: "2s",
             }}
           />
