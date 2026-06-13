@@ -40,7 +40,7 @@ export async function getLogoBase64(): Promise<string | null> {
 // Palette OFPPT moderne
 const OFPPT_NAVY: [number, number, number] = [0, 48, 135]; // #003087
 const OFPPT_BLUE: [number, number, number] = [10, 77, 168]; // #0A4DA8 (primaire)
-const OFPPT_ORANGE: [number, number, number] = [232, 101, 26]; // #E8651A (accent)
+const OFPPT_GREEN: [number, number, number] = [58, 161, 70]; // #3AA146 (vert logo OFPPT, accent)
 const TEXT_GRAY: [number, number, number] = [31, 41, 55];
 
 export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
@@ -82,7 +82,7 @@ export function pdfHeader(doc: jsPDF, opts: PdfHeaderOptions): void {
   doc.text(dateStr, W - 10, 12, { align: "right" });
 
   // Ligne séparatrice orange (accent OFPPT)
-  doc.setDrawColor(...OFPPT_ORANGE);
+  doc.setDrawColor(...OFPPT_GREEN);
   doc.setLineWidth(0.6);
   doc.line(10, 22, W - 10, 22);
 }
@@ -103,7 +103,7 @@ export function pdfFooter(
   doc.line(10, footerY, W - 10, footerY);
 
   // Bande orange inférieure (accent OFPPT)
-  doc.setFillColor(...OFPPT_ORANGE);
+  doc.setFillColor(...OFPPT_GREEN);
   doc.rect(0, H - 2, W, 2, "F");
 
   doc.setFont("helvetica", "normal");
@@ -279,7 +279,7 @@ export function renderMarkdownBody(
     if (trimmed.startsWith("### ")) {
       ensureSpace(lineH + 4);
       y += 2;
-      doc.setFillColor(...OFPPT_ORANGE);
+      doc.setFillColor(...OFPPT_GREEN);
       doc.rect(marginX, y - 3, 1.5, 4, "F");
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
@@ -317,7 +317,7 @@ export function renderMarkdownBody(
     const bullet = trimmed.match(/^[-*]\s+(.*)$/);
     if (bullet) {
       ensureSpace(lineH);
-      doc.setFillColor(...OFPPT_ORANGE);
+      doc.setFillColor(...OFPPT_GREEN);
       doc.circle(marginX + 1.5, y - 1, 0.9, "F");
       drawRich(parseRich(bullet[1]), marginX + 5, maxW - 5, TEXT_GRAY, baseSize);
       continue;
