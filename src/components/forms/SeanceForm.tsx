@@ -6,11 +6,13 @@ import { SeanceFormData, FILIERES_OFPPT } from "@/types/seance";
 interface Props {
   onGenerate: (data: SeanceFormData) => void;
   isLoading: boolean;
+  initial?: Partial<SeanceFormData>;
+  forceReferentiel?: boolean;
 }
 
 interface ModuleItem { module: string; mhg: number; codeModule?: string; }
 
-export default function SeanceForm({ onGenerate, isLoading }: Props) {
+export default function SeanceForm({ onGenerate, isLoading, initial, forceReferentiel }: Props) {
   const [form, setForm] = useState<SeanceFormData>({
     filiere: "",
     module: "",
@@ -22,6 +24,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
     competence: "",
     niveauApprentissage: "intermediaire",
     mode: "presentiel",
+    ...initial,
   });
 
   const [groupes, setGroupes] = useState<string[]>([]);
@@ -89,7 +92,7 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
         Paramètres de la séance
       </h2>
 
-      {hasImport ? (
+      {hasImport && !forceReferentiel ? (
         <>
           {/* Filière */}
           <div>
@@ -184,10 +187,14 @@ export default function SeanceForm({ onGenerate, isLoading }: Props) {
         <>
           <div>
             <label className="label">Filière *</label>
-            <select className="input-field" value={form.filiere} onChange={set("filiere")} required>
-              <option value="">— Choisir une filière —</option>
-              {FILIERES_OFPPT.map((f) => <option key={f} value={f}>{f}</option>)}
-            </select>
+            <input
+              type="text"
+              className="input-field"
+              placeholder="Ex: Gestion des Entreprises"
+              value={form.filiere}
+              onChange={set("filiere")}
+              required
+            />
           </div>
           <div>
             <label className="label">Intitulé module *</label>

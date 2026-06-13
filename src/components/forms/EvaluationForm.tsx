@@ -9,6 +9,7 @@ interface ModuleItem { module: string; mhg: number; codeModule?: string; }
 interface Props {
   onGenerate: (data: EvaluationFormData) => void;
   isLoading: boolean;
+  initial?: Partial<EvaluationFormData>;
 }
 
 const TYPES: { value: EvaluationType; label: string; icon: string; desc: string }[] = [
@@ -19,7 +20,7 @@ const TYPES: { value: EvaluationType; label: string; icon: string; desc: string 
   { value: "rattrapage", label: "Rattrapage", icon: "🔄", desc: "Session de rattrapage" },
 ];
 
-export default function EvaluationForm({ onGenerate, isLoading }: Props) {
+export default function EvaluationForm({ onGenerate, isLoading, initial }: Props) {
   const [form, setForm] = useState<EvaluationFormData>({
     type: "qcm",
     filiere: "",
@@ -32,6 +33,7 @@ export default function EvaluationForm({ onGenerate, isLoading }: Props) {
     nbExercices: 3,
     dureeExamen: "2h",
     themesCouverts: "",
+    ...initial,
   });
 
   const [groupes, setGroupes] = useState<string[]>([]);

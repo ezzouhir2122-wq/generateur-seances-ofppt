@@ -1,17 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import SeanceForm from "@/components/forms/SeanceForm";
 import SeanceResult from "@/components/ui/SeanceResult";
 import { SeanceFormData } from "@/types/seance";
 import { exportToPDF, exportToWord, exportToPPT } from "@/lib/export";
+import { consumeReferentielContext } from "@/lib/referentiel-context";
 
 export default function SeancesPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [contenu, setContenu] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [titre, setTitre] = useState("");
+  const [initial, setInitial] = useState<Partial<SeanceFormData> | undefined>(undefined);
+
+  useEffect(() => {
+    const ctx = consumeReferentielContext();
+    if (ctx) {
+      setInitial({
+        filiere: ctx.filiere,
+        module: ctx.module,
+        codeModule: ctx.codeModule,
+        competence: ctx.competence,
+        objectifs: ctx.objectifs,
+      });
+    }
+  }, []);
   const { data: session } = useSession();
   const formateur = session?.user
     ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
@@ -50,7 +65,7 @@ export default function SeancesPage() {
       <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
         {!contenu && (
           <div className="lg:col-span-2">
-            <SeanceForm onGenerate={handleGenerate} isLoading={isLoading} />
+            <SeanceForm onGenerate={handleGenerate} isLoading={isLoading} initial={initial} forceReferentiel={!!initial} />
           </div>
         )}
 

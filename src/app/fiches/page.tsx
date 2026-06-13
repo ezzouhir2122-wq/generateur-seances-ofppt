@@ -6,6 +6,7 @@ import FicheForm from "@/components/forms/FicheForm";
 import ReactMarkdown from "react-markdown";
 import type { FicheFormData } from "@/types/seance";
 import { toast } from "sonner";
+import { consumeReferentielContext } from "@/lib/referentiel-context";
 
 function FichesContent() {
   const searchParams = useSearchParams();
@@ -33,6 +34,20 @@ function FichesContent() {
       })
       .catch(() => {});
   }, [searchParams]);
+
+  useEffect(() => {
+    const ctx = consumeReferentielContext();
+    if (ctx) {
+      setDefaultValues((prev) => ({
+        ...prev,
+        filiere: ctx.filiere,
+        module: ctx.module,
+        codeModule: ctx.codeModule,
+        intitule: ctx.competence,
+        objectifsSavoir: ctx.objectifs,
+      }));
+    }
+  }, []);
 
   async function handleGenerate(data: FicheFormData) {
     setIsLoading(true);
