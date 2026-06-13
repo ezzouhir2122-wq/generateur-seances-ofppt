@@ -18,11 +18,13 @@ Attendu : `✓ Compiled successfully` sans erreur TypeScript ni ESLint. (`npm ru
 
 ---
 
-## Task 1 : Modèle de données — Séquence
+## Task 1 : Modèle de données — Séquence ✅ (fait inline — voir note)
+
+> **Note d'exécution (2026-06-13) :** la base est une instance **Supabase de production** et le référentiel y a été créé via SQL additif brut (`prisma/migrations/referentiel_pedagogique.sql`), pas via `prisma migrate dev`. Pour éviter tout reset, cette tâche a été réalisée par le contrôleur : mise à jour de `schema.prisma`, écriture de `prisma/migrations/add_sequences.sql` (additif/idempotent), application via `npx prisma db execute --url "$DIRECT_URL" --file prisma/migrations/add_sequences.sql`, puis `npx prisma generate`. Les sous-agents commencent à la Tâche 2.
 
 **Files:**
 - Modify: `prisma/schema.prisma`
-- Migration: `prisma/migrations/<timestamp>_add_sequences/`
+- Migration: `prisma/migrations/add_sequences.sql` (SQL additif appliqué via `prisma db execute`)
 
 - [ ] **Step 1 : Ajouter le modèle `Sequence` et la relation dans `RefModule`**
 
