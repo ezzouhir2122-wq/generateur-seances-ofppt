@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
-import { getLogoBase64, stampAllPages, PdfFormateur } from "@/lib/pdf-helpers";
+import { getLogoBase64, stampAllPages, renderMarkdownBody, PdfFormateur } from "@/lib/pdf-helpers";
 
 export async function exportToPPT(contenu: string, titre: string): Promise<void> {
   const { default: PptxGenJS } = await import("pptxgenjs");
@@ -102,30 +102,8 @@ export async function exportToPDF(
 ) {
   const logoBase64 = await getLogoBase64();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const contentTop = 26;
-  const contentBottom = pageH - 16;
-  const lineH = 5;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.setTextColor(31, 41, 55);
-
-  const lines = doc.splitTextToSize(
-    contenu.replace(/[#*`|]/g, "").replace(/\n{3,}/g, "\n\n"),
-    pageW - 30
-  );
-
-  let y = contentTop;
-  for (const line of lines) {
-    if (y + lineH > contentBottom) {
-      doc.addPage();
-      y = contentTop;
-    }
-    doc.text(line, 15, y);
-    y += lineH;
-  }
+  renderMarkdownBody(doc, contenu, { contentTop: 26, fontSize: 10 });
 
   if (formateur) {
     stampAllPages(doc, { titre, type, logoBase64 }, formateur);
@@ -173,32 +151,8 @@ export async function exportFichePDF(
   const logoBase64 = await getLogoBase64();
 
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const contentTop = 26;
-  const contentBottom = pageH - 16;
-  const lineH = 5;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.setTextColor(31, 41, 55);
-
-  const lines = contenu
-    .replace(/#{1,6} /g, "")
-    .replace(/\*\*(.*?)\*\*/g, "$1")
-    .split("\n")
-    .filter(Boolean);
-
-  let y = contentTop;
-  for (const rawLine of lines) {
-    const wrapped = doc.splitTextToSize(rawLine, pageW - 30);
-    if (y + wrapped.length * lineH > contentBottom) {
-      doc.addPage();
-      y = contentTop;
-    }
-    doc.text(wrapped, 15, y);
-    y += wrapped.length * lineH + 2;
-  }
+  renderMarkdownBody(doc, contenu, { contentTop: 26, fontSize: 9 });
 
   if (formateur) {
     stampAllPages(doc, { titre, type: "Fiche Pédagogique", logoBase64 }, formateur);
