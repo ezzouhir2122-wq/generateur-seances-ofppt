@@ -53,6 +53,7 @@ npx prisma migrate dev --name [nom] # Nouvelle migration
 Voir `.env.example` — ne jamais commiter `.env`
 
 ## Règles
+- **RÈGLE D'OR** : Après chaque implémentation de modification, toujours faire un `git add` + `git commit` + `git push` pour permettre le déploiement Vercel.
 - Toujours sauvegarder les décisions dans `decisions/ledger.md`
 - Ne jamais stocker les clés API dans le code
 - Tous les exports dans `src/lib/export.ts`

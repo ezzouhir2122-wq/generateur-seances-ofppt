@@ -68,11 +68,12 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
       ...prev,
       module: moduleName,
       codeModule: found?.codeModule ?? "",
+      mhg: found?.mhg,
     }));
   };
 
   const selectModuleFromList = (m: ModuleItem) => {
-    setForm((prev) => ({ ...prev, module: m.module, codeModule: m.codeModule ?? "" }));
+    setForm((prev) => ({ ...prev, module: m.module, codeModule: m.codeModule ?? "", mhg: m.mhg }));
     setShowList(false);
   };
 

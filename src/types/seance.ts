@@ -2,6 +2,7 @@ export interface SeanceFormData {
   filiere: string;
   module: string;
   codeModule?: string;
+  mhg?: number;
   duree: string;
   niveau: "T" | "TS";
   annee: "1ere-annee" | "2eme-annee" | "3eme-annee";

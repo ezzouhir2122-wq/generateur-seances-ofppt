@@ -9,6 +9,7 @@ export interface SeanceParams {
   filiere: string;
   module: string;
   codeModule?: string;
+  mhg?: number;
   duree: string;
   niveau: string;
   annee?: string;

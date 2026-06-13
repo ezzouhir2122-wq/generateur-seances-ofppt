@@ -49,6 +49,11 @@ function buildPrompt(p: SeanceParams): string {
     : "";
   const modeSection = `- Mode de formation : ${mode}\n`;
 
+  const dureeMins = p.duree === "5h" ? 300 : 150;
+  const mhgSection = p.mhg
+    ? `- Masse horaire globale du module (MH.G) : ${p.mhg}h (cette séance représente environ ${Math.round((dureeMins / 60 / p.mhg) * 100)}% du volume horaire total)\n`
+    : "";
+
   const adaptationsMode = p.mode === "distanciel"
     ? `\n**Contexte distanciel :** Adapte les explications à l'auto-formation : sois autosuffisant, explicite chaque notion, et signale les points à approfondir en autonomie.`
     : p.mode === "hybride"
@@ -63,6 +68,10 @@ function buildPrompt(p: SeanceParams): string {
 
   const theme = p.competence ? p.competence : moduleLabel;
 
+  const mhgHeader = p.mhg ? ` | MH.G |` : "";
+  const mhgHeaderSep = p.mhg ? ` ------|` : "";
+  const mhgHeaderVal = p.mhg ? ` ${p.mhg}h |` : "";
+
   return `Tu es un expert formateur OFPPT et concepteur de contenus pédagogiques. Rédige un COURS DÉTAILLÉ, complet et directement exploitable par les stagiaires.
 
 **Paramètres :**
@@ -71,22 +80,22 @@ function buildPrompt(p: SeanceParams): string {
 - Durée : ${p.duree}
 - Niveau : ${niveauFull}
 - Type : ${typeLabel}
-${themeSection}${niveauAppSection}${modeSection}${adaptationsMode}${adaptationsNiveau}
+${themeSection}${niveauAppSection}${modeSection}${mhgSection}${adaptationsMode}${adaptationsNiveau}
 
 **Consignes de rédaction :**
 - NE génère AUCUNE section "Objectifs pédagogiques".
 - Rédige un véritable cours de fond (pas une fiche de déroulement) : définitions, explications approfondies, exemples détaillés et expliqués étape par étape.
 - Style clair, professionnel et pédagogique, adapté au niveau ${niveauFull}.
-- Utilise des listes, des tableaux et des formules quand c'est pertinent.
+- Utilise des listes, des tableaux et des formules quand c'est pertinent.${p.mhg ? `\n- Ce cours couvre environ ${Math.round((dureeMins / 60 / p.mhg) * 100)}% de la masse horaire du module : calibre la profondeur en conséquence.` : ""}
 
 **Format de sortie attendu (Markdown) :**
 
 # ${theme}
 
 ## En-tête
-| Filière | Module | Durée | Niveau | Type | Mode |
-|---------|--------|-------|--------|------|------|
-| ${p.filiere} | ${moduleLabel} | ${p.duree} | ${niveauFull} | ${typeLabel} | ${mode} |
+| Filière | Module | Durée | Niveau | Type | Mode |${mhgHeader}
+|---------|--------|-------|--------|------|------|${mhgHeaderSep}
+| ${p.filiere} | ${moduleLabel} | ${p.duree} | ${niveauFull} | ${typeLabel} | ${mode} |${mhgHeaderVal}
 
 ## Introduction
 (Mise en contexte du thème, son importance dans le métier et le module.)
