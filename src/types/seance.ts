@@ -62,3 +62,13 @@ export interface FicheFormData {
   objectifsSavoirEtre?: string;
   prerequis: string;
 }
+
+export interface ReferentielContext {
+  filiere: string;
+  module: string;
+  codeModule: string;
+  sequence?: string;
+  competence: string;
+  objectifs: string;
+  criteres: string;
+}

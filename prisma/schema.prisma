@@ -121,10 +121,24 @@ model RefModule {
   mhg         Int?
   filiereId   String
   filiere     Filiere      @relation(fields: [filiereId], references: [id], onDelete: Cascade)
+  sequences   Sequence[]
   competences Competence[]
   createdAt   DateTime     @default(now())
 
   @@map("RefModule")
+}
+
+model Sequence {
+  id          String       @id @default(cuid())
+  titre       String
+  code        String?
+  ordre       Int?
+  moduleId    String
+  module      RefModule    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  competences Competence[]
+  createdAt   DateTime     @default(now())
+
+  @@index([moduleId])
 }
 
 model Competence {
@@ -132,10 +146,14 @@ model Competence {
   titre            String
   moduleId         String
   module           RefModule               @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  sequenceId       String?
+  sequence         Sequence?               @relation(fields: [sequenceId], references: [id], onDelete: SetNull)
   objectifs        Objectif[]
   progressions     ProgressionCompetence[]
   groupeSelections GroupeCompetence[]
   createdAt        DateTime                @default(now())
+
+  @@index([sequenceId])
 }
 
 model Objectif {

@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import EvaluationForm from "@/components/forms/EvaluationForm";
 import EvaluationResult from "@/components/ui/EvaluationResult";
 import type { EvaluationFormData, EvaluationType } from "@/types/seance";
 import { exportToPDF, exportToWord } from "@/lib/export";
+import { consumeReferentielContext } from "@/lib/referentiel-context";
 
 const TYPE_LABELS: Record<EvaluationType, string> = {
   qcm: "QCM",
@@ -21,6 +22,20 @@ export default function EvaluationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [typeLabel, setTypeLabel] = useState("");
   const [titre, setTitre] = useState("");
+  const [initial, setInitial] = useState<Partial<EvaluationFormData> | undefined>(undefined);
+
+  useEffect(() => {
+    const ctx = consumeReferentielContext();
+    if (ctx) {
+      setInitial({
+        filiere: ctx.filiere,
+        module: ctx.module,
+        codeModule: ctx.codeModule,
+        theme: ctx.competence,
+        themesCouverts: ctx.objectifs,
+      });
+    }
+  }, []);
   const { data: session } = useSession();
   const formateur = session?.user
     ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
@@ -66,7 +81,7 @@ export default function EvaluationsPage() {
       <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
         {!contenu && (
           <div className="lg:col-span-2">
-            <EvaluationForm onGenerate={handleGenerate} isLoading={isLoading} />
+            <EvaluationForm onGenerate={handleGenerate} isLoading={isLoading} initial={initial} />
           </div>
         )}
 

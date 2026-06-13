@@ -2,6 +2,11 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+export interface ExtractedCompetence {
+  titre: string;
+  objectifs: { titre: string; criteres: string[] }[];
+}
+
 export interface ExtractedReferentiel {
   secteur: string;
   secteurCode?: string;
@@ -11,12 +16,11 @@ export interface ExtractedReferentiel {
     nom: string;
     code?: string;
     mhg?: number;
-    competences: {
+    competences?: ExtractedCompetence[];
+    sequences?: {
       titre: string;
-      objectifs: {
-        titre: string;
-        criteres: string[];
-      }[];
+      code?: string;
+      competences: ExtractedCompetence[];
     }[];
   }[];
 }
@@ -40,20 +44,26 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans explication) 
       "nom": "intitulé du module",
       "code": "code module (ex: M101)",
       "mhg": 120,
-      "competences": [
+      "sequences": [
         {
-          "titre": "titre de la compétence",
-          "objectifs": [
+          "titre": "intitulé de la séquence pédagogique",
+          "code": "code optionnel (ex: S1)",
+          "competences": [
             {
-              "titre": "titre de l'objectif",
-              "criteres": ["critère de performance 1", "critère 2"]
+              "titre": "titre de la compétence",
+              "objectifs": [
+                { "titre": "titre de l'objectif", "criteres": ["critère 1", "critère 2"] }
+              ]
             }
           ]
         }
-      ]
+      ],
+      "competences": []
     }
   ]
 }
+
+Si le document découpe le module en SÉQUENCES pédagogiques, place les compétences sous leur séquence dans "sequences" et laisse "competences" vide. Si le document ne mentionne PAS de séquences, laisse "sequences" vide et place les compétences directement dans "competences".
 
 Si une information n'est pas présente, utilise null ou un tableau vide. Extrais un maximum d'informations présentes dans le document.`;
 

@@ -96,9 +96,36 @@ export async function POST(req: NextRequest) {
     }
 
     let modulesCreated = 0;
+    let sequencesCreated = 0;
     let competencesCreated = 0;
     let objectifsCreated = 0;
     let criteresCreated = 0;
+
+    // Crée une compétence + ses objectifs + critères sous un module, éventuellement rattachée à une séquence.
+    async function createCompetence(
+      comp: { titre: string; objectifs?: { titre: string; criteres?: string[] }[] },
+      moduleId: string,
+      sequenceId: string | null
+    ) {
+      const competence = await prisma.competence.create({
+        data: { titre: comp.titre, moduleId, sequenceId },
+      });
+      competencesCreated++;
+
+      for (const obj of comp.objectifs ?? []) {
+        const objectif = await prisma.objectif.create({
+          data: { titre: obj.titre, competenceId: competence.id },
+        });
+        objectifsCreated++;
+
+        for (const crit of obj.criteres ?? []) {
+          await prisma.criterePerformance.create({
+            data: { description: crit, objectifId: objectif.id },
+          });
+          criteresCreated++;
+        }
+      }
+    }
 
     for (const mod of extracted.modules ?? []) {
       const refModule = await prisma.refModule.create({
@@ -111,24 +138,19 @@ export async function POST(req: NextRequest) {
       });
       modulesCreated++;
 
+      // Compétences directement sous le module (pas de séquence)
       for (const comp of mod.competences ?? []) {
-        const competence = await prisma.competence.create({
-          data: { titre: comp.titre, moduleId: refModule.id },
+        await createCompetence(comp, refModule.id, null);
+      }
+
+      // Compétences regroupées par séquence
+      for (const seq of mod.sequences ?? []) {
+        const sequence = await prisma.sequence.create({
+          data: { titre: seq.titre, code: seq.code ?? null, moduleId: refModule.id },
         });
-        competencesCreated++;
-
-        for (const obj of comp.objectifs ?? []) {
-          const objectif = await prisma.objectif.create({
-            data: { titre: obj.titre, competenceId: competence.id },
-          });
-          objectifsCreated++;
-
-          for (const crit of obj.criteres ?? []) {
-            await prisma.criterePerformance.create({
-              data: { description: crit, objectifId: objectif.id },
-            });
-            criteresCreated++;
-          }
+        sequencesCreated++;
+        for (const comp of seq.competences ?? []) {
+          await createCompetence(comp, refModule.id, sequence.id);
         }
       }
     }
@@ -137,7 +159,7 @@ export async function POST(req: NextRequest) {
       success: true,
       secteur: extracted.secteur,
       filiere: extracted.filiere,
-      stats: { modulesCreated, competencesCreated, objectifsCreated, criteresCreated },
+      stats: { modulesCreated, sequencesCreated, competencesCreated, objectifsCreated, criteresCreated },
     });
   } catch (err) {
     console.error("Erreur référentiel:", err);
@@ -167,12 +189,64 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(filieres);
   }
 
+  if (mode === "cascade") {
+    const filieres = await prisma.filiere.findMany({
+      select: {
+        id: true,
+        nom: true,
+        code: true,
+        modules: {
+          select: {
+            id: true,
+            nom: true,
+            code: true,
+            sequences: {
+              select: {
+                id: true,
+                titre: true,
+                code: true,
+                competences: {
+                  select: {
+                    id: true,
+                    titre: true,
+                    objectifs: { select: { titre: true, criteres: { select: { description: true } } } },
+                  },
+                  orderBy: { titre: "asc" },
+                },
+              },
+              orderBy: [{ ordre: "asc" }, { titre: "asc" }],
+            },
+            competences: {
+              where: { sequenceId: null },
+              select: {
+                id: true,
+                titre: true,
+                objectifs: { select: { titre: true, criteres: { select: { description: true } } } },
+              },
+              orderBy: { titre: "asc" },
+            },
+          },
+          orderBy: { nom: "asc" },
+        },
+      },
+      orderBy: { nom: "asc" },
+    });
+    return NextResponse.json(filieres);
+  }
+
   const secteurs = await prisma.secteur.findMany({
     include: {
       filieres: {
         include: {
           modules: {
             include: {
+              sequences: {
+                include: {
+                  competences: {
+                    include: { objectifs: { include: { criteres: true } } },
+                  },
+                },
+              },
               competences: {
                 include: { objectifs: { include: { criteres: true } } },
               },
