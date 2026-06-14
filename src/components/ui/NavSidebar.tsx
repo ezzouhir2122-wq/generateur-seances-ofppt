@@ -136,19 +136,19 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
       href={href}
       className="group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
       style={active
-        ? { background: "rgba(143,184,255,0.18)", color: "#8FB8FF" }
-        : { color: "rgba(255,255,255,0.65)" }
+        ? { background: "rgba(232,101,26,0.14)", color: "#F1F5F9" }
+        : { color: "rgba(255,255,255,0.50)" }
       }
-      onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "#FFFFFF"; } }}
-      onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.65)"; } }}
+      onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.85)"; } }}
+      onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.50)"; } }}
     >
       {active && (
         <span
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-          style={{ background: "#8FB8FF" }}
+          style={{ background: "#E8651A" }}
         />
       )}
-      <span style={{ color: active ? "#8FB8FF" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
+      <span style={{ color: active ? "#E8651A" : "rgba(255,255,255,0.35)", flexShrink: 0 }}>
         {icon}
       </span>
       <span className="truncate">{label}</span>
@@ -170,20 +170,20 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   return (
     <aside
       className="w-[240px] flex-shrink-0 flex flex-col h-screen sticky top-0"
-      style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.10)" }}
+      style={{ background: "#0D1117", borderRight: "1px solid rgba(255,255,255,0.07)" }}
     >
       {/* ─ Branding ─ */}
-      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
+      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
-            style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.15)" }}
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
           >
             <Image src="/logo-ofppt.jpg" alt="OFPPT" width={36} height={36} className="object-cover w-full h-full" />
           </div>
           <div className="min-w-0">
-            <div className="text-white font-bold text-sm leading-tight tracking-wide">OFPPT</div>
-            <div className="text-[11px] font-medium leading-tight" style={{ color: "#FFA05C" }}>Compétencia IA</div>
+            <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#F1F5F9" }}>OFPPT</div>
+            <div className="text-[11px] font-medium leading-tight" style={{ color: "#E8651A" }}>Compétencia IA</div>
           </div>
         </div>
       </div>
@@ -198,13 +198,13 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
             >
               <span
                 className="text-[9px] font-bold tracking-[0.12em] uppercase select-none"
-                style={{ color: "rgba(255,255,255,0.40)" }}
+                style={{ color: "rgba(255,255,255,0.28)" }}
               >
                 {section.label}
               </span>
               <span
                 className="flex-1 h-px"
-                style={{ background: "rgba(255,255,255,0.10)" }}
+                style={{ background: "rgba(255,255,255,0.07)" }}
               />
             </div>
             {/* Items */}
@@ -221,7 +221,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
             </div>
             {/* Section divider (except after last) */}
             {sIdx < navSections.length - 1 && (
-              <div className="mt-4 h-px" style={{ background: "rgba(255,255,255,0.10)" }} />
+              <div className="mt-4 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
             )}
           </div>
         ))}
@@ -229,30 +229,30 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         {/* ─ Système ─ */}
         <div>
           <div className="flex items-center gap-2 px-2 mb-1.5">
-            <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none" style={{ color: "rgba(255,255,255,0.40)" }}>
+            <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none" style={{ color: "rgba(255,255,255,0.28)" }}>
               Système
             </span>
-            <span className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.10)" }} />
+            <span className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
           </div>
           <button
             onClick={onSettingsClick}
             className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
-            style={{ color: "rgba(255,255,255,0.65)" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "#FFFFFF"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.65)"; }}
+            style={{ color: "rgba(255,255,255,0.50)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.85)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.50)"; }}
           >
-            <span style={{ color: "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
+            <span style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }}><GearIcon /></span>
             Modules & Paramètres
           </button>
         </div>
       </nav>
 
       {/* ─ User card ─ */}
-      <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+      <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
         {/* Avatar + name */}
         <div
           className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-2"
-          style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.12)" }}
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)" }}
         >
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 select-none"
@@ -261,8 +261,8 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-white text-xs font-semibold truncate leading-tight">{user.name ?? "Formateur"}</div>
-            <div className="text-[10px] truncate leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.55)" }}>{user.email}</div>
+            <div className="text-xs font-semibold truncate leading-tight" style={{ color: "#F1F5F9" }}>{user.name ?? "Formateur"}</div>
+            <div className="text-[10px] truncate leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.40)" }}>{user.email}</div>
           </div>
         </div>
 
@@ -270,7 +270,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
           className="w-full text-xs rounded-lg py-2 transition-all duration-150 font-medium"
-          style={{ color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.15)" }}
+          style={{ color: "rgba(255,255,255,0.40)", border: "1px solid rgba(255,255,255,0.09)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444408"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
         >
@@ -278,7 +278,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         </button>
 
         {/* Credit */}
-        <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "rgba(255,255,255,0.20)" }}>
+        <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "rgba(255,255,255,0.15)" }}>
           Développé par Mr EZZOUIR Elmustapha (9559)
         </div>
       </div>
