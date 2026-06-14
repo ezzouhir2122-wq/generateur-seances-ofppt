@@ -279,7 +279,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
 
         {/* Credit */}
         <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "rgba(255,255,255,0.15)" }}>
-          Développé par Mr EZZOUIR Elmustapha (9559)
+          Développé par EZZOUIR ELMUSTAPHA 9998 · OFPPT ISGI Marrakech
         </div>
       </div>
     </aside>
