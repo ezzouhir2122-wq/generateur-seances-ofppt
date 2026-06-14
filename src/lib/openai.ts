@@ -1,17 +1,25 @@
 import OpenAI from "openai";
 import { SeanceParams } from "../../equipment/generate-seance";
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+export const OPENAI_MODELS = [
+  { id: "gpt-4o",       label: "GPT-4o — Meilleur" },
+  { id: "gpt-4o-mini",  label: "GPT-4o Mini — Rapide" },
+  { id: "gpt-4-turbo",  label: "GPT-4 Turbo — Puissant" },
+];
 
-export async function generateWithOpenAI(params: SeanceParams): Promise<string> {
+export async function generateWithOpenAI(
+  params: SeanceParams,
+  options?: { apiKey?: string; model?: string }
+): Promise<string> {
+  const key = options?.apiKey || process.env.OPENAI_API_KEY;
+  if (!key) throw new Error("Clé OpenAI manquante");
+  const client = new OpenAI({ apiKey: key });
+  const model = options?.model ?? "gpt-4o";
   const completion = await client.chat.completions.create({
-    model: "gpt-4o",
+    model,
     max_tokens: 4096,
     messages: [
-      {
-        role: "system",
-        content: "Tu es un expert en ingénierie pédagogique OFPPT.",
-      },
+      { role: "system", content: "Tu es un expert en ingénierie pédagogique OFPPT." },
       { role: "user", content: buildPrompt(params) },
     ],
   });

@@ -1,11 +1,22 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { SeanceParams } from "../../equipment/generate-seance";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+export const CLAUDE_MODELS = [
+  { id: "claude-opus-4-8",         label: "Claude Opus 4.8 — Meilleur" },
+  { id: "claude-sonnet-4-6",       label: "Claude Sonnet 4.6 — Équilibré" },
+  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 — Rapide" },
+];
 
-export async function generateWithClaude(params: SeanceParams): Promise<string> {
+export async function generateWithClaude(
+  params: SeanceParams,
+  options?: { apiKey?: string; model?: string }
+): Promise<string> {
+  const key = options?.apiKey || process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error("Clé Claude manquante");
+  const client = new Anthropic({ apiKey: key });
+  const model = options?.model ?? "claude-opus-4-8";
   const message = await client.messages.create({
-    model: "claude-opus-4-8",
+    model,
     max_tokens: 4096,
     messages: [{ role: "user", content: buildPrompt(params) }],
   });

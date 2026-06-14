@@ -47,8 +47,8 @@ interface SidebarProps {
     matricule?: string | null;
     etablissement?: string | null;
   };
-  claudeKey: boolean;
-  openaiKey: boolean;
+  claudeKey?: boolean;
+  openaiKey?: boolean;
 }
 
 export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: SidebarProps) {
@@ -69,6 +69,16 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
   const [matricule, setMatricule] = useState(user.matricule ?? "");
   const [etablissement, setEtablissement] = useState(user.etablissement ?? "");
   const [savingProfile, setSavingProfile] = useState(false);
+
+  // API Settings
+  const [claudeKey, setClaudeKey] = useState("");
+  const [openaiKey, setOpenaiKey] = useState("");
+  const [preferredModel, setPreferredModel] = useState("claude-sonnet-4-6");
+  const [savingApi, setSavingApi] = useState(false);
+  const [hasClaudeKey, setHasClaudeKey] = useState(false);
+  const [hasOpenaiKey, setHasOpenaiKey] = useState(false);
+  const [showClaudeKey, setShowClaudeKey] = useState(false);
+  const [showOpenaiKey, setShowOpenaiKey] = useState(false);
 
   const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
@@ -116,9 +126,41 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
     }
   }, []);
 
+  const loadApiSettings = useCallback(async () => {
+    try {
+      const res = await fetch("/api/user/api-settings");
+      if (res.ok) {
+        const data = await res.json();
+        setPreferredModel(data.preferredModel ?? "claude-sonnet-4-6");
+        setHasClaudeKey(data.hasClaudeKey);
+        setHasOpenaiKey(data.hasOpenaiKey);
+        if (data.claudeApiKey) setClaudeKey(data.claudeApiKey);
+        if (data.openaiApiKey) setOpenaiKey(data.openaiApiKey);
+      }
+    } catch {}
+  }, []);
+
+  const saveApiSettings = async () => {
+    setSavingApi(true);
+    try {
+      const res = await fetch("/api/user/api-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, preferredModel }),
+      });
+      if (!res.ok) throw new Error();
+      toast.success("Paramètres API sauvegardés");
+      await loadApiSettings();
+    } catch {
+      toast.error("Erreur lors de la sauvegarde");
+    } finally {
+      setSavingApi(false);
+    }
+  };
+
   useEffect(() => {
-    if (open) { loadStats(); loadReferentiels(); }
-  }, [open, loadStats, loadReferentiels]);
+    if (open) { loadStats(); loadReferentiels(); loadApiSettings(); }
+  }, [open, loadStats, loadReferentiels, loadApiSettings]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -698,26 +740,112 @@ export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: S
 
           {/* Paramètres API */}
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>🔑 Paramètres API</h3>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span style={{ color: "#9CA3AF" }}>Claude API</span>
-                <span className="font-medium" style={{ color: claudeKey ? "#0A4DA8" : "#EF4444" }}>
-                  {claudeKey ? "✅ Configuré" : "❌ Manquant"}
-                </span>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>🔑 Paramètres API & Modèle IA</h3>
+            <p className="text-xs mb-4" style={{ color: "#6B7280" }}>Choisissez votre modèle et saisissez vos clés API personnelles.</p>
+
+            {/* Sélecteur de modèle */}
+            <div className="mb-4">
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Modèle IA préféré</p>
+              <div className="space-y-1.5">
+                {[
+                  { id: "claude-opus-4-8",         label: "Claude Opus 4.8", sub: "Meilleur — Anthropic", color: "#E8651A" },
+                  { id: "claude-sonnet-4-6",       label: "Claude Sonnet 4.6", sub: "Équilibré — Anthropic", color: "#E8651A" },
+                  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5", sub: "Rapide — Anthropic", color: "#E8651A" },
+                  { id: "gpt-4o",                  label: "GPT-4o", sub: "Meilleur — OpenAI", color: "#10A37F" },
+                  { id: "gpt-4o-mini",             label: "GPT-4o Mini", sub: "Rapide — OpenAI", color: "#10A37F" },
+                ].map((m) => (
+                  <button
+                    key={m.id}
+                    onClick={() => setPreferredModel(m.id)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all"
+                    style={{
+                      background: preferredModel === m.id ? `${m.color}12` : "#F3F4F6",
+                      border: `1px solid ${preferredModel === m.id ? m.color + "50" : "#E2E8F0"}`,
+                    }}
+                  >
+                    <span
+                      className="w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center"
+                      style={{ background: preferredModel === m.id ? m.color : "transparent", border: `2px solid ${preferredModel === m.id ? m.color : "#D1D5DB"}` }}
+                    >
+                      {preferredModel === m.id && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    </span>
+                    <div>
+                      <p className="text-xs font-semibold leading-tight" style={{ color: preferredModel === m.id ? m.color : "#111827" }}>{m.label}</p>
+                      <p className="text-[10px] leading-tight mt-0.5" style={{ color: "#9CA3AF" }}>{m.sub}</p>
+                    </div>
+                  </button>
+                ))}
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span style={{ color: "#9CA3AF" }}>OpenAI API</span>
-                <span className="font-medium" style={{ color: openaiKey ? "#0A4DA8" : "#EF4444" }}>
-                  {openaiKey ? "✅ Configuré" : "❌ Manquant"}
-                </span>
-              </div>
-              {(!claudeKey && !openaiKey) && (
-                <p className="text-xs rounded-lg p-2 mt-2" style={{ color: "#F59E0B", background: "#F59E0B14", border: "1px solid #F59E0B30" }}>
-                  Ajoutez vos clés API dans le fichier <code>.env</code> pour activer la génération.
-                </p>
-              )}
             </div>
+
+            {/* Clé Claude */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API Claude (Anthropic)</p>
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasClaudeKey ? "#0A4DA814" : "#F3F4F6", color: hasClaudeKey ? "#0A4DA8" : "#9CA3AF" }}>
+                  {hasClaudeKey ? "✓ Active" : "Non configurée"}
+                </span>
+              </div>
+              <div className="relative">
+                <input
+                  type={showClaudeKey ? "text" : "password"}
+                  placeholder={hasClaudeKey ? "••••••••••••••••••••••" : "sk-ant-api03-..."}
+                  value={claudeKey}
+                  onChange={e => setClaudeKey(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg pr-10 outline-none font-mono"
+                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowClaudeKey(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]"
+                  style={{ color: "#9CA3AF" }}
+                >
+                  {showClaudeKey ? "Cacher" : "Voir"}
+                </button>
+              </div>
+            </div>
+
+            {/* Clé OpenAI */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API OpenAI</p>
+                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasOpenaiKey ? "#10A37F14" : "#F3F4F6", color: hasOpenaiKey ? "#10A37F" : "#9CA3AF" }}>
+                  {hasOpenaiKey ? "✓ Active" : "Non configurée"}
+                </span>
+              </div>
+              <div className="relative">
+                <input
+                  type={showOpenaiKey ? "text" : "password"}
+                  placeholder={hasOpenaiKey ? "••••••••••••••••••••••" : "sk-proj-..."}
+                  value={openaiKey}
+                  onChange={e => setOpenaiKey(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg pr-10 outline-none font-mono"
+                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowOpenaiKey(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]"
+                  style={{ color: "#9CA3AF" }}
+                >
+                  {showOpenaiKey ? "Cacher" : "Voir"}
+                </button>
+              </div>
+            </div>
+
+            <button
+              onClick={saveApiSettings}
+              disabled={savingApi}
+              className="w-full text-xs py-2.5 rounded-lg font-semibold transition-all disabled:opacity-50"
+              style={{ background: "#E8651A", color: "#fff" }}
+            >
+              {savingApi ? "Sauvegarde…" : "💾 Sauvegarder"}
+            </button>
+
+            <p className="text-[10px] mt-2 text-center" style={{ color: "#9CA3AF" }}>
+              Vos clés sont chiffrées et stockées en sécurité.
+            </p>
           </section>
 
           {/* Navigation */}
