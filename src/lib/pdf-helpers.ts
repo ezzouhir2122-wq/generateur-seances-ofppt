@@ -138,6 +138,42 @@ export interface RenderBodyOptions {
   fontSize?: number;
 }
 
+/** Remplace les caractères Unicode non supportés par Helvetica (box-drawing, typographiques) */
+function sanitizeForPdf(text: string): string {
+  return text
+    // Lignes verticales box-drawing → |
+    .replace(/[│┃┆┇┊┋╎╏║]/g, "|")
+    // Coins et jonctions box-drawing → +
+    .replace(/[┌┍┎┏┐┑┒┓]/g, "+")
+    .replace(/[└┕┖┗┘┙┚┛]/g, "+")
+    .replace(/[├┝┞┟┠┡┢┣]/g, "+")
+    .replace(/[┤┥┦┧┨┩┪┫]/g, "+")
+    .replace(/[┬┭┮┯┰┱┲┳]/g, "+")
+    .replace(/[┴┵┶┷┸┹┺┻]/g, "+")
+    .replace(/[┼┽┾┿╀╁╂╃]/g, "+")
+    .replace(/[╄-╍]/g, "+")
+    .replace(/[╔╗╚╝╠╣╦╩╬]/g, "+")
+    // Tout le reste du bloc box-drawing → -
+    .replace(/[─-╿]/g, "-")
+    // Guillemets typographiques
+    .replace(/[‘’′]/g, "'")
+    .replace(/[“”″]/g, '"')
+    // Tirets typographiques
+    .replace(/–/g, "-")
+    .replace(/—/g, "--")
+    // Ellipsis
+    .replace(/…/g, "...")
+    // Espace insécable
+    .replace(/ /g, " ")
+    // Puce Unicode
+    .replace(/[•‣◦▪▫]/g, "-")
+    // Flèches unicode courantes
+    .replace(/→/g, "->")
+    .replace(/←/g, "<-")
+    .replace(/↔/g, "<->")
+    .replace(/[↑↓]/g, "|");
+}
+
 /**
  * Rend du markdown (titres, gras, listes, tableaux) en PDF stylé OFPPT,
  * au lieu de vider du texte brut. Gère automatiquement les sauts de page.
@@ -219,29 +255,67 @@ export function renderMarkdownBody(
     const parsed = rows.map((r) =>
       r.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map((c) => c.trim())
     );
-    const isSep = (cells: string[]) => cells.every((c) => /^:?-{2,}:?$/.test(c));
+    const isSep = (cells: string[]) => cells.every((c) => /^[-:]{2,}$/.test(c.trim()));
     const header = parsed[0];
-    let body = parsed.slice(1);
-    if (body.length && isSep(body[0])) body = body.slice(1);
-    const nCols = header.length;
+    let body = parsed.slice(1).filter((r) => !isSep(r));
+    const nCols = Math.max(header.length, 1);
     const colW = maxW / nCols;
-    const rowH = 6;
+    const cellPad = 2;
+    const lineSpacing = 4;
+
+    // Calcule la hauteur d'une ligne en fonction du contenu multi-ligne
+    const calcRowH = (cells: string[]): number => {
+      let maxLines = 1;
+      doc.setFontSize(8);
+      cells.forEach((c) => {
+        const txt = c.replace(/\*\*/g, "").trim();
+        if (!txt) return;
+        const wrapped = doc.splitTextToSize(txt, colW - cellPad * 2) as string[];
+        maxLines = Math.max(maxLines, wrapped.length);
+      });
+      return Math.max(7, maxLines * lineSpacing + 4);
+    };
 
     const drawRow = (cells: string[], isHeader: boolean, idx: number) => {
-      ensureSpace(rowH);
-      if (isHeader) doc.setFillColor(...OFPPT_NAVY);
-      else if (idx % 2 === 0) doc.setFillColor(248, 250, 252);
-      else doc.setFillColor(240, 242, 245);
-      doc.rect(marginX, y - 4, maxW, rowH, "F");
-      doc.setFont("helvetica", isHeader ? "bold" : "normal");
+      const rowH = calcRowH(cells);
+      ensureSpace(rowH + 1);
+
+      // Fond de ligne
+      if (isHeader) {
+        doc.setFillColor(...OFPPT_NAVY);
+      } else if (idx % 2 === 0) {
+        doc.setFillColor(248, 250, 252);
+      } else {
+        doc.setFillColor(255, 255, 255);
+      }
+      doc.rect(marginX, y, maxW, rowH, "F");
+
+      // Bordures
+      doc.setDrawColor(180, 195, 215);
+      doc.setLineWidth(0.25);
+      doc.rect(marginX, y, maxW, rowH, "S");
+      for (let ci = 1; ci < nCols; ci++) {
+        const cx = marginX + ci * colW;
+        doc.line(cx, y, cx, y + rowH);
+      }
+
+      // Texte
       doc.setFontSize(8);
-      if (isHeader) doc.setTextColor(255, 255, 255);
-      else doc.setTextColor(...TEXT_GRAY);
       cells.forEach((c, ci) => {
-        const txt = c.replace(/\*\*/g, "");
-        const wrapped = doc.splitTextToSize(txt, colW - 3) as string[];
-        doc.text(wrapped[0] ?? "", marginX + ci * colW + 1.5, y);
+        const txt = c.replace(/\*\*/g, "").trim();
+        if (!txt) return;
+        doc.setFont("helvetica", isHeader ? "bold" : "normal");
+        if (isHeader) doc.setTextColor(255, 255, 255);
+        else doc.setTextColor(...TEXT_GRAY);
+        const wrapped = doc.splitTextToSize(txt, colW - cellPad * 2) as string[];
+        wrapped.forEach((line, li) => {
+          const ty = y + 4.5 + li * lineSpacing;
+          if (ty < y + rowH - 0.5) {
+            doc.text(line, marginX + ci * colW + cellPad, ty);
+          }
+        });
       });
+
       y += rowH;
     };
 
@@ -251,10 +325,10 @@ export function renderMarkdownBody(
       while (r.length < nCols) r.push("");
       drawRow(r, false, idx);
     });
-    y += 3;
+    y += 4;
   };
 
-  const rawLines = contenu.replace(/\r/g, "").split("\n");
+  const rawLines = sanitizeForPdf(contenu).replace(/\r/g, "").split("\n");
   for (let i = 0; i < rawLines.length; i++) {
     const trimmed = rawLines[i].trim();
 
