@@ -51,7 +51,7 @@ interface SidebarProps {
   openaiKey?: boolean;
 }
 
-export default function Sidebar({ open, onClose, user, claudeKey, openaiKey }: SidebarProps) {
+export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [stats, setStats] = useState<Stats>({ seancesCount: 0, modulesCount: 0, filieresCount: 0 });
   const [preview, setPreview] = useState<{ rows: number; data: ModuleRow[] } | null>(null);
   const [importing, setImporting] = useState(false);
