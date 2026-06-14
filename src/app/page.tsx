@@ -399,16 +399,7 @@ export default async function DashboardPage() {
                   <Link
                     key={s.id}
                     href={`/historique/${s.id}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "9px 10px",
-                      borderRadius: "8px",
-                      transition: "background 0.15s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "")}
+                    className="flex items-center gap-[10px] px-[10px] py-[9px] rounded-lg transition-colors hover:bg-white/5"
                   >
                     <span style={{ color: "#E8651A", fontSize: "12px", flexShrink: 0 }}>⚡</span>
                     <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.65)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -420,16 +411,7 @@ export default async function DashboardPage() {
                   <Link
                     key={f.id}
                     href={`/fiches/${f.id}`}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "10px",
-                      padding: "9px 10px",
-                      borderRadius: "8px",
-                      transition: "background 0.15s",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.05)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "")}
+                    className="flex items-center gap-[10px] px-[10px] py-[9px] rounded-lg transition-colors hover:bg-white/5"
                   >
                     <span style={{ fontSize: "12px", flexShrink: 0 }}>📋</span>
                     <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.65)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
