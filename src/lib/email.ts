@@ -1,7 +1,5 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function sendWelcomeEmail({
   to,
   name,
@@ -12,6 +10,7 @@ export async function sendWelcomeEmail({
   password: string;
 }) {
   if (!process.env.RESEND_API_KEY) return;
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
     from: "Competencia IA <noreply@competencia-ia.com>",
