@@ -13,7 +13,7 @@ export async function sendWelcomeEmail({
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   await resend.emails.send({
-    from: "Competencia IA <noreply@competencia-ia.com>",
+    from: "Competencia IA <onboarding@resend.dev>",
     to,
     subject: "Bienvenue sur Competencia IA — vos accès",
     html: buildEmailHtml({ name, email: to, password }),
