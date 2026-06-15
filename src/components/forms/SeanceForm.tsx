@@ -32,6 +32,7 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
   const [selectedGroupe, setSelectedGroupe] = useState("");
   const [hasImport, setHasImport] = useState(false);
   const [showList, setShowList] = useState(false);
+  const [refCompetences, setRefCompetences] = useState<{ id: string; titre: string; objectifs: string[] }[]>([]);
 
   useEffect(() => {
     fetch("/api/modules?distinct=groupe")
@@ -76,6 +77,26 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
     setForm((prev) => ({ ...prev, module: m.module, codeModule: m.codeModule ?? "", mhg: m.mhg }));
     setShowList(false);
   };
+
+  // Charge les compétences du référentiel quand le module change
+  useEffect(() => {
+    const code = form.codeModule?.trim();
+    const nom = form.module?.trim();
+    if (!code && !nom) { setRefCompetences([]); return; }
+    const param = code ? `code=${encodeURIComponent(code)}` : `nom=${encodeURIComponent(nom!)}`;
+    fetch(`/api/referentiel/competences?${param}`)
+      .then((r) => r.json())
+      .then((data) => setRefCompetences(Array.isArray(data) ? data : []))
+      .catch(() => setRefCompetences([]));
+  }, [form.codeModule, form.module]);
+
+  function compLetter(titre: string, idx: number): string {
+    const m = titre.match(/^([A-Za-z])\.\s*/);
+    return m ? m[1].toUpperCase() : String.fromCharCode(65 + idx);
+  }
+  function compText(titre: string): string {
+    return titre.replace(/^[A-Za-z]\.\s*/, "").trim();
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,9 +286,47 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
         </div>
       </div>
 
+      {/* Compétences du référentiel (si disponibles) */}
+      {refCompetences.length > 0 && (
+        <div className="rounded-xl p-3" style={{ background: "#0A4DA808", border: "1px solid #0A4DA830" }}>
+          <p className="text-[11px] font-semibold uppercase tracking-wider mb-2" style={{ color: "#0A4DA8" }}>
+            Compétences du référentiel
+          </p>
+          <div className="space-y-1">
+            {refCompetences.map((c, i) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setForm((prev) => ({ ...prev, competence: c.titre }))}
+                className="w-full flex items-start gap-2 text-left px-3 py-2 rounded-lg transition-colors text-xs"
+                style={
+                  form.competence === c.titre
+                    ? { background: "#0A4DA8", color: "#FFFFFF" }
+                    : { background: "#FFFFFF", color: "#374151", border: "1px solid #E2E8F0" }
+                }
+              >
+                <span
+                  className="flex-shrink-0 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center mt-0.5"
+                  style={
+                    form.competence === c.titre
+                      ? { background: "#FFFFFF30", color: "#FFFFFF" }
+                      : { background: "#0A4DA8", color: "#FFFFFF" }
+                  }
+                >
+                  {compLetter(c.titre, i)}
+                </span>
+                <span className="flex-1">{compText(c.titre)}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Thème / Compétence du cours */}
       <div>
-        <label className="label">Thème ou compétence du cours</label>
+        <label className="label">
+          {refCompetences.length > 0 ? "Compétence sélectionnée / thème libre" : "Thème ou compétence du cours"}
+        </label>
         <textarea
           className="input-field resize-none"
           rows={2}
@@ -276,7 +335,9 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
           onChange={set("competence")}
         />
         <p className="text-xs mt-1" style={{ color: "#9CA3AF" }}>
-          Précisez le thème pour cibler le cours détaillé (définition, développement, exemples).
+          {refCompetences.length > 0
+            ? "Sélectionnez une compétence ci-dessus ou saisissez un thème libre."
+            : "Précisez le thème pour cibler le cours détaillé (définition, développement, exemples)."}
         </p>
       </div>
 

@@ -14,7 +14,16 @@ export default async function ReferentielPage() {
       filieres: {
         include: {
           modules: {
-            select: { id: true, nom: true, code: true, mhg: true },
+            include: {
+              competences: {
+                select: {
+                  id: true,
+                  titre: true,
+                  objectifs: { select: { titre: true } },
+                },
+                orderBy: { titre: "asc" },
+              },
+            },
             orderBy: { nom: "asc" },
           },
         },
@@ -37,6 +46,11 @@ export default async function ReferentielPage() {
         nom: m.nom,
         code: m.code,
         mhg: m.mhg,
+        competences: m.competences.map((c) => ({
+          id: c.id,
+          titre: c.titre,
+          objectifs: c.objectifs.map((o) => o.titre),
+        })),
       })),
     })),
   }));
