@@ -128,29 +128,69 @@ export async function POST(req: NextRequest) {
     }
 
     for (const mod of extracted.modules ?? []) {
-      const refModule = await prisma.refModule.create({
-        data: {
-          nom: mod.nom,
-          code: mod.code ?? null,
-          mhg: mod.mhg ?? null,
+      // Upsert module — évite les doublons si ré-importation
+      let refModule = await prisma.refModule.findFirst({
+        where: {
           filiereId: filiere.id,
+          ...(mod.code
+            ? { code: { equals: mod.code, mode: "insensitive" } }
+            : { nom: { equals: mod.nom, mode: "insensitive" } }),
         },
       });
-      modulesCreated++;
+
+      if (refModule) {
+        // Met à jour mhg si manquant
+        if (mod.mhg && !refModule.mhg) {
+          refModule = await prisma.refModule.update({
+            where: { id: refModule.id },
+            data: { mhg: mod.mhg },
+          });
+        }
+      } else {
+        refModule = await prisma.refModule.create({
+          data: {
+            nom: mod.nom,
+            code: mod.code ?? null,
+            mhg: mod.mhg ?? null,
+            filiereId: filiere.id,
+          },
+        });
+        modulesCreated++;
+      }
 
       // Compétences directement sous le module (pas de séquence)
+      const existingComps = await prisma.competence.findMany({
+        where: { moduleId: refModule.id, sequenceId: null },
+        select: { titre: true },
+      });
+      const existingTitles = new Set(existingComps.map((c) => c.titre.toLowerCase()));
+
       for (const comp of mod.competences ?? []) {
-        await createCompetence(comp, refModule.id, null);
+        if (!existingTitles.has(comp.titre.toLowerCase())) {
+          await createCompetence(comp, refModule.id, null);
+        }
       }
 
       // Compétences regroupées par séquence
       for (const seq of mod.sequences ?? []) {
-        const sequence = await prisma.sequence.create({
-          data: { titre: seq.titre, code: seq.code ?? null, moduleId: refModule.id },
+        let sequence = await prisma.sequence.findFirst({
+          where: { moduleId: refModule.id, titre: { equals: seq.titre, mode: "insensitive" } },
         });
-        sequencesCreated++;
+        if (!sequence) {
+          sequence = await prisma.sequence.create({
+            data: { titre: seq.titre, code: seq.code ?? null, moduleId: refModule.id },
+          });
+          sequencesCreated++;
+        }
+        const existingSeqComps = await prisma.competence.findMany({
+          where: { sequenceId: sequence.id },
+          select: { titre: true },
+        });
+        const existingSeqTitles = new Set(existingSeqComps.map((c) => c.titre.toLowerCase()));
         for (const comp of seq.competences ?? []) {
-          await createCompetence(comp, refModule.id, sequence.id);
+          if (!existingSeqTitles.has(comp.titre.toLowerCase())) {
+            await createCompetence(comp, refModule.id, sequence.id);
+          }
         }
       }
     }
