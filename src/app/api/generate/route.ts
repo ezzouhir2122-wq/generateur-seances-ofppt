@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { generateWithClaude } from "@/lib/claude";
 import { generateWithOpenAI } from "@/lib/openai";
+import { generateWithGoogle } from "@/lib/google";
+import { generateWithOpenRouter } from "@/lib/openrouter";
 import { prisma } from "@/lib/db";
 import { SeanceParams } from "../../../../equipment/generate-seance";
 
@@ -16,25 +18,44 @@ export async function POST(req: NextRequest) {
   // Charger les paramètres API de l'utilisateur
   let userClaudeKey: string | null = null;
   let userOpenaiKey: string | null = null;
+  let userGoogleKey: string | null = null;
+  let userOpenrouterKey: string | null = null;
   let preferredModel = "claude-opus-4-8";
 
   if (session?.user?.id) {
     try {
       const userSettings = await prisma.user.findUnique({
         where: { id: session.user.id },
-        select: { claudeApiKey: true, openaiApiKey: true, preferredModel: true },
+        select: { claudeApiKey: true, openaiApiKey: true, googleApiKey: true, openrouterApiKey: true, preferredModel: true },
       });
       if (userSettings?.claudeApiKey) userClaudeKey = userSettings.claudeApiKey;
       if (userSettings?.openaiApiKey) userOpenaiKey = userSettings.openaiApiKey;
+      if (userSettings?.googleApiKey) userGoogleKey = userSettings.googleApiKey;
+      if (userSettings?.openrouterApiKey) userOpenrouterKey = userSettings.openrouterApiKey;
       if (userSettings?.preferredModel) preferredModel = userSettings.preferredModel;
     } catch {}
   }
 
-  const isOpenAIModel = preferredModel.startsWith("gpt-");
   let contenu: string;
   let source = "claude";
 
-  if (isOpenAIModel) {
+  if (preferredModel.startsWith("gemini")) {
+    try {
+      contenu = await generateWithGoogle(params, { apiKey: userGoogleKey ?? undefined, model: preferredModel });
+      source = "google";
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur Google AI";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  } else if (preferredModel.startsWith("openrouter/") || preferredModel.includes("/")) {
+    try {
+      contenu = await generateWithOpenRouter(params, { apiKey: userOpenrouterKey ?? undefined, model: preferredModel });
+      source = "openrouter";
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur OpenRouter";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  } else if (preferredModel.startsWith("gpt-") || preferredModel.startsWith("o1") || preferredModel.startsWith("o3")) {
     try {
       contenu = await generateWithOpenAI(params, { apiKey: userOpenaiKey ?? undefined, model: preferredModel });
       source = "openai";
