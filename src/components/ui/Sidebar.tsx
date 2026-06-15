@@ -291,7 +291,11 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       const fd = new FormData();
       fd.append("file", refFile);
       const res = await fetch("/api/referentiel", { method: "POST", body: fd });
-      const json = await res.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      let json: any = {};
+      try { json = await res.json(); } catch {
+        if (!res.ok) throw new Error(`Erreur serveur (${res.status}) — le fichier est peut-être trop volumineux. Réessayez.`);
+      }
       if (!res.ok) throw new Error(json.error ?? "Erreur inconnue");
       setRefResult(json);
       setRefFile(null);

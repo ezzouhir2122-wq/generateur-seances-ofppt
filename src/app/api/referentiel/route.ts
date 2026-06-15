@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { extractReferentielFromText } from "@/lib/referentiel-extractor";
 import { read, utils } from "xlsx";
 
+export const maxDuration = 300;
+
 // DOMMatrix polyfill — required by pdfjs-dist (used by pdf-parse) in Node.js serverless
 if (typeof globalThis.DOMMatrix === "undefined") {
   (globalThis as Record<string, unknown>).DOMMatrix = class {

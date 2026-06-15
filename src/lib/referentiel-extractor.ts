@@ -100,37 +100,43 @@ async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedR
   return JSON.parse(raw.slice(start, end + 1)) as ExtractedReferentiel;
 }
 
+function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
+  for (const newMod of extra.modules ?? []) {
+    const existing = base.modules.find(
+      (m) => m.code && newMod.code && m.code.toLowerCase() === newMod.code.toLowerCase()
+    );
+    if (existing) {
+      if (!existing.competences) existing.competences = [];
+      for (const c of newMod.competences ?? []) {
+        if (!existing.competences.some((ec) => ec.titre === c.titre)) {
+          existing.competences.push(c);
+        }
+      }
+    } else {
+      base.modules.push(newMod);
+    }
+  }
+}
+
 export async function extractReferentielFromText(text: string): Promise<ExtractedReferentiel> {
   const chunks = splitIntoChunks(text, 40000);
 
-  // Premier chunk : structure complète (secteur, filière, modules)
+  // Premier chunk séquentiel pour obtenir secteur/filière
   const first = await extractChunk(chunks[0], true);
 
-  // Chunks suivants : fusionne les modules supplémentaires
-  for (let i = 1; i < chunks.length; i++) {
-    try {
-      const extra = await extractChunk(chunks[i], false);
-      if (extra.modules?.length) {
-        // Fusionne les modules du chunk suivant dans le premier résultat
-        for (const newMod of extra.modules) {
-          const existing = first.modules.find(
-            (m) => m.code && newMod.code && m.code.toLowerCase() === newMod.code.toLowerCase()
-          );
-          if (existing) {
-            // Ajoute les compétences manquantes au module existant
-            if (!existing.competences) existing.competences = [];
-            for (const c of newMod.competences ?? []) {
-              if (!existing.competences.some((ec) => ec.titre === c.titre)) {
-                existing.competences.push(c);
-              }
-            }
-          } else {
-            first.modules.push(newMod);
-          }
-        }
+  if (chunks.length === 1) return first;
+
+  // Chunks suivants en parallèle (max 4 simultanés pour éviter le rate-limit)
+  const CONCURRENCY = 4;
+  for (let i = 1; i < chunks.length; i += CONCURRENCY) {
+    const batch = chunks.slice(i, i + CONCURRENCY);
+    const results = await Promise.allSettled(
+      batch.map((chunk) => extractChunk(chunk, false))
+    );
+    for (const result of results) {
+      if (result.status === "fulfilled" && result.value.modules?.length) {
+        mergeInto(first, result.value);
       }
-    } catch {
-      // Chunk suivant illisible, on continue
     }
   }
 
