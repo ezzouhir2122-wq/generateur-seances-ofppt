@@ -73,12 +73,16 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   // API Settings
   const [claudeKey, setClaudeKey] = useState("");
   const [openaiKey, setOpenaiKey] = useState("");
+  const [openrouterKey, setOpenrouterKey] = useState("");
   const [preferredModel, setPreferredModel] = useState("claude-sonnet-4-6");
   const [savingApi, setSavingApi] = useState(false);
   const [hasClaudeKey, setHasClaudeKey] = useState(false);
   const [hasOpenaiKey, setHasOpenaiKey] = useState(false);
+  const [hasOpenrouterKey, setHasOpenrouterKey] = useState(false);
   const [showClaudeKey, setShowClaudeKey] = useState(false);
   const [showOpenaiKey, setShowOpenaiKey] = useState(false);
+  const [showOpenrouterKey, setShowOpenrouterKey] = useState(false);
+  const [apiProvider, setApiProvider] = useState<"anthropic" | "openai" | "openrouter">("anthropic");
 
   const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
@@ -134,8 +138,15 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
         setPreferredModel(data.preferredModel ?? "claude-sonnet-4-6");
         setHasClaudeKey(data.hasClaudeKey);
         setHasOpenaiKey(data.hasOpenaiKey);
+        setHasOpenrouterKey(data.hasOpenrouterKey ?? false);
         if (data.claudeApiKey) setClaudeKey(data.claudeApiKey);
         if (data.openaiApiKey) setOpenaiKey(data.openaiApiKey);
+        if (data.openrouterApiKey) setOpenrouterKey(data.openrouterApiKey);
+        // Auto-select tab based on preferredModel
+        const m = data.preferredModel ?? "";
+        if (m.startsWith("gpt") || m.startsWith("o1") || m.startsWith("o3")) setApiProvider("openai");
+        else if (m.startsWith("openrouter/") || m.includes("/")) setApiProvider("openrouter");
+        else setApiProvider("anthropic");
       }
     } catch {}
   }, []);
@@ -146,7 +157,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       const res = await fetch("/api/user/api-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, preferredModel }),
+        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, preferredModel }),
       });
       if (!res.ok) throw new Error();
       toast.success("Paramètres API sauvegardés");
@@ -355,10 +366,10 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       {/* Panneau */}
       <div
         ref={sidebarRef}
-        className={`fixed top-0 right-0 h-full w-[380px] shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
-          open ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 left-0 h-full w-[380px] shadow-2xl z-50 flex flex-col transition-transform duration-300 ${
+          open ? "translate-x-0" : "-translate-x-full"
         }`}
-        style={{ background: "#F8FAFC", borderLeft: "1px solid #E2E8F0" }}
+        style={{ background: "#F8FAFC", borderRight: "1px solid #E2E8F0" }}
       >
         {/* Header */}
         <div className="px-5 py-4 flex items-center justify-between shrink-0" style={{ borderBottom: "1px solid #E2E8F0", background: "#FFFFFF" }}>
@@ -745,19 +756,53 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
           {/* Paramètres API */}
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>🔑 Paramètres API & Modèle IA</h3>
-            <p className="text-xs mb-4" style={{ color: "#6B7280" }}>Choisissez votre modèle et saisissez vos clés API personnelles.</p>
+            <p className="text-xs mb-4" style={{ color: "#6B7280" }}>Sélectionnez votre fournisseur, choisissez un modèle et saisissez votre clé API.</p>
 
-            {/* Sélecteur de modèle */}
+            {/* Onglets fournisseur */}
+            <div className="flex gap-1 mb-4 p-1 rounded-xl" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
+              {([
+                { id: "anthropic", label: "Anthropic", dot: "#E8651A", badge: hasClaudeKey },
+                { id: "openai",    label: "OpenAI",    dot: "#10A37F", badge: hasOpenaiKey },
+                { id: "openrouter",label: "OpenRouter", dot: "#6366F1", badge: hasOpenrouterKey },
+              ] as const).map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => setApiProvider(p.id)}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition-all relative"
+                  style={
+                    apiProvider === p.id
+                      ? { background: "#FFFFFF", color: "#111827", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }
+                      : { color: "#6B7280" }
+                  }
+                >
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.dot }} />
+                  {p.label}
+                  {p.badge && (
+                    <span className="w-1.5 h-1.5 rounded-full absolute top-1.5 right-1.5" style={{ background: p.dot }} />
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Modèles selon fournisseur */}
             <div className="mb-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Modèle IA préféré</p>
+              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Modèle IA</p>
               <div className="space-y-1.5">
-                {[
-                  { id: "claude-opus-4-8",         label: "Claude Opus 4.8", sub: "Meilleur — Anthropic", color: "#E8651A" },
-                  { id: "claude-sonnet-4-6",       label: "Claude Sonnet 4.6", sub: "Équilibré — Anthropic", color: "#E8651A" },
-                  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5", sub: "Rapide — Anthropic", color: "#E8651A" },
-                  { id: "gpt-4o",                  label: "GPT-4o", sub: "Meilleur — OpenAI", color: "#10A37F" },
-                  { id: "gpt-4o-mini",             label: "GPT-4o Mini", sub: "Rapide — OpenAI", color: "#10A37F" },
-                ].map((m) => (
+                {(apiProvider === "anthropic" ? [
+                  { id: "claude-opus-4-8",           label: "Claude Opus 4.8",   sub: "Meilleur", color: "#E8651A" },
+                  { id: "claude-sonnet-4-6",         label: "Claude Sonnet 4.6", sub: "Équilibré", color: "#E8651A" },
+                  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5",  sub: "Rapide",   color: "#E8651A" },
+                ] : apiProvider === "openai" ? [
+                  { id: "gpt-4o",       label: "GPT-4o",      sub: "Meilleur",  color: "#10A37F" },
+                  { id: "gpt-4o-mini",  label: "GPT-4o Mini", sub: "Rapide",    color: "#10A37F" },
+                  { id: "o3-mini",      label: "o3-mini",     sub: "Raisonnement", color: "#10A37F" },
+                ] : [
+                  { id: "openrouter/google/gemini-2.5-pro",         label: "Gemini 2.5 Pro",     sub: "Google · Meilleur",  color: "#6366F1" },
+                  { id: "openrouter/anthropic/claude-sonnet-4-5",   label: "Claude Sonnet 4.5",  sub: "Anthropic via OR",   color: "#6366F1" },
+                  { id: "openrouter/meta-llama/llama-4-maverick",   label: "Llama 4 Maverick",   sub: "Meta · Gratuit",     color: "#6366F1" },
+                  { id: "openrouter/mistralai/mistral-large",       label: "Mistral Large",      sub: "Mistral AI",         color: "#6366F1" },
+                  { id: "openrouter/deepseek/deepseek-r1",          label: "DeepSeek R1",        sub: "Raisonnement",       color: "#6366F1" },
+                ]).map((m) => (
                   <button
                     key={m.id}
                     onClick={() => setPreferredModel(m.id)}
@@ -782,69 +827,89 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
               </div>
             </div>
 
-            {/* Clé Claude */}
-            <div className="mb-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API Claude (Anthropic)</p>
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasClaudeKey ? "#0A4DA814" : "#F3F4F6", color: hasClaudeKey ? "#0A4DA8" : "#9CA3AF" }}>
-                  {hasClaudeKey ? "✓ Active" : "Non configurée"}
-                </span>
+            {/* Clé API selon fournisseur */}
+            {apiProvider === "anthropic" && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API Anthropic</p>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasClaudeKey ? "#E8651A14" : "#F3F4F6", color: hasClaudeKey ? "#E8651A" : "#9CA3AF" }}>
+                    {hasClaudeKey ? "✓ Active" : "Non configurée"}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showClaudeKey ? "text" : "password"}
+                    placeholder={hasClaudeKey ? "••••••••••••••••••••••" : "sk-ant-api03-..."}
+                    value={claudeKey}
+                    onChange={e => setClaudeKey(e.target.value)}
+                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
+                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                  />
+                  <button type="button" onClick={() => setShowClaudeKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
+                    {showClaudeKey ? "Cacher" : "Voir"}
+                  </button>
+                </div>
               </div>
-              <div className="relative">
-                <input
-                  type={showClaudeKey ? "text" : "password"}
-                  placeholder={hasClaudeKey ? "••••••••••••••••••••••" : "sk-ant-api03-..."}
-                  value={claudeKey}
-                  onChange={e => setClaudeKey(e.target.value)}
-                  className="w-full text-xs px-3 py-2.5 rounded-lg pr-10 outline-none font-mono"
-                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowClaudeKey(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]"
-                  style={{ color: "#9CA3AF" }}
-                >
-                  {showClaudeKey ? "Cacher" : "Voir"}
-                </button>
-              </div>
-            </div>
+            )}
 
-            {/* Clé OpenAI */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API OpenAI</p>
-                <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasOpenaiKey ? "#10A37F14" : "#F3F4F6", color: hasOpenaiKey ? "#10A37F" : "#9CA3AF" }}>
-                  {hasOpenaiKey ? "✓ Active" : "Non configurée"}
-                </span>
+            {apiProvider === "openai" && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API OpenAI</p>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasOpenaiKey ? "#10A37F14" : "#F3F4F6", color: hasOpenaiKey ? "#10A37F" : "#9CA3AF" }}>
+                    {hasOpenaiKey ? "✓ Active" : "Non configurée"}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showOpenaiKey ? "text" : "password"}
+                    placeholder={hasOpenaiKey ? "••••••••••••••••••••••" : "sk-proj-..."}
+                    value={openaiKey}
+                    onChange={e => setOpenaiKey(e.target.value)}
+                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
+                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                  />
+                  <button type="button" onClick={() => setShowOpenaiKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
+                    {showOpenaiKey ? "Cacher" : "Voir"}
+                  </button>
+                </div>
               </div>
-              <div className="relative">
-                <input
-                  type={showOpenaiKey ? "text" : "password"}
-                  placeholder={hasOpenaiKey ? "••••••••••••••••••••••" : "sk-proj-..."}
-                  value={openaiKey}
-                  onChange={e => setOpenaiKey(e.target.value)}
-                  className="w-full text-xs px-3 py-2.5 rounded-lg pr-10 outline-none font-mono"
-                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowOpenaiKey(v => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]"
-                  style={{ color: "#9CA3AF" }}
-                >
-                  {showOpenaiKey ? "Cacher" : "Voir"}
-                </button>
+            )}
+
+            {apiProvider === "openrouter" && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API OpenRouter</p>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasOpenrouterKey ? "#6366F114" : "#F3F4F6", color: hasOpenrouterKey ? "#6366F1" : "#9CA3AF" }}>
+                    {hasOpenrouterKey ? "✓ Active" : "Non configurée"}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showOpenrouterKey ? "text" : "password"}
+                    placeholder={hasOpenrouterKey ? "••••••••••••••••••••••" : "sk-or-v1-..."}
+                    value={openrouterKey}
+                    onChange={e => setOpenrouterKey(e.target.value)}
+                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
+                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                  />
+                  <button type="button" onClick={() => setShowOpenrouterKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
+                    {showOpenrouterKey ? "Cacher" : "Voir"}
+                  </button>
+                </div>
+                <p className="text-[10px] mt-1.5 rounded-lg px-2 py-1.5" style={{ background: "#6366F10D", color: "#6366F1", border: "1px solid #6366F130" }}>
+                  Obtenez une clé gratuite sur <span className="font-mono">openrouter.ai</span> — accès à +200 modèles
+                </p>
               </div>
-            </div>
+            )}
 
             <button
               onClick={saveApiSettings}
               disabled={savingApi}
               className="w-full text-xs py-2.5 rounded-lg font-semibold transition-all disabled:opacity-50"
-              style={{ background: "#E8651A", color: "#fff" }}
+              style={{ background: apiProvider === "openrouter" ? "#6366F1" : apiProvider === "openai" ? "#10A37F" : "#E8651A", color: "#fff" }}
             >
-              {savingApi ? "Sauvegarde…" : "💾 Sauvegarder"}
+              {savingApi ? "Sauvegarde…" : "💾 Sauvegarder les paramètres"}
             </button>
 
             <p className="text-[10px] mt-2 text-center" style={{ color: "#9CA3AF" }}>

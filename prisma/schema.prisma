@@ -16,9 +16,10 @@ model User {
   createdAt     DateTime      @default(now())
   matricule      String?
   etablissement  String?
-  claudeApiKey   String?
-  openaiApiKey   String?
-  preferredModel String?  @default("claude-sonnet-4-6")
+  claudeApiKey      String?
+  openaiApiKey      String?
+  openrouterApiKey  String?
+  preferredModel    String?  @default("claude-sonnet-4-6")
   seances       Seance[]
   modules       UserModule[]
   fiches        Fiche[]
