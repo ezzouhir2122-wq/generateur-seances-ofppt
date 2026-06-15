@@ -74,15 +74,18 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [claudeKey, setClaudeKey] = useState("");
   const [openaiKey, setOpenaiKey] = useState("");
   const [openrouterKey, setOpenrouterKey] = useState("");
+  const [googleKey, setGoogleKey] = useState("");
   const [preferredModel, setPreferredModel] = useState("claude-sonnet-4-6");
   const [savingApi, setSavingApi] = useState(false);
   const [hasClaudeKey, setHasClaudeKey] = useState(false);
   const [hasOpenaiKey, setHasOpenaiKey] = useState(false);
   const [hasOpenrouterKey, setHasOpenrouterKey] = useState(false);
+  const [hasGoogleKey, setHasGoogleKey] = useState(false);
   const [showClaudeKey, setShowClaudeKey] = useState(false);
   const [showOpenaiKey, setShowOpenaiKey] = useState(false);
   const [showOpenrouterKey, setShowOpenrouterKey] = useState(false);
-  const [apiProvider, setApiProvider] = useState<"anthropic" | "openai" | "openrouter">("anthropic");
+  const [showGoogleKey, setShowGoogleKey] = useState(false);
+  const [apiProvider, setApiProvider] = useState<"anthropic" | "openai" | "google" | "openrouter">("anthropic");
 
   const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
@@ -139,12 +142,15 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
         setHasClaudeKey(data.hasClaudeKey);
         setHasOpenaiKey(data.hasOpenaiKey);
         setHasOpenrouterKey(data.hasOpenrouterKey ?? false);
+        setHasGoogleKey(data.hasGoogleKey ?? false);
         if (data.claudeApiKey) setClaudeKey(data.claudeApiKey);
         if (data.openaiApiKey) setOpenaiKey(data.openaiApiKey);
         if (data.openrouterApiKey) setOpenrouterKey(data.openrouterApiKey);
+        if (data.googleApiKey) setGoogleKey(data.googleApiKey);
         // Auto-select tab based on preferredModel
         const m = data.preferredModel ?? "";
         if (m.startsWith("gpt") || m.startsWith("o1") || m.startsWith("o3")) setApiProvider("openai");
+        else if (m.startsWith("gemini")) setApiProvider("google");
         else if (m.startsWith("openrouter/") || m.includes("/")) setApiProvider("openrouter");
         else setApiProvider("anthropic");
       }
@@ -157,7 +163,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       const res = await fetch("/api/user/api-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, preferredModel }),
+        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, googleApiKey: googleKey, preferredModel }),
       });
       if (!res.ok) throw new Error();
       toast.success("Paramètres API sauvegardés");
@@ -758,17 +764,18 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>🔑 Paramètres API & Modèle IA</h3>
             <p className="text-xs mb-4" style={{ color: "#6B7280" }}>Sélectionnez votre fournisseur, choisissez un modèle et saisissez votre clé API.</p>
 
-            {/* Onglets fournisseur */}
-            <div className="flex gap-1 mb-4 p-1 rounded-xl" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
+            {/* Onglets fournisseur — 2 × 2 */}
+            <div className="grid grid-cols-2 gap-1 mb-4 p-1 rounded-xl" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
               {([
-                { id: "anthropic", label: "Anthropic", dot: "#E8651A", badge: hasClaudeKey },
-                { id: "openai",    label: "OpenAI",    dot: "#10A37F", badge: hasOpenaiKey },
-                { id: "openrouter",label: "OpenRouter", dot: "#6366F1", badge: hasOpenrouterKey },
+                { id: "anthropic",  label: "Anthropic",  dot: "#E8651A", badge: hasClaudeKey },
+                { id: "openai",     label: "OpenAI",     dot: "#10A37F", badge: hasOpenaiKey },
+                { id: "google",     label: "Google",     dot: "#4285F4", badge: hasGoogleKey },
+                { id: "openrouter", label: "OpenRouter", dot: "#6366F1", badge: hasOpenrouterKey },
               ] as const).map((p) => (
                 <button
                   key={p.id}
                   onClick={() => setApiProvider(p.id)}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition-all relative"
+                  className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition-all relative"
                   style={
                     apiProvider === p.id
                       ? { background: "#FFFFFF", color: "#111827", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }
@@ -789,19 +796,22 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
               <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Modèle IA</p>
               <div className="space-y-1.5">
                 {(apiProvider === "anthropic" ? [
-                  { id: "claude-opus-4-8",           label: "Claude Opus 4.8",   sub: "Meilleur", color: "#E8651A" },
-                  { id: "claude-sonnet-4-6",         label: "Claude Sonnet 4.6", sub: "Équilibré", color: "#E8651A" },
-                  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5",  sub: "Rapide",   color: "#E8651A" },
+                  { id: "claude-opus-4-8",           label: "Claude Opus 4.8",   sub: "Meilleur · Anthropic",  color: "#E8651A" },
+                  { id: "claude-sonnet-4-6",         label: "Claude Sonnet 4.6", sub: "Équilibré · Anthropic", color: "#E8651A" },
+                  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5",  sub: "Rapide · Anthropic",    color: "#E8651A" },
                 ] : apiProvider === "openai" ? [
-                  { id: "gpt-4o",       label: "GPT-4o",      sub: "Meilleur",  color: "#10A37F" },
-                  { id: "gpt-4o-mini",  label: "GPT-4o Mini", sub: "Rapide",    color: "#10A37F" },
-                  { id: "o3-mini",      label: "o3-mini",     sub: "Raisonnement", color: "#10A37F" },
+                  { id: "gpt-4o",       label: "GPT-4o",      sub: "Meilleur · OpenAI",      color: "#10A37F" },
+                  { id: "gpt-4o-mini",  label: "GPT-4o Mini", sub: "Rapide · OpenAI",        color: "#10A37F" },
+                  { id: "o3-mini",      label: "o3-mini",     sub: "Raisonnement · OpenAI",  color: "#10A37F" },
+                ] : apiProvider === "google" ? [
+                  { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro",   sub: "Meilleur · Google",      color: "#4285F4" },
+                  { id: "gemini-1.5-pro",   label: "Gemini 1.5 Pro",   sub: "Équilibré · Google",     color: "#4285F4" },
+                  { id: "gemini-1.5-flash", label: "Gemini 1.5 Flash", sub: "Rapide · Google",        color: "#4285F4" },
                 ] : [
-                  { id: "openrouter/google/gemini-2.5-pro",         label: "Gemini 2.5 Pro",     sub: "Google · Meilleur",  color: "#6366F1" },
-                  { id: "openrouter/anthropic/claude-sonnet-4-5",   label: "Claude Sonnet 4.5",  sub: "Anthropic via OR",   color: "#6366F1" },
-                  { id: "openrouter/meta-llama/llama-4-maverick",   label: "Llama 4 Maverick",   sub: "Meta · Gratuit",     color: "#6366F1" },
-                  { id: "openrouter/mistralai/mistral-large",       label: "Mistral Large",      sub: "Mistral AI",         color: "#6366F1" },
-                  { id: "openrouter/deepseek/deepseek-r1",          label: "DeepSeek R1",        sub: "Raisonnement",       color: "#6366F1" },
+                  { id: "openrouter/meta-llama/llama-4-maverick",        label: "Llama 4 Maverick",   sub: "Meta · Open Source",   color: "#6366F1" },
+                  { id: "openrouter/mistralai/mistral-large-2411",        label: "Mistral Large 2",    sub: "Mistral AI",           color: "#6366F1" },
+                  { id: "openrouter/deepseek/deepseek-r1",                label: "DeepSeek R1",        sub: "Raisonnement",         color: "#6366F1" },
+                  { id: "openrouter/qwen/qwen-2.5-72b-instruct",         label: "Qwen 2.5 72B",       sub: "Alibaba",              color: "#6366F1" },
                 ]).map((m) => (
                   <button
                     key={m.id}
@@ -903,11 +913,44 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
               </div>
             )}
 
+            {apiProvider === "google" && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API Google AI</p>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasGoogleKey ? "#4285F414" : "#F3F4F6", color: hasGoogleKey ? "#4285F4" : "#9CA3AF" }}>
+                    {hasGoogleKey ? "✓ Active" : "Non configurée"}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showGoogleKey ? "text" : "password"}
+                    placeholder={hasGoogleKey ? "••••••••••••••••••••••" : "AIzaSy..."}
+                    value={googleKey}
+                    onChange={e => setGoogleKey(e.target.value)}
+                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
+                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                  />
+                  <button type="button" onClick={() => setShowGoogleKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
+                    {showGoogleKey ? "Cacher" : "Voir"}
+                  </button>
+                </div>
+                <p className="text-[10px] mt-1.5 rounded-lg px-2 py-1.5" style={{ background: "#4285F40D", color: "#4285F4", border: "1px solid #4285F430" }}>
+                  Obtenez une clé sur <span className="font-mono">aistudio.google.com</span> — accès gratuit aux modèles Gemini
+                </p>
+              </div>
+            )}
+
             <button
               onClick={saveApiSettings}
               disabled={savingApi}
               className="w-full text-xs py-2.5 rounded-lg font-semibold transition-all disabled:opacity-50"
-              style={{ background: apiProvider === "openrouter" ? "#6366F1" : apiProvider === "openai" ? "#10A37F" : "#E8651A", color: "#fff" }}
+              style={{
+                background: apiProvider === "openrouter" ? "#6366F1"
+                  : apiProvider === "openai" ? "#10A37F"
+                  : apiProvider === "google" ? "#4285F4"
+                  : "#E8651A",
+                color: "#fff"
+              }}
             >
               {savingApi ? "Sauvegarde…" : "💾 Sauvegarder les paramètres"}
             </button>
