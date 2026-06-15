@@ -28,6 +28,7 @@ export default function SeancesPage() {
       });
     }
   }, []);
+
   const { data: session } = useSession();
   const formateur = session?.user
     ? { name: session.user.name ?? "Formateur", matricule: session.user.matricule, etablissement: session.user.etablissement }
@@ -38,11 +39,11 @@ export default function SeancesPage() {
     setError(null);
     setContenu(null);
     setTitre(`Séance — ${data.filiere} — ${data.module}`);
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 90_000);
     setElapsed(0);
+
     const ticker = setInterval(() => setElapsed((s) => s + 1), 1000);
+    const controller = new AbortController();
+    const safetyTimeout = setTimeout(() => controller.abort(), 120_000);
 
     try {
       const res = await fetch("/api/generate", {
@@ -56,21 +57,59 @@ export default function SeancesPage() {
         const json = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(json.error ?? "Erreur lors de la génération");
       }
-      const json = await res.json() as { contenu?: string };
-      if (!json.contenu) throw new Error("Réponse vide — vérifiez votre clé API dans les paramètres ⚙");
-      setContenu(json.contenu);
+
+      const contentType = res.headers.get("content-type") ?? "";
+
+      if (contentType.includes("text/plain") && res.body) {
+        // ── Claude streaming path ──────────────────────────────────────────
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+        let finalContent = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          if (buffer.startsWith("[[ERROR]]")) {
+            throw new Error(buffer.slice("[[ERROR]]".length) || "Erreur de génération IA");
+          }
+
+          const metaIdx = buffer.indexOf("\n[[META]]");
+          if (metaIdx !== -1) {
+            finalContent = buffer.slice(0, metaIdx);
+            setContenu(finalContent);
+            break;
+          }
+
+          setContenu(buffer);
+          finalContent = buffer;
+        }
+
+        if (!finalContent.trim()) {
+          throw new Error("Réponse vide — vérifiez votre clé API dans les paramètres ⚙");
+        }
+      } else {
+        // ── JSON path (Google, OpenAI, OpenRouter) ─────────────────────────
+        const json = await res.json() as { contenu?: string };
+        if (!json.contenu) throw new Error("Réponse vide — vérifiez votre clé API dans les paramètres ⚙");
+        setContenu(json.contenu);
+      }
     } catch (err) {
+      setContenu(null);
       if (err instanceof Error && err.name === "AbortError") {
-        setError("La génération a pris trop de temps (> 90s). Essayez un modèle plus rapide comme Claude Haiku ou Gemini Flash dans les paramètres ⚙.");
+        setError("La génération a pris trop de temps. Essayez un modèle plus rapide comme Claude Haiku ou Gemini Flash dans les paramètres ⚙.");
       } else {
         const msg = err instanceof Error ? err.message : "Erreur inconnue";
-        setError(msg.includes("clé") || msg.includes("API") || msg.includes("manquante")
-          ? msg
-          : `Erreur de génération — ${msg}. Configurez votre clé API dans les paramètres ⚙.`
+        setError(
+          msg.includes("clé") || msg.includes("API") || msg.includes("manquante")
+            ? msg
+            : `Erreur de génération — ${msg}. Configurez votre clé API dans les paramètres ⚙.`
         );
       }
     } finally {
-      clearTimeout(timeout);
+      clearTimeout(safetyTimeout);
       clearInterval(ticker);
       setIsLoading(false);
     }
@@ -91,17 +130,18 @@ export default function SeancesPage() {
         )}
 
         <div className={contenu ? "col-span-1" : "lg:col-span-3"}>
-          {isLoading && (
+          {/* Spinner initial (avant le premier token Claude) */}
+          {isLoading && !contenu && (
             <div className="card flex flex-col items-center justify-center py-20 gap-4">
               <div className="w-10 h-10 border-4 border-[#0A4DA8] border-t-transparent rounded-full animate-spin" />
               <p className="text-sm font-medium" style={{ color: "#374151" }}>Génération en cours…</p>
               <p className="text-xs" style={{ color: "#9CA3AF" }}>
                 {elapsed < 10
-                  ? "L'IA rédige votre cours…"
+                  ? "Connexion à l'IA…"
                   : elapsed < 30
-                  ? `${elapsed}s — rédaction du contenu…`
+                  ? `${elapsed}s — l'IA rédige votre cours…`
                   : elapsed < 60
-                  ? `${elapsed}s — cours long en cours, encore quelques secondes…`
+                  ? `${elapsed}s — cours long, encore quelques secondes…`
                   : `${elapsed}s — presque terminé…`}
               </p>
               {elapsed >= 15 && (
@@ -112,20 +152,22 @@ export default function SeancesPage() {
             </div>
           )}
 
-          {error && (
-            <div className="card" style={{ borderColor: "#7F1D1D", background: "#2A1010" }}>
-              <p className="text-red-400 text-sm">{error}</p>
-            </div>
-          )}
-
+          {/* Résultat — live streaming ou final */}
           {contenu && (
             <SeanceResult
               contenu={contenu}
+              isStreaming={isLoading}
               onExportPDF={() => exportToPDF(contenu, titre, formateur)}
               onExportWord={() => exportToWord(contenu, titre)}
               onExportPPT={() => exportToPPT(contenu, titre)}
               onReset={() => { setContenu(null); setError(null); }}
             />
+          )}
+
+          {error && !contenu && (
+            <div className="card" style={{ borderColor: "#7F1D1D", background: "#2A1010" }}>
+              <p className="text-red-400 text-sm">{error}</p>
+            </div>
           )}
 
           {!isLoading && !contenu && !error && (

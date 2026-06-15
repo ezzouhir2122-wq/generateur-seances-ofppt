@@ -25,6 +25,24 @@ export async function generateWithClaude(
   return block.text;
 }
 
+export async function* streamWithClaude(
+  params: SeanceParams,
+  options?: { apiKey?: string; model?: string }
+): AsyncGenerator<string> {
+  const key = options?.apiKey || process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error("Clé Claude manquante");
+  const client = new Anthropic({ apiKey: key });
+  const model = options?.model ?? "claude-opus-4-8";
+  const stream = client.messages.stream({
+    model,
+    max_tokens: 4096,
+    messages: [{ role: "user", content: buildPrompt(params) }],
+  });
+  for await (const text of stream.textStream) {
+    yield text;
+  }
+}
+
 const ANNEE_LABELS_CLAUDE: Record<string, string> = {
   "1ere-annee": "1ère Année",
   "2eme-annee": "2ème Année",
