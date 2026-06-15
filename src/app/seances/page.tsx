@@ -13,6 +13,7 @@ export default function SeancesPage() {
   const [contenu, setContenu] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [titre, setTitre] = useState("");
+  const [elapsed, setElapsed] = useState(0);
   const [initial, setInitial] = useState<Partial<SeanceFormData> | undefined>(undefined);
 
   useEffect(() => {
@@ -38,19 +39,39 @@ export default function SeancesPage() {
     setContenu(null);
     setTitre(`Séance — ${data.filiere} — ${data.module}`);
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 90_000);
+    setElapsed(0);
+    const ticker = setInterval(() => setElapsed((s) => s + 1), 1000);
+
     try {
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
 
-      if (!res.ok) throw new Error("Erreur lors de la génération");
-      const json = await res.json();
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(json.error ?? "Erreur lors de la génération");
+      }
+      const json = await res.json() as { contenu?: string };
+      if (!json.contenu) throw new Error("Réponse vide — vérifiez votre clé API dans les paramètres ⚙");
       setContenu(json.contenu);
-    } catch {
-      setError("Impossible de générer la séance. Vérifiez vos clés API dans .env");
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        setError("La génération a pris trop de temps (> 90s). Essayez un modèle plus rapide comme Claude Haiku ou Gemini Flash dans les paramètres ⚙.");
+      } else {
+        const msg = err instanceof Error ? err.message : "Erreur inconnue";
+        setError(msg.includes("clé") || msg.includes("API") || msg.includes("manquante")
+          ? msg
+          : `Erreur de génération — ${msg}. Configurez votre clé API dans les paramètres ⚙.`
+        );
+      }
     } finally {
+      clearTimeout(timeout);
+      clearInterval(ticker);
       setIsLoading(false);
     }
   };
@@ -73,7 +94,21 @@ export default function SeancesPage() {
           {isLoading && (
             <div className="card flex flex-col items-center justify-center py-20 gap-4">
               <div className="w-10 h-10 border-4 border-[#0A4DA8] border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm" style={{ color: "#9CA3AF" }}>Génération de la séance en cours...</p>
+              <p className="text-sm font-medium" style={{ color: "#374151" }}>Génération en cours…</p>
+              <p className="text-xs" style={{ color: "#9CA3AF" }}>
+                {elapsed < 10
+                  ? "L'IA rédige votre cours…"
+                  : elapsed < 30
+                  ? `${elapsed}s — rédaction du contenu…`
+                  : elapsed < 60
+                  ? `${elapsed}s — cours long en cours, encore quelques secondes…`
+                  : `${elapsed}s — presque terminé…`}
+              </p>
+              {elapsed >= 15 && (
+                <p className="text-[11px] px-4 text-center" style={{ color: "#0A4DA8" }}>
+                  💡 Pour des réponses plus rapides, sélectionnez <strong>Claude Haiku</strong> ou <strong>Gemini Flash</strong> dans les paramètres ⚙
+                </p>
+              )}
             </div>
           )}
 

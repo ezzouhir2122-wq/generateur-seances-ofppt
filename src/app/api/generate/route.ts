@@ -7,6 +7,8 @@ import { generateWithOpenRouter } from "@/lib/openrouter";
 import { prisma } from "@/lib/db";
 import { SeanceParams } from "../../../../equipment/generate-seance";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   const params: SeanceParams = await req.json();
