@@ -336,7 +336,7 @@ export async function GET(req: NextRequest) {
   // Template Excel download — no auth check needed beyond session
   if (mode === "template") {
     const buf = generateTemplateExcel();
-    return new NextResponse(buf, {
+    return new NextResponse(new Uint8Array(buf), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": 'attachment; filename="modele-referentiel-ofppt.xlsx"',
