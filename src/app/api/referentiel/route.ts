@@ -343,6 +343,93 @@ async function saveReferentielFull(extracted: ExtractedReferentiel) {
   return { modulesCreated, sequencesCreated, competencesCreated, objectifsCreated, criteresCreated };
 }
 
+// ── CSV parser: auto-detects ; or , separator ────────────────────────────────
+function parseCsvRows(buffer: Buffer): Record<string, unknown>[] | null {
+  const text = buffer.toString("utf-8");
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return null;
+  const sep = lines[0].includes(";") ? ";" : ",";
+
+  function splitRow(line: string): string[] {
+    const cols: string[] = [];
+    let cur = "", inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === sep && !inQ) { cols.push(cur.trim()); cur = ""; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    return cols.map(c => c.replace(/^"|"$/g, "").trim());
+  }
+
+  const headers = splitRow(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = splitRow(line);
+    const row: Record<string, unknown> = {};
+    headers.forEach((h, i) => { row[h] = vals[i] ?? ""; });
+    return row;
+  });
+}
+
+// ── OFPPT direct-competences format ──────────────────────────────────────────
+// Columns: Filière | Niveau de formation | N° Module | Intitulé du module | Masse horaire (h) | Compétences Pedagogique
+// One competence per row — groups are split by (Filière + Niveau de formation)
+function parseOfpptDirectFormat(rows: Record<string, unknown>[]): ExtractedReferentiel[] | null {
+  if (rows.length === 0) return null;
+  const keys = Object.keys(rows[0]).map(normalize);
+
+  const hasNiveau = keys.some(k => k.includes("niveau"));
+  const hasModule = keys.some(k => k.includes("module") || k.includes("intitule") || k.includes("intitulé"));
+  const hasComp = keys.some(k => k.includes("competence") || k.includes("compétence") || k.includes("pedagogique") || k.includes("pédagogique"));
+  if (!hasNiveau || !hasModule || !hasComp) return null;
+
+  const groupMap = new Map<string, ExtractedReferentiel>();
+  const groupOrder: string[] = [];
+
+  for (const row of rows) {
+    const filiereVal = col(row, "Filière", "Filiere", "filiere");
+    const niveauVal  = col(row, "Niveau de formation", "Niveau de fo", "Niveau de f", "Niveau");
+    const mCode      = col(row, "N° Module", "N°Module", "N° module", "N°module", "Numero Module", "No Module");
+    const mNom       = col(row, "Intitulé du module", "Intitule du module", "Intitulé module", "Module");
+    const mhgStr     = col(row, "Masse horaire (h)", "Masse horaire", "MHG", "Masse horai");
+    const mhg        = mhgStr && !isNaN(parseFloat(mhgStr)) ? parseFloat(mhgStr) : undefined;
+    const compTitre  = col(
+      row,
+      "Compétences Pedagogique", "Competences Pedagogique",
+      "Compétences Pedagogiques", "Competences Pedagogiques",
+      "Compétence Pedagogique",  "Competence Pedagogique",
+      "Compétences", "Competences",
+    );
+
+    if (!mNom) continue;
+
+    const key = `${filiereVal}||${niveauVal}`;
+    if (!groupMap.has(key)) {
+      groupMap.set(key, { secteur: filiereVal || "OFPPT", filiere: niveauVal || "Formation", modules: [] });
+      groupOrder.push(key);
+    }
+    const group = groupMap.get(key)!;
+
+    let mod = group.modules.find(m =>
+      (mCode && m.code?.toLowerCase() === mCode.toLowerCase()) ||
+      m.nom.toLowerCase() === mNom.toLowerCase()
+    );
+    if (!mod) {
+      mod = { nom: mNom, code: mCode || undefined, mhg, competences: [], sequences: [] };
+      group.modules.push(mod);
+    }
+    if (mhg && !mod.mhg) mod.mhg = mhg;
+
+    if (!compTitre) continue;
+    if (!mod.competences!.some(c => c.titre === compTitre)) {
+      mod.competences!.push({ titre: compTitre, objectifs: [] });
+    }
+  }
+
+  const groups = groupOrder.map(k => groupMap.get(k)!).filter(g => g.modules.length > 0);
+  return groups.length > 0 ? groups : null;
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
@@ -358,18 +445,49 @@ export async function POST(req: NextRequest) {
     let extracted: ExtractedReferentiel | null = null;
     let importMode = "ia";
 
+    // ── Fast path 1: template Excel (Sous-élément + Apprentissage format) ──
     if (ext === "xlsx" || ext === "xls") {
       extracted = parseTemplateExcel(buffer);
       if (extracted) importMode = "template";
     }
 
+    // ── Fast path 2: OFPPT direct-competences format (CSV or Excel) ──
+    if (!extracted) {
+      let rows: Record<string, unknown>[] | null = null;
+      if (ext === "csv") {
+        rows = parseCsvRows(buffer);
+      } else if (ext === "xlsx" || ext === "xls") {
+        const wb2 = read(buffer, { type: "buffer" });
+        const ws2 = wb2.Sheets[wb2.SheetNames[0]];
+        rows = utils.sheet_to_json<Record<string, unknown>>(ws2, { defval: "" });
+      }
+      if (rows && rows.length > 0) {
+        const groups = parseOfpptDirectFormat(rows);
+        if (groups && groups.length > 0) {
+          let modulesCreated = 0, competencesCreated = 0;
+          for (const group of groups) {
+            const s = await saveReferentielBatch(group);
+            modulesCreated += s.modulesCreated;
+            competencesCreated += s.competencesCreated;
+          }
+          return NextResponse.json({
+            success: true,
+            secteur: groups[0].secteur,
+            filiere: groups[0].filiere,
+            importMode: "template",
+            stats: { modulesCreated, competencesCreated, sequencesCreated: 0, objectifsCreated: 0, criteresCreated: 0 },
+          });
+        }
+      }
+    }
+
+    // ── Slow path: AI extraction (PDF, DOCX, unrecognised formats) ──
     if (!extracted) {
       const text = await extractTextFromBuffer(buffer, file.type, file.name);
       if (!text || text.trim().length < 50) return NextResponse.json({ error: "Le fichier semble vide ou illisible" }, { status: 400 });
       extracted = await extractReferentielFromText(text);
     }
 
-    // Fast batch path for template Excel, sequential path for AI imports
     const stats = importMode === "template"
       ? await saveReferentielBatch(extracted)
       : await saveReferentielFull(extracted);

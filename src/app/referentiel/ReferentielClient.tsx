@@ -98,7 +98,7 @@ export default function ReferentielClient({ secteurs }: Props) {
       const res = await fetch("/api/referentiel", { method: "POST", body: fd });
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error ?? `Erreur ${res.status}`);
-      toast.success(`✅ Référentiel importé — ${json.stats?.modulesCreated ?? 0} modules`);
+      toast.success(`✅ Importé — ${json.stats?.modulesCreated ?? 0} modules · ${json.stats?.competencesCreated ?? 0} compétences`);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erreur lors de l'import");
