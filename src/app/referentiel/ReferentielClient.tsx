@@ -287,15 +287,25 @@ export default function ReferentielClient({ secteurs }: Props) {
                 <span key={col} className="text-[11px] px-2 py-0.5 rounded font-mono" style={{ background: "#F0F4FF", color: "#0A4DA8", border: "1px solid #0A4DA820" }}>{col}</span>
               ))}
             </div>
-            <a
-              href="/api/referentiel?mode=template"
-              download="modele-referentiel-ofppt.xlsx"
-              className="inline-block mt-3 text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
-              style={{ background: "#0A4DA8", color: "#fff" }}
-              onClick={e => e.stopPropagation()}
-            >
-              📥 Télécharger le modèle Excel
-            </a>
+            <div className="flex items-center gap-2 mt-3 flex-wrap">
+              <button
+                onClick={e => { e.stopPropagation(); fileInputRef.current?.click(); }}
+                disabled={uploading}
+                className="text-xs font-semibold px-4 py-1.5 rounded-lg transition-opacity hover:opacity-80 disabled:opacity-50"
+                style={{ background: "#16A34A", color: "#fff" }}
+              >
+                {uploading ? "Import en cours…" : "📂 Importer mon fichier Excel"}
+              </button>
+              <a
+                href="/api/referentiel?mode=template"
+                download="modele-referentiel-ofppt.xlsx"
+                className="inline-block text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+                style={{ background: "#0A4DA8", color: "#fff" }}
+                onClick={e => e.stopPropagation()}
+              >
+                📥 Télécharger le modèle
+              </a>
+            </div>
           </div>
         </div>
       </div>
