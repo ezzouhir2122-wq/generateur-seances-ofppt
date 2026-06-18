@@ -87,17 +87,39 @@ function splitIntoChunks(text: string, size = 40000): string[] {
   return chunks;
 }
 
+function sanitizeJson(str: string): string {
+  let inString = false;
+  let escaped = false;
+  let result = "";
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    if (escaped) { result += ch; escaped = false; continue; }
+    if (ch === "\\" && inString) { result += ch; escaped = true; continue; }
+    if (ch === '"') { inString = !inString; result += ch; continue; }
+    if (inString) {
+      const code = ch.charCodeAt(0);
+      if (ch === "\n") { result += "\\n"; continue; }
+      if (ch === "\r") { result += "\\r"; continue; }
+      if (ch === "\t") { result += "\\t"; continue; }
+      if (code < 0x20) { result += " "; continue; }
+    }
+    result += ch;
+  }
+  return result;
+}
+
 async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedReferentiel> {
   const message = await client.messages.create({
     model: "claude-opus-4-8",
-    max_tokens: 8192,
+    max_tokens: 16384,
     messages: [{ role: "user", content: OFPPT_PROMPT(chunk, isFirst) }],
   });
   const raw = (message.content[0] as { type: string; text: string }).text.trim();
   const start = raw.indexOf("{");
   const end = raw.lastIndexOf("}");
   if (start === -1 || end === -1) throw new Error("Réponse JSON invalide");
-  return JSON.parse(raw.slice(start, end + 1)) as ExtractedReferentiel;
+  const jsonStr = sanitizeJson(raw.slice(start, end + 1));
+  return JSON.parse(jsonStr) as ExtractedReferentiel;
 }
 
 function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
