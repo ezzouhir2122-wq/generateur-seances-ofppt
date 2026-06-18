@@ -624,6 +624,19 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
               </div>
               <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>L&apos;IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
             </div>
+
+            <div className="mt-2 rounded-lg p-3 text-xs" style={{ background: "#E8F5E9", border: "1px solid #A5D6A7" }}>
+              <p className="font-semibold mb-1" style={{ color: "#2E7D32" }}>⚡ Import sans IA (instantané)</p>
+              <p style={{ color: "#388E3C" }}>Téléchargez le modèle Excel, remplissez-le et importez-le — aucune clé API requise.</p>
+              <a
+                href="/api/referentiel?mode=template"
+                download="modele-referentiel-ofppt.xlsx"
+                className="inline-block mt-2 rounded px-3 py-1 text-[10px] font-semibold"
+                style={{ background: "#2E7D32", color: "#fff" }}
+              >
+                📥 Télécharger le modèle Excel
+              </a>
+            </div>
           </section>
 
           {/* Référentiels importés */}

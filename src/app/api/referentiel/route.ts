@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { extractReferentielFromText } from "@/lib/referentiel-extractor";
-import { read, utils } from "xlsx";
+import { extractReferentielFromText, ExtractedReferentiel } from "@/lib/referentiel-extractor";
+import { read, utils, write } from "xlsx";
 
 export const maxDuration = 300;
 
@@ -23,6 +23,95 @@ if (typeof globalThis.DOMMatrix === "undefined") {
     toJSON() { return {}; } toString() { return "matrix(1, 0, 0, 1, 0, 0)"; }
   };
 }
+
+// ── Template Excel helpers ──────────────────────────────────────────────────
+
+const TEMPLATE_HEADERS = ["Secteur", "Filière", "Code Filière", "Code Module", "Module", "MHG", "Compétence", "Objectif", "Critère"];
+
+function normalize(s: string) {
+  return s.toLowerCase().replace(/[̀-ͯ]/g, "").normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+}
+
+function col(row: Record<string, unknown>, ...names: string[]): string {
+  for (const name of names) {
+    const key = Object.keys(row).find(k => normalize(k) === normalize(name));
+    if (key && row[key] !== undefined && row[key] !== "") return String(row[key]).trim();
+  }
+  return "";
+}
+
+function parseTemplateExcel(buffer: Buffer): ExtractedReferentiel | null {
+  const wb = read(buffer, { type: "buffer" });
+  const ws = wb.Sheets[wb.SheetNames[0]];
+  const rows = utils.sheet_to_json<Record<string, unknown>>(ws, { defval: "" });
+  if (rows.length === 0) return null;
+
+  const keys = Object.keys(rows[0]).map(normalize);
+  const isTemplate = ["secteur", "filiere", "module"].every(k => keys.some(r => r.includes(k)));
+  if (!isTemplate) return null;
+
+  const result: ExtractedReferentiel = { secteur: "", filiere: "", modules: [] };
+
+  for (const row of rows) {
+    const secteur = col(row, "Secteur");
+    const filiere = col(row, "Filière", "Filiere");
+    const filiereCode = col(row, "Code Filière", "Code Filiere");
+    const moduleCode = col(row, "Code Module");
+    const moduleNom = col(row, "Module", "Nom Module", "Intitulé module");
+    const mhgStr = col(row, "MHG", "Masse Horaire");
+    const mhg = mhgStr ? parseFloat(mhgStr) : undefined;
+    const competenceTitre = col(row, "Compétence", "Competence");
+    const objectifTitre = col(row, "Objectif");
+    const critereTitre = col(row, "Critère", "Critere", "Critère de performance");
+
+    if (!result.secteur && secteur) result.secteur = secteur;
+    if (!result.filiere && filiere) result.filiere = filiere;
+    if (!result.filiereCode && filiereCode) result.filiereCode = filiereCode;
+    if (!moduleNom) continue;
+
+    let mod = result.modules.find(m =>
+      (moduleCode && m.code?.toLowerCase() === moduleCode.toLowerCase()) ||
+      m.nom.toLowerCase() === moduleNom.toLowerCase()
+    );
+    if (!mod) {
+      mod = { nom: moduleNom, code: moduleCode || undefined, mhg: mhg || undefined, competences: [], sequences: [] };
+      result.modules.push(mod);
+    }
+    if (!competenceTitre) continue;
+
+    let comp = mod.competences!.find(c => c.titre.toLowerCase() === competenceTitre.toLowerCase());
+    if (!comp) { comp = { titre: competenceTitre, objectifs: [] }; mod.competences!.push(comp); }
+    if (!objectifTitre) continue;
+
+    let obj = comp.objectifs.find(o => o.titre.toLowerCase() === objectifTitre.toLowerCase());
+    if (!obj) { obj = { titre: objectifTitre, criteres: [] }; comp.objectifs.push(obj); }
+
+    if (critereTitre && !obj.criteres.includes(critereTitre)) obj.criteres.push(critereTitre);
+  }
+
+  return result.secteur && result.filiere && result.modules.length > 0 ? result : null;
+}
+
+function generateTemplateExcel(): Buffer {
+  const wb = utils.book_new();
+  const data = [
+    TEMPLATE_HEADERS,
+    ["Informatique et Digital", "Développement Digital", "DD", "M101", "Programmation Orientée Objet", "80",
+      "Analyser les besoins", "Identifier les exigences", "Les exigences fonctionnelles sont correctement identifiées"],
+    ["Informatique et Digital", "Développement Digital", "DD", "M101", "Programmation Orientée Objet", "80",
+      "Analyser les besoins", "Identifier les exigences", "Les exigences sont validées avec le client"],
+    ["Informatique et Digital", "Développement Digital", "DD", "M101", "Programmation Orientée Objet", "80",
+      "Analyser les besoins", "Définir l'architecture", "L'architecture retenue est justifiée"],
+    ["Informatique et Digital", "Développement Digital", "DD", "M102", "Bases de données", "60",
+      "Concevoir une base de données", "Modéliser le schéma", "Le modèle conceptuel est correct et complet"],
+  ];
+  const ws = utils.aoa_to_sheet(data);
+  ws["!cols"] = TEMPLATE_HEADERS.map(() => ({ wch: 28 }));
+  utils.book_append_sheet(wb, ws, "Référentiel");
+  return Buffer.from(write(wb, { type: "buffer", bookType: "xlsx" }));
+}
+
+// ── Text extraction (AI path) ───────────────────────────────────────────────
 
 async function extractTextFromBuffer(buffer: Buffer, mimeType: string, fileName: string): Promise<string> {
   const ext = fileName.split(".").pop()?.toLowerCase();
@@ -85,13 +174,24 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 });
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const text = await extractTextFromBuffer(buffer, file.type, file.name);
 
-    if (!text || text.trim().length < 50) {
-      return NextResponse.json({ error: "Le fichier semble vide ou illisible" }, { status: 400 });
+    // Try direct template parse first — no AI, no timeout
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    let extracted: ExtractedReferentiel | null = null;
+    let importMode = "ia";
+
+    if (ext === "xlsx" || ext === "xls") {
+      extracted = parseTemplateExcel(buffer);
+      if (extracted) importMode = "template";
     }
 
-    const extracted = await extractReferentielFromText(text);
+    if (!extracted) {
+      const text = await extractTextFromBuffer(buffer, file.type, file.name);
+      if (!text || text.trim().length < 50) {
+        return NextResponse.json({ error: "Le fichier semble vide ou illisible" }, { status: 400 });
+      }
+      extracted = await extractReferentielFromText(text);
+    }
 
     // Upsert Secteur
     let secteur = await prisma.secteur.findFirst({ where: { nom: extracted.secteur } });
@@ -215,6 +315,7 @@ export async function POST(req: NextRequest) {
       success: true,
       secteur: extracted.secteur,
       filiere: extracted.filiere,
+      importMode,
       stats: { modulesCreated, sequencesCreated, competencesCreated, objectifsCreated, criteresCreated },
     });
   } catch (err) {
@@ -230,8 +331,20 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
-  // Lightweight mode for the assistant — returns only filières + module names
   const mode = req.nextUrl.searchParams.get("mode");
+
+  // Template Excel download — no auth check needed beyond session
+  if (mode === "template") {
+    const buf = generateTemplateExcel();
+    return new NextResponse(buf, {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": 'attachment; filename="modele-referentiel-ofppt.xlsx"',
+      },
+    });
+  }
+
+  // Lightweight mode for the assistant — returns only filières + module names
   if (mode === "summary") {
     const filieres = await prisma.filiere.findMany({
       select: {
