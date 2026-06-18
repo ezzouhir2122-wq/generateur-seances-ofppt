@@ -58,7 +58,21 @@ async function extractTextFromBuffer(buffer: Buffer, mimeType: string, fileName:
     return buffer.toString("utf-8");
   }
 
-  throw new Error("Format non supporté. Utilisez PDF, DOCX, Excel ou Markdown.");
+  if (ext === "csv") {
+    const text = buffer.toString("utf-8");
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    if (lines.length === 0) return "";
+    const headers = lines[0].split(",").map((h) => h.replace(/^"|"$/g, "").trim());
+    return lines
+      .slice(1)
+      .map((line) => {
+        const cols = line.split(",").map((c) => c.replace(/^"|"$/g, "").trim());
+        return headers.map((h, i) => `${h}: ${cols[i] ?? ""}`).join(" | ");
+      })
+      .join("\n");
+  }
+
+  throw new Error("Format non supporté. Utilisez PDF, DOCX, Excel, CSV ou Markdown.");
 }
 
 export async function POST(req: NextRequest) {

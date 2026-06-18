@@ -549,7 +549,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
           {/* Référentiel Pédagogique */}
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>📚 Référentiel Pédagogique OFPPT</h3>
-            <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Importez un référentiel (PDF, DOCX, Excel) — l&apos;IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
+            <p className="text-xs mb-3" style={{ color: "#4B5563" }}>Importez un référentiel (PDF, DOCX, Excel, CSV) — l&apos;IA extrait automatiquement filières, modules, compétences, objectifs et critères.</p>
 
             {refResult && (
               <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#0A4DA814", border: "1px solid #0A4DA830" }}>
@@ -576,7 +576,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                 <input
                   ref={refFileRef}
                   type="file"
-                  accept=".pdf,.docx,.doc,.xlsx,.xls,.md,.markdown"
+                  accept=".pdf,.docx,.doc,.xlsx,.xls,.csv,.md,.markdown"
                   className="hidden"
                   onChange={handleRefFile}
                 />
@@ -618,7 +618,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
             <div className="mt-3 rounded-lg p-3 text-xs space-y-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
               <p className="font-semibold" style={{ color: "#374151" }}>Formats acceptés :</p>
               <div className="flex gap-2 flex-wrap mt-1">
-                {["PDF", "DOCX", "Excel", "MD"].map((f) => (
+                {["PDF", "DOCX", "Excel", "CSV", "MD"].map((f) => (
                   <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #0A4DA840", color: "#0A4DA8" }}>{f}</span>
                 ))}
               </div>
