@@ -56,12 +56,12 @@ function exportExcel(
   const rows = secteurs.flatMap((s) =>
     s.filieres.flatMap((f) =>
       f.modules.map((m, idx) => ({
-        Secteur: idx === 0 ? s.nom : "",
-        Filière: idx === 0 ? f.nom : "",
-        "N°": m.code ?? "",
-        "Intitulé Module": m.nom,
-        "MHG (h)": m.mhg ?? "",
-        Compétences: m.competences
+        "Filière": idx === 0 ? s.nom : "",
+        "Niveau de formation": idx === 0 ? f.nom : "",
+        "N° Module": m.code ?? "",
+        "Intitulé du module": m.nom,
+        "Masse horaire (h)": m.mhg ?? "",
+        "Compétences Pedagogiques": m.competences
           .map((c, i) => `${compLetter(c.titre, i)}. ${compText(c.titre)}`)
           .join(" | "),
       }))
@@ -71,11 +71,11 @@ function exportExcel(
   if (rows.length === 0) return;
   const ws = utils.json_to_sheet(rows);
   ws["!cols"] = [
-    { wch: 22 },
-    { wch: 30 },
+    { wch: 20 },
+    { wch: 26 },
     { wch: 12 },
     { wch: 50 },
-    { wch: 10 },
+    { wch: 12 },
     { wch: 80 },
   ];
   const wb = utils.book_new();
@@ -136,6 +136,7 @@ export default function ReferentielClient({ secteurs }: Props) {
           r.nom.toLowerCase().includes(q) ||
           (r.code ?? "").toLowerCase().includes(q) ||
           r.filiere.toLowerCase().includes(q) ||
+          r.secteur.toLowerCase().includes(q) ||
           r.competences.some((c) => c.titre.toLowerCase().includes(q))
       );
     }
@@ -522,13 +523,19 @@ export default function ReferentielClient({ secteurs }: Props) {
                 >
                   <th
                     className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: "#4B5563", width: "22%" }}
+                    style={{ color: "#4B5563", width: "14%" }}
                   >
                     Filière
                   </th>
                   <th
                     className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: "#4B5563", width: "100px" }}
+                    style={{ color: "#4B5563", width: "18%" }}
+                  >
+                    Niveau de formation
+                  </th>
+                  <th
+                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: "#4B5563", width: "90px" }}
                   >
                     N° Module
                   </th>
@@ -540,15 +547,15 @@ export default function ReferentielClient({ secteurs }: Props) {
                   </th>
                   <th
                     className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: "#4B5563", width: "80px" }}
+                    style={{ color: "#4B5563", width: "90px" }}
                   >
-                    MHG
+                    Masse horaire (h)
                   </th>
                   <th
                     className="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider"
-                    style={{ color: "#4B5563", width: "120px" }}
+                    style={{ color: "#4B5563", width: "140px" }}
                   >
-                    Compétences
+                    Compétences Pedagogiques
                   </th>
                 </tr>
               </thead>
@@ -556,7 +563,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                 {filtered.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={6}
                       className="px-4 py-8 text-center text-sm"
                       style={{ color: "#4B5563" }}
                     >
@@ -588,12 +595,20 @@ export default function ReferentielClient({ secteurs }: Props) {
                               className="text-xs font-medium"
                               style={{ color: "#0A4DA8" }}
                             >
+                              {row.secteur}
+                            </span>
+                          </td>
+                          <td className="px-4 py-2.5">
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: "#374151" }}
+                            >
                               {row.filiere}
                             </span>
                             {row.filiereCode && (
                               <span
                                 className="ml-1.5 text-[10px] font-mono"
-                                style={{ color: "#4B5563" }}
+                                style={{ color: "#9CA3AF" }}
                               >
                                 {row.filiereCode}
                               </span>
@@ -821,7 +836,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                         className="text-[11px] font-medium"
                         style={{ color: "#FFFFFF99" }}
                       >
-                        {row.filiere}
+                        {row.secteur}{row.filiere && row.filiere !== row.secteur ? ` · ${row.filiere}` : ""}
                       </span>
                       {row.mhg && (
                         <span
@@ -931,7 +946,7 @@ export default function ReferentielClient({ secteurs }: Props) {
             </span>
             <div className="flex items-center gap-2">
               <span className="text-xs" style={{ color: "#4B5563" }}>
-                Total MHG affiché :
+                Total Masse horaire :
               </span>
               <span
                 className="text-xs font-semibold"

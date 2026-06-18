@@ -28,7 +28,7 @@ if (typeof globalThis.DOMMatrix === "undefined") {
 
 // Colonnes du modèle OFPPT (format officiel)
 const TEMPLATE_HEADERS = [
-  "Niveau de formation", "N° Module",
+  "Filière", "Niveau de formation", "N° Module",
   "Intitulé du module", "Masse horaire (h)", "Sous-élément", "Apprentissage de base",
 ];
 
@@ -81,10 +81,13 @@ function parseTemplateExcel(buffer: Buffer): ExtractedReferentiel | null {
       let moduleNom: string;
 
       if (isNewOfpptFormat) {
-        // Nouveau format : Niveau de formation | N° Module | Intitulé du module | Masse horaire | Sous-élément | Apprentissage de base
+        // Nouveau format : Filière | Niveau de formation | N° Module | Intitulé du module | Masse horaire | Sous-élément | Apprentissage de base
+        const filiereVal = col(row, "Filière", "Filiere", "filiere");
         filiere = col(row, "Niveau de formation", "Niveau de fo", "Niveau");
         moduleCode = col(row, "N° Module", "N°Module", "N° module", "N°module", "Numero Module", "No Module");
         moduleNom = col(row, "Intitulé du module", "Intitule du module", "Module");
+        // Filière column → stored as secteur; Niveau de formation → stored as filière
+        if (!result.secteur && filiereVal) result.secteur = filiereVal;
       } else {
         // Ancien format : Secteur | Filière | Intitulé du module | ...
         const secteur = col(row, "Secteur");
@@ -170,16 +173,16 @@ function generateTemplateExcel(): Buffer {
   const wb = utils.book_new();
   const data = [
     TEMPLATE_HEADERS,
-    ["Technicien Spécialisé", "M101", "Métier et formation", "30", "A1", "Connaître les techniques de prise de notes"],
-    ["Technicien Spécialisé", "M101", "Métier et formation", "30", "A2", "Consulter des ouvrages spécialisés"],
-    ["Technicien Spécialisé", "M101", "Métier et formation", "30", "B1", "Distinguer la nature et les exigences de l'emploi"],
-    ["Technicien Spécialisé", "M101", "Métier et formation", "30", "B2", "Décrire les conditions générales d'exercice du métier"],
-    ["Technicien Spécialisé", "M102", "Programmation Web", "80", "A1", "Analyser les besoins du projet"],
-    ["Technicien Spécialisé", "M102", "Programmation Web", "80", "A2", "Concevoir l'architecture de l'application"],
-    ["Technicien Spécialisé", "M102", "Programmation Web", "80", "B1", "Implémenter les fonctionnalités selon les spécifications"],
+    ["TSC", "Technicien Spécialisé", "M101", "Métier et formation", "30", "A1", "Connaître les techniques de prise de notes"],
+    ["TSC", "Technicien Spécialisé", "M101", "Métier et formation", "30", "A2", "Consulter des ouvrages spécialisés"],
+    ["TSC", "Technicien Spécialisé", "M101", "Métier et formation", "30", "B1", "Distinguer la nature et les exigences de l'emploi"],
+    ["TSC", "Technicien Spécialisé", "M101", "Métier et formation", "30", "B2", "Décrire les conditions générales d'exercice du métier"],
+    ["TSC", "Technicien Spécialisé", "M102", "Programmation Web", "80", "A1", "Analyser les besoins du projet"],
+    ["TSC", "Technicien Spécialisé", "M102", "Programmation Web", "80", "A2", "Concevoir l'architecture de l'application"],
+    ["TSC", "Technicien Spécialisé", "M102", "Programmation Web", "80", "B1", "Implémenter les fonctionnalités selon les spécifications"],
   ];
   const ws = utils.aoa_to_sheet(data);
-  ws["!cols"] = [{ wch: 24 }, { wch: 14 }, { wch: 28 }, { wch: 16 }, { wch: 14 }, { wch: 50 }];
+  ws["!cols"] = [{ wch: 16 }, { wch: 24 }, { wch: 14 }, { wch: 28 }, { wch: 16 }, { wch: 14 }, { wch: 50 }];
   utils.book_append_sheet(wb, ws, "Référentiel");
   return Buffer.from(write(wb, { type: "buffer", bookType: "xlsx" }));
 }
