@@ -237,6 +237,109 @@ async function extractTextFromBuffer(buffer: Buffer, mimeType: string, fileName:
   throw new Error("Format non supporté. Utilisez PDF, DOCX, Excel, CSV ou Markdown.");
 }
 
+// ── Fast batch save for template imports (no AI objectifs) ────────────────────
+async function saveReferentielBatch(extracted: ExtractedReferentiel) {
+  // 1. Upsert secteur
+  let secteur = await prisma.secteur.findFirst({ where: { nom: extracted.secteur } });
+  if (!secteur) secteur = await prisma.secteur.create({ data: { nom: extracted.secteur, code: extracted.secteurCode ?? null } });
+
+  // 2. Upsert filiere
+  let filiere = await prisma.filiere.findFirst({ where: { nom: extracted.filiere, secteurId: secteur.id } });
+  if (!filiere) filiere = await prisma.filiere.create({ data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, secteurId: secteur.id } });
+
+  // 3. Load all existing modules in one query
+  const existingMods = await prisma.refModule.findMany({
+    where: { filiereId: filiere.id },
+    select: { id: true, nom: true, code: true, mhg: true },
+  });
+  const moduleIdMap = new Map<string, string>();
+  for (const em of existingMods) {
+    moduleIdMap.set((em.code ?? em.nom).toLowerCase(), em.id);
+  }
+
+  // 4. Create new modules in parallel
+  const newMods = extracted.modules.filter(m => !moduleIdMap.has((m.code ?? m.nom).toLowerCase()));
+  const created = await Promise.all(
+    newMods.map(m => prisma.refModule.create({ data: { nom: m.nom, code: m.code ?? null, mhg: m.mhg ?? null, filiereId: filiere.id } }))
+  );
+  created.forEach((m, i) => moduleIdMap.set((newMods[i].code ?? newMods[i].nom).toLowerCase(), m.id));
+
+  // 5. Load all existing competences in one query
+  const allModuleIds = [...moduleIdMap.values()];
+  const existingComps = await prisma.competence.findMany({
+    where: { moduleId: { in: allModuleIds }, sequenceId: null },
+    select: { titre: true, moduleId: true },
+  });
+  const existingCompSet = new Set(existingComps.map(c => `${c.moduleId}:${c.titre.toLowerCase()}`));
+
+  // 6. Batch create all new competences in one createMany
+  const compsToCreate: { titre: string; moduleId: string; sequenceId: null }[] = [];
+  for (const mod of extracted.modules) {
+    const moduleId = moduleIdMap.get((mod.code ?? mod.nom).toLowerCase());
+    if (!moduleId) continue;
+    for (const comp of mod.competences ?? []) {
+      if (!existingCompSet.has(`${moduleId}:${comp.titre.toLowerCase()}`)) {
+        compsToCreate.push({ titre: comp.titre, moduleId, sequenceId: null });
+      }
+    }
+  }
+  if (compsToCreate.length > 0) await prisma.competence.createMany({ data: compsToCreate });
+
+  return { modulesCreated: newMods.length, competencesCreated: compsToCreate.length, sequencesCreated: 0, objectifsCreated: 0, criteresCreated: 0 };
+}
+
+// ── Sequential save for AI imports (has nested objectifs/criteres) ─────────────
+async function saveReferentielFull(extracted: ExtractedReferentiel) {
+  let secteur = await prisma.secteur.findFirst({ where: { nom: extracted.secteur } });
+  if (!secteur) secteur = await prisma.secteur.create({ data: { nom: extracted.secteur, code: extracted.secteurCode ?? null } });
+
+  let filiere = await prisma.filiere.findFirst({ where: { nom: extracted.filiere, secteurId: secteur.id } });
+  if (!filiere) filiere = await prisma.filiere.create({ data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, secteurId: secteur.id } });
+
+  let modulesCreated = 0, sequencesCreated = 0, competencesCreated = 0, objectifsCreated = 0, criteresCreated = 0;
+
+  async function createCompetence(comp: { titre: string; objectifs?: { titre: string; criteres?: string[] }[] }, moduleId: string, sequenceId: string | null) {
+    const competence = await prisma.competence.create({ data: { titre: comp.titre, moduleId, sequenceId } });
+    competencesCreated++;
+    for (const obj of comp.objectifs ?? []) {
+      const objectif = await prisma.objectif.create({ data: { titre: obj.titre, competenceId: competence.id } });
+      objectifsCreated++;
+      for (const crit of obj.criteres ?? []) {
+        await prisma.criterePerformance.create({ data: { description: crit, objectifId: objectif.id } });
+        criteresCreated++;
+      }
+    }
+  }
+
+  for (const mod of extracted.modules ?? []) {
+    let refModule = await prisma.refModule.findFirst({
+      where: { filiereId: filiere.id, ...(mod.code ? { code: { equals: mod.code, mode: "insensitive" } } : { nom: { equals: mod.nom, mode: "insensitive" } }) },
+    });
+    if (refModule) {
+      if (mod.mhg && !refModule.mhg) refModule = await prisma.refModule.update({ where: { id: refModule.id }, data: { mhg: mod.mhg } });
+    } else {
+      refModule = await prisma.refModule.create({ data: { nom: mod.nom, code: mod.code ?? null, mhg: mod.mhg ?? null, filiereId: filiere.id } });
+      modulesCreated++;
+    }
+    const existingComps = await prisma.competence.findMany({ where: { moduleId: refModule.id, sequenceId: null }, select: { titre: true } });
+    const existingTitles = new Set(existingComps.map(c => c.titre.toLowerCase()));
+    for (const comp of mod.competences ?? []) {
+      if (!existingTitles.has(comp.titre.toLowerCase())) await createCompetence(comp, refModule.id, null);
+    }
+    for (const seq of mod.sequences ?? []) {
+      let sequence = await prisma.sequence.findFirst({ where: { moduleId: refModule.id, titre: { equals: seq.titre, mode: "insensitive" } } });
+      if (!sequence) { sequence = await prisma.sequence.create({ data: { titre: seq.titre, code: seq.code ?? null, moduleId: refModule.id } }); sequencesCreated++; }
+      const existingSeqComps = await prisma.competence.findMany({ where: { sequenceId: sequence.id }, select: { titre: true } });
+      const existingSeqTitles = new Set(existingSeqComps.map(c => c.titre.toLowerCase()));
+      for (const comp of seq.competences ?? []) {
+        if (!existingSeqTitles.has(comp.titre.toLowerCase())) await createCompetence(comp, refModule.id, sequence.id);
+      }
+    }
+  }
+
+  return { modulesCreated, sequencesCreated, competencesCreated, objectifsCreated, criteresCreated };
+}
+
 export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
@@ -247,9 +350,8 @@ export async function POST(req: NextRequest) {
     if (!file) return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 });
 
     const buffer = Buffer.from(await file.arrayBuffer());
-
-    // Try direct template parse first — no AI, no timeout
     const ext = file.name.split(".").pop()?.toLowerCase();
+
     let extracted: ExtractedReferentiel | null = null;
     let importMode = "ia";
 
@@ -260,143 +362,19 @@ export async function POST(req: NextRequest) {
 
     if (!extracted) {
       const text = await extractTextFromBuffer(buffer, file.type, file.name);
-      if (!text || text.trim().length < 50) {
-        return NextResponse.json({ error: "Le fichier semble vide ou illisible" }, { status: 400 });
-      }
+      if (!text || text.trim().length < 50) return NextResponse.json({ error: "Le fichier semble vide ou illisible" }, { status: 400 });
       extracted = await extractReferentielFromText(text);
     }
 
-    // Upsert Secteur
-    let secteur = await prisma.secteur.findFirst({ where: { nom: extracted.secteur } });
-    if (!secteur) {
-      secteur = await prisma.secteur.create({
-        data: { nom: extracted.secteur, code: extracted.secteurCode ?? null },
-      });
-    }
+    // Fast batch path for template Excel, sequential path for AI imports
+    const stats = importMode === "template"
+      ? await saveReferentielBatch(extracted)
+      : await saveReferentielFull(extracted);
 
-    // Upsert Filiere
-    let filiere = await prisma.filiere.findFirst({
-      where: { nom: extracted.filiere, secteurId: secteur.id },
-    });
-    if (!filiere) {
-      filiere = await prisma.filiere.create({
-        data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, secteurId: secteur.id },
-      });
-    }
-
-    let modulesCreated = 0;
-    let sequencesCreated = 0;
-    let competencesCreated = 0;
-    let objectifsCreated = 0;
-    let criteresCreated = 0;
-
-    // Crée une compétence + ses objectifs + critères sous un module, éventuellement rattachée à une séquence.
-    async function createCompetence(
-      comp: { titre: string; objectifs?: { titre: string; criteres?: string[] }[] },
-      moduleId: string,
-      sequenceId: string | null
-    ) {
-      const competence = await prisma.competence.create({
-        data: { titre: comp.titre, moduleId, sequenceId },
-      });
-      competencesCreated++;
-
-      for (const obj of comp.objectifs ?? []) {
-        const objectif = await prisma.objectif.create({
-          data: { titre: obj.titre, competenceId: competence.id },
-        });
-        objectifsCreated++;
-
-        for (const crit of obj.criteres ?? []) {
-          await prisma.criterePerformance.create({
-            data: { description: crit, objectifId: objectif.id },
-          });
-          criteresCreated++;
-        }
-      }
-    }
-
-    for (const mod of extracted.modules ?? []) {
-      // Upsert module — évite les doublons si ré-importation
-      let refModule = await prisma.refModule.findFirst({
-        where: {
-          filiereId: filiere.id,
-          ...(mod.code
-            ? { code: { equals: mod.code, mode: "insensitive" } }
-            : { nom: { equals: mod.nom, mode: "insensitive" } }),
-        },
-      });
-
-      if (refModule) {
-        // Met à jour mhg si manquant
-        if (mod.mhg && !refModule.mhg) {
-          refModule = await prisma.refModule.update({
-            where: { id: refModule.id },
-            data: { mhg: mod.mhg },
-          });
-        }
-      } else {
-        refModule = await prisma.refModule.create({
-          data: {
-            nom: mod.nom,
-            code: mod.code ?? null,
-            mhg: mod.mhg ?? null,
-            filiereId: filiere.id,
-          },
-        });
-        modulesCreated++;
-      }
-
-      // Compétences directement sous le module (pas de séquence)
-      const existingComps = await prisma.competence.findMany({
-        where: { moduleId: refModule.id, sequenceId: null },
-        select: { titre: true },
-      });
-      const existingTitles = new Set(existingComps.map((c) => c.titre.toLowerCase()));
-
-      for (const comp of mod.competences ?? []) {
-        if (!existingTitles.has(comp.titre.toLowerCase())) {
-          await createCompetence(comp, refModule.id, null);
-        }
-      }
-
-      // Compétences regroupées par séquence
-      for (const seq of mod.sequences ?? []) {
-        let sequence = await prisma.sequence.findFirst({
-          where: { moduleId: refModule.id, titre: { equals: seq.titre, mode: "insensitive" } },
-        });
-        if (!sequence) {
-          sequence = await prisma.sequence.create({
-            data: { titre: seq.titre, code: seq.code ?? null, moduleId: refModule.id },
-          });
-          sequencesCreated++;
-        }
-        const existingSeqComps = await prisma.competence.findMany({
-          where: { sequenceId: sequence.id },
-          select: { titre: true },
-        });
-        const existingSeqTitles = new Set(existingSeqComps.map((c) => c.titre.toLowerCase()));
-        for (const comp of seq.competences ?? []) {
-          if (!existingSeqTitles.has(comp.titre.toLowerCase())) {
-            await createCompetence(comp, refModule.id, sequence.id);
-          }
-        }
-      }
-    }
-
-    return NextResponse.json({
-      success: true,
-      secteur: extracted.secteur,
-      filiere: extracted.filiere,
-      importMode,
-      stats: { modulesCreated, sequencesCreated, competencesCreated, objectifsCreated, criteresCreated },
-    });
+    return NextResponse.json({ success: true, secteur: extracted.secteur, filiere: extracted.filiere, importMode, stats });
   } catch (err) {
     console.error("Erreur référentiel:", err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Erreur lors du traitement" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Erreur lors du traitement" }, { status: 500 });
   }
 }
 
