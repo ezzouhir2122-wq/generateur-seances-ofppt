@@ -9,6 +9,7 @@ export interface SeanceFormData {
   type: "theorique" | "tp" | "ta";
   objectifs?: string;
   competence?: string;
+  competences?: string[];
   niveauApprentissage?: "debutant" | "intermediaire" | "avance";
   mode?: "presentiel" | "distanciel" | "hybride";
 }
@@ -52,6 +53,7 @@ export interface FicheFormData {
   filiere: string;
   module: string;
   codeModule?: string;
+  mhg?: number;
   intitule: string;
   formateur: string;
   duree: string;
@@ -62,6 +64,8 @@ export interface FicheFormData {
   objectifsSavoirFaire?: string;
   objectifsSavoirEtre?: string;
   prerequis: string;
+  competence?: string;
+  competences?: string[];
 }
 
 export interface ReferentielContext {
