@@ -618,8 +618,8 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
             <div className="mt-3 rounded-lg p-3 text-xs space-y-1" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
               <p className="font-semibold" style={{ color: "#374151" }}>Formats acceptés :</p>
               <div className="flex gap-2 flex-wrap mt-1">
-                {["PDF", "DOCX", "Excel", "CSV", "MD"].map((f) => (
-                  <span key={f} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #0A4DA840", color: "#0A4DA8" }}>{f}</span>
+                {["PDF", "DOCX", "Excel", "CSV", "MD"].map((fmt) => (
+                  <span key={fmt} className="rounded px-2 py-0.5 font-mono text-[10px]" style={{ background: "#F5F7FA", border: "1px solid #0A4DA840", color: "#0A4DA8" }}>{fmt}</span>
                 ))}
               </div>
               <p className="text-[10px] mt-1" style={{ color: "#4B5563" }}>L&apos;IA extrait : Filière · Module · Compétence · Objectif · Critères de performance</p>
