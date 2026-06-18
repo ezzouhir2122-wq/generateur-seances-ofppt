@@ -142,8 +142,8 @@ function splitIntoChunks(text: string, size = 12000): string[] {
 
 async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedReferentiel> {
   const message = await client.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 16000,
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 8000,
     tools: [EXTRACT_TOOL],
     tool_choice: { type: "tool", name: "extract_referentiel" },
     messages: [{ role: "user", content: OFPPT_PROMPT(chunk, isFirst) }],
@@ -186,7 +186,7 @@ function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
 }
 
 export async function extractReferentielFromText(text: string): Promise<ExtractedReferentiel> {
-  const chunks = splitIntoChunks(text, 12000);
+  const chunks = splitIntoChunks(text, 8000);
 
   // First chunk sequential — establishes secteur/filière
   const first = await extractChunk(chunks[0], true);
