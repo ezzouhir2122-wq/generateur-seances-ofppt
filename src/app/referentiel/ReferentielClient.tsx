@@ -275,17 +275,17 @@ export default function ReferentielClient({ secteurs }: Props) {
                 <p className="text-sm font-semibold mb-1" style={{ color: "#111827" }}>
                   Glissez votre fichier ici ou cliquez pour sélectionner
                 </p>
-                <p className="text-xs" style={{ color: "#9CA3AF" }}>Excel (.xlsx), CSV, PDF, DOCX acceptés</p>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>Excel (.xlsx), CSV, Markdown (.md), PDF, DOCX acceptés</p>
               </>
             )}
           </div>
 
           {/* Columns info */}
           <div className="mt-4 rounded-xl p-4" style={{ background: "#FFFFFF", border: "1px solid #E2E8F0" }}>
-            <p className="text-xs font-semibold mb-2" style={{ color: "#374151" }}>Colonnes attendues (Excel/CSV) :</p>
+            <p className="text-xs font-semibold mb-2" style={{ color: "#374151" }}>Colonnes attendues (Excel / CSV / Markdown) :</p>
             <div className="flex flex-wrap gap-1.5">
-              {["Niveau de formation", "N° Module", "Intitulé du module", "Masse horaire (h)", "Sous-élément", "Apprentissage de base"].map(col => (
-                <span key={col} className="text-[11px] px-2 py-0.5 rounded font-mono" style={{ background: "#F0F4FF", color: "#0A4DA8", border: "1px solid #0A4DA820" }}>{col}</span>
+              {["Filière", "Niveau de formation", "N° Module", "Intitulé du module", "Masse horaire (h)", "Compétences Pedagogique"].map(c => (
+                <span key={c} className="text-[11px] px-2 py-0.5 rounded font-mono" style={{ background: "#F0F4FF", color: "#0A4DA8", border: "1px solid #0A4DA820" }}>{c}</span>
               ))}
             </div>
             <div className="flex items-center gap-2 mt-3 flex-wrap">
@@ -295,7 +295,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                 className="text-xs font-semibold px-4 py-1.5 rounded-lg transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{ background: "#16A34A", color: "#fff" }}
               >
-                {uploading ? "Import en cours…" : "📂 Importer mon fichier Excel"}
+                {uploading ? "Import en cours…" : "📂 Importer mon fichier"}
               </button>
               <a
                 href="/api/referentiel?mode=template"
@@ -304,7 +304,16 @@ export default function ReferentielClient({ secteurs }: Props) {
                 style={{ background: "#0A4DA8", color: "#fff" }}
                 onClick={e => e.stopPropagation()}
               >
-                📥 Télécharger le modèle
+                📥 Modèle Excel
+              </a>
+              <a
+                href="/api/referentiel?mode=template-md"
+                download="modele-referentiel-ofppt.md"
+                className="inline-block text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+                style={{ background: "#374151", color: "#fff" }}
+                onClick={e => e.stopPropagation()}
+              >
+                📄 Modèle Markdown
               </a>
             </div>
           </div>

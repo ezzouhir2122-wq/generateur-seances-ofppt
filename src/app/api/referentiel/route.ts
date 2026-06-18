@@ -371,6 +371,48 @@ function parseCsvRows(buffer: Buffer): Record<string, unknown>[] | null {
   });
 }
 
+// ── Markdown table parser ────────────────────────────────────────────────────
+// Supports GFM tables: | Col1 | Col2 | … |
+function parseMarkdownTable(buffer: Buffer): Record<string, unknown>[] | null {
+  const text = buffer.toString("utf-8");
+  const lines = text.split(/\r?\n/);
+
+  function parseMdRow(line: string): string[] {
+    return line.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+  }
+
+  const tableLines = lines.filter(l => l.trim().startsWith("|") && l.includes("|", 1));
+  if (tableLines.length < 3) return null;
+
+  const headers = parseMdRow(tableLines[0]);
+  if (headers.length === 0) return null;
+
+  const dataLines = tableLines.slice(1).filter(l => !parseMdRow(l).every(c => /^[-:]+$/.test(c)));
+  if (dataLines.length === 0) return null;
+
+  return dataLines.map(line => {
+    const vals = parseMdRow(line);
+    const row: Record<string, unknown> = {};
+    headers.forEach((h, i) => { row[h] = vals[i] ?? ""; });
+    return row;
+  });
+}
+
+function generateTemplateMd(): string {
+  return `# Référentiel Pédagogique OFPPT
+
+| Filière | Niveau de formation | N° Module | Intitulé du module | Masse horaire (h) | Compétences Pedagogique |
+|---------|---------------------|-----------|-------------------|:-----------------:|------------------------|
+| Gestion des Entreprises | 1ère Année | M101 | Métier et formation | 30 | Connaître les techniques de prise de notes |
+| Gestion des Entreprises | 1ère Année | M101 | Métier et formation | 30 | Consulter des ouvrages spécialisés |
+| Gestion des Entreprises | 1ère Année | M101 | Métier et formation | 30 | Distinguer la nature et les exigences de l'emploi |
+| Gestion des Entreprises | 1ère Année | M102 | Communication professionnelle | 45 | Maîtriser les techniques de communication orale |
+| Gestion des Entreprises | 1ère Année | M102 | Communication professionnelle | 45 | Rédiger des documents professionnels |
+| GEOCF | 2ème Année | M201 | Mathématiques appliquées | 60 | Appliquer les méthodes de calcul numérique |
+| GEOCF | 2ème Année | M201 | Mathématiques appliquées | 60 | Résoudre des problèmes d'optimisation |
+`;
+}
+
 // ── OFPPT direct-competences format ──────────────────────────────────────────
 // Columns: Filière | Niveau de formation | N° Module | Intitulé du module | Masse horaire (h) | Compétences Pedagogique
 // One competence per row — groups are split by (Filière + Niveau de formation)
@@ -481,6 +523,27 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // ── Fast path 3: Markdown table format (.md) ──
+    if (!extracted && (ext === "md" || ext === "markdown")) {
+      const rows = parseMarkdownTable(buffer);
+      if (rows && rows.length > 0) {
+        const groups = parseOfpptDirectFormat(rows);
+        if (groups && groups.length > 0) {
+          let modulesCreated = 0, competencesCreated = 0;
+          for (const group of groups) {
+            const s = await saveReferentielBatch(group);
+            modulesCreated += s.modulesCreated;
+            competencesCreated += s.competencesCreated;
+          }
+          return NextResponse.json({
+            success: true, secteur: groups[0].secteur, filiere: groups[0].filiere,
+            importMode: "template",
+            stats: { modulesCreated, competencesCreated, sequencesCreated: 0, objectifsCreated: 0, criteresCreated: 0 },
+          });
+        }
+      }
+    }
+
     // ── Slow path: AI extraction (PDF, DOCX, unrecognised formats) ──
     if (!extracted) {
       const text = await extractTextFromBuffer(buffer, file.type, file.name);
@@ -505,13 +568,24 @@ export async function GET(req: NextRequest) {
 
   const mode = req.nextUrl.searchParams.get("mode");
 
-  // Template Excel download — no auth check needed beyond session
+  // Template Excel download
   if (mode === "template") {
     const buf = generateTemplateExcel();
     return new NextResponse(new Uint8Array(buf), {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         "Content-Disposition": 'attachment; filename="modele-referentiel-ofppt.xlsx"',
+      },
+    });
+  }
+
+  // Template Markdown download
+  if (mode === "template-md") {
+    const md = generateTemplateMd();
+    return new NextResponse(md, {
+      headers: {
+        "Content-Type": "text/markdown; charset=utf-8",
+        "Content-Disposition": 'attachment; filename="modele-referentiel-ofppt.md"',
       },
     });
   }
