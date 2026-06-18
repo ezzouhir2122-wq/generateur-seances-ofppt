@@ -33,13 +33,19 @@ export async function* streamWithClaude(
   if (!key) throw new Error("Clé Claude manquante");
   const client = new Anthropic({ apiKey: key });
   const model = options?.model ?? "claude-opus-4-8";
-  const stream = client.messages.stream({
+  const stream = await client.messages.create({
     model,
     max_tokens: 4096,
     messages: [{ role: "user", content: buildPrompt(params) }],
+    stream: true,
   });
-  for await (const text of stream.textStream) {
-    yield text;
+  for await (const event of stream) {
+    if (
+      event.type === "content_block_delta" &&
+      event.delta.type === "text_delta"
+    ) {
+      yield event.delta.text;
+    }
   }
 }
 
