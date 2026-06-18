@@ -139,8 +139,8 @@ function repairTruncatedJson(str: string): string {
 
 async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedReferentiel> {
   const message = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 8192,
+    model: "claude-sonnet-4-6",
+    max_tokens: 16000,
     messages: [{ role: "user", content: OFPPT_PROMPT(chunk, isFirst) }],
   });
   const raw = (message.content[0] as { type: string; text: string }).text.trim();
@@ -180,15 +180,15 @@ function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
 }
 
 export async function extractReferentielFromText(text: string): Promise<ExtractedReferentiel> {
-  const chunks = splitIntoChunks(text, 8000);
+  const chunks = splitIntoChunks(text, 15000);
 
   // Premier chunk séquentiel pour obtenir secteur/filière
   const first = await extractChunk(chunks[0], true);
 
   if (chunks.length === 1) return first;
 
-  // Chunks suivants en parallèle (max 4 simultanés pour éviter le rate-limit)
-  const CONCURRENCY = 4;
+  // Chunks suivants en parallèle (max 6 simultanés)
+  const CONCURRENCY = 6;
   for (let i = 1; i < chunks.length; i += CONCURRENCY) {
     const batch = chunks.slice(i, i + CONCURRENCY);
     const results = await Promise.allSettled(
