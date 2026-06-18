@@ -108,6 +108,35 @@ function sanitizeJson(str: string): string {
   return result;
 }
 
+// Repairs JSON truncated by a max_tokens cutoff by closing unclosed structures.
+function repairTruncatedJson(str: string): string {
+  let inString = false;
+  let escaped = false;
+  const stack: string[] = [];
+  let result = "";
+
+  for (let i = 0; i < str.length; i++) {
+    const ch = str[i];
+    result += ch;
+    if (escaped) { escaped = false; continue; }
+    if (ch === "\\" && inString) { escaped = true; continue; }
+    if (ch === '"') { inString = !inString; continue; }
+    if (!inString) {
+      if (ch === "{" || ch === "[") stack.push(ch);
+      else if (ch === "}" && stack[stack.length - 1] === "{") stack.pop();
+      else if (ch === "]" && stack[stack.length - 1] === "[") stack.pop();
+    }
+  }
+
+  if (inString) result += '"';
+  // Remove trailing comma left by a truncated array element
+  result = result.replace(/,\s*$/, "");
+  for (let i = stack.length - 1; i >= 0; i--) {
+    result += stack[i] === "{" ? "}" : "]";
+  }
+  return result;
+}
+
 async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedReferentiel> {
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
@@ -116,10 +145,20 @@ async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedR
   });
   const raw = (message.content[0] as { type: string; text: string }).text.trim();
   const start = raw.indexOf("{");
+  if (start === -1) throw new Error("Réponse JSON invalide");
+
+  // Use full string from { onward so truncated responses can be repaired
   const end = raw.lastIndexOf("}");
-  if (start === -1 || end === -1) throw new Error("Réponse JSON invalide");
-  const jsonStr = sanitizeJson(raw.slice(start, end + 1));
-  return JSON.parse(jsonStr) as ExtractedReferentiel;
+  const jsonCandidate = end > start ? raw.slice(start, end + 1) : raw.slice(start);
+  const sanitized = sanitizeJson(jsonCandidate);
+
+  try {
+    return JSON.parse(sanitized) as ExtractedReferentiel;
+  } catch {
+    // Response was likely truncated at max_tokens — repair and retry
+    const repaired = repairTruncatedJson(sanitized);
+    return JSON.parse(repaired) as ExtractedReferentiel;
+  }
 }
 
 function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
@@ -141,7 +180,7 @@ function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
 }
 
 export async function extractReferentielFromText(text: string): Promise<ExtractedReferentiel> {
-  const chunks = splitIntoChunks(text, 15000);
+  const chunks = splitIntoChunks(text, 8000);
 
   // Premier chunk séquentiel pour obtenir secteur/filière
   const first = await extractChunk(chunks[0], true);
