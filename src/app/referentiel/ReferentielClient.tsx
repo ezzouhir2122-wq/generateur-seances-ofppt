@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { utils, writeFile } from "xlsx";
 import Link from "next/link";
 import { setReferentielContext } from "@/lib/referentiel-context";
+import { toast } from "sonner";
 
 interface CompetenceItem {
   id: string;
@@ -85,6 +86,26 @@ function exportExcel(
 export default function ReferentielClient({ secteurs }: Props) {
   const router = useRouter();
   const [selectedSecteur, setSelectedSecteur] = useState<string>("all");
+  const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const uploadFile = useCallback(async (file: File) => {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/referentiel", { method: "POST", body: fd });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error ?? `Erreur ${res.status}`);
+      toast.success(`✅ Référentiel importé — ${json.stats?.modulesCreated ?? 0} modules`);
+      router.refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur lors de l'import");
+    } finally {
+      setUploading(false);
+    }
+  }, [router]);
   const [search, setSearch] = useState("");
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [view, setView] = useState<"modules" | "competences">("modules");
@@ -208,30 +229,89 @@ export default function ReferentielClient({ secteurs }: Props) {
 
   if (secteurs.length === 0) {
     return (
-      <div
-        className="min-h-screen flex flex-col items-center justify-center"
-        style={{ background: "#F5F7FA", color: "#9CA3AF" }}
-      >
-        <div className="text-5xl mb-4">📚</div>
-        <h2 className="text-xl font-semibold mb-2" style={{ color: "#374151" }}>
-          Aucun référentiel importé
-        </h2>
-        <p className="text-sm mb-6" style={{ color: "#4B5563" }}>
-          Importez un référentiel depuis le panneau Paramètres
-        </p>
-        <Link
-          href="/"
-          className="text-sm px-4 py-2 rounded-lg font-medium text-white"
-          style={{ background: "#0A4DA8" }}
-        >
-          ← Retour au tableau de bord
-        </Link>
+      <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#F5F7FA" }}>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".xlsx,.xls,.csv,.pdf,.docx,.doc,.md"
+          className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); }}
+        />
+
+        <div className="w-full max-w-xl">
+          {/* Title */}
+          <div className="text-center mb-8">
+            <div className="text-5xl mb-3">📚</div>
+            <h2 className="text-xl font-bold mb-1" style={{ color: "#111827" }}>Référentiel pédagogique</h2>
+            <p className="text-sm" style={{ color: "#6B7280" }}>Importez votre fichier Excel ou CSV pour commencer</p>
+          </div>
+
+          {/* Drop zone */}
+          <div
+            onClick={() => !uploading && fileInputRef.current?.click()}
+            onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+            onDragLeave={() => setDragOver(false)}
+            onDrop={e => {
+              e.preventDefault();
+              setDragOver(false);
+              const f = e.dataTransfer.files[0];
+              if (f) uploadFile(f);
+            }}
+            className="rounded-2xl p-10 text-center cursor-pointer transition-all"
+            style={{
+              border: `2px dashed ${dragOver ? "#0A4DA8" : "#D1D5DB"}`,
+              background: dragOver ? "#0A4DA808" : "#FFFFFF",
+            }}
+          >
+            {uploading ? (
+              <div className="flex flex-col items-center gap-3">
+                <span className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin block" />
+                <p className="text-sm font-medium" style={{ color: "#0A4DA8" }}>Import en cours…</p>
+              </div>
+            ) : (
+              <>
+                <div className="text-3xl mb-3">📥</div>
+                <p className="text-sm font-semibold mb-1" style={{ color: "#111827" }}>
+                  Glissez votre fichier ici ou cliquez pour sélectionner
+                </p>
+                <p className="text-xs" style={{ color: "#9CA3AF" }}>Excel (.xlsx), CSV, PDF, DOCX acceptés</p>
+              </>
+            )}
+          </div>
+
+          {/* Columns info */}
+          <div className="mt-4 rounded-xl p-4" style={{ background: "#FFFFFF", border: "1px solid #E2E8F0" }}>
+            <p className="text-xs font-semibold mb-2" style={{ color: "#374151" }}>Colonnes attendues (Excel/CSV) :</p>
+            <div className="flex flex-wrap gap-1.5">
+              {["Niveau de formation", "N° Module", "Intitulé du module", "Masse horaire (h)", "Sous-élément", "Apprentissage de base"].map(col => (
+                <span key={col} className="text-[11px] px-2 py-0.5 rounded font-mono" style={{ background: "#F0F4FF", color: "#0A4DA8", border: "1px solid #0A4DA820" }}>{col}</span>
+              ))}
+            </div>
+            <a
+              href="/api/referentiel?mode=template"
+              download="modele-referentiel-ofppt.xlsx"
+              className="inline-block mt-3 text-xs font-semibold px-3 py-1.5 rounded-lg transition-opacity hover:opacity-80"
+              style={{ background: "#0A4DA8", color: "#fff" }}
+              onClick={e => e.stopPropagation()}
+            >
+              📥 Télécharger le modèle Excel
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen" style={{ background: "#F5F7FA" }}>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx,.xls,.csv,.pdf,.docx,.doc,.md"
+        className="hidden"
+        onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ""; }}
+      />
+
       {/* Header */}
       <div
         className="sticky top-0 z-10 px-6 py-4 flex items-center justify-between"
@@ -249,6 +329,16 @@ export default function ReferentielClient({ secteurs }: Props) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2 text-xs px-3 py-2 rounded-lg font-medium transition-opacity hover:opacity-80 disabled:opacity-50"
+            style={{ background: "#E8F5E9", color: "#2E7D32", border: "1px solid #A5D6A7" }}
+          >
+            {uploading
+              ? <><span className="w-3 h-3 border-2 border-green-300 border-t-green-700 rounded-full animate-spin" />Import…</>
+              : <>📥 Importer</>}
+          </button>
           <Link
             href="/referentiel/generer"
             className="flex items-center gap-2 text-sm px-4 py-2 rounded-lg font-medium text-white transition-opacity hover:opacity-90"
