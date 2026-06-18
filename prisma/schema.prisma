@@ -107,6 +107,8 @@ model Secteur {
   code      String?
   filieres  Filiere[]
   createdAt DateTime  @default(now())
+
+  @@map("Filiére")
 }
 
 model Filiere {
@@ -117,6 +119,8 @@ model Filiere {
   secteur   Secteur     @relation(fields: [secteurId], references: [id], onDelete: Cascade)
   modules   RefModule[]
   createdAt DateTime    @default(now())
+
+  @@map("Niveau de Formation")
 }
 
 model RefModule {
