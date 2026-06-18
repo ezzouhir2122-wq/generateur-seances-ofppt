@@ -26,10 +26,14 @@ if (typeof globalThis.DOMMatrix === "undefined") {
 
 // ── Template Excel helpers ──────────────────────────────────────────────────
 
-const TEMPLATE_HEADERS = ["Secteur", "Filière", "Code Filière", "Code Module", "Module", "MHG", "Compétence", "Objectif", "Critère"];
+// Colonnes du modèle OFPPT (format officiel)
+const TEMPLATE_HEADERS = [
+  "Secteur", "Filière",
+  "Intitulé du module", "Masse horaire (h)", "Sous-élément", "Apprentissage de base",
+];
 
 function normalize(s: string) {
-  return s.toLowerCase().replace(/[̀-ͯ]/g, "").normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+  return s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 }
 
 function col(row: Record<string, unknown>, ...names: string[]): string {
@@ -47,66 +51,109 @@ function parseTemplateExcel(buffer: Buffer): ExtractedReferentiel | null {
   if (rows.length === 0) return null;
 
   const keys = Object.keys(rows[0]).map(normalize);
-  const isTemplate = ["secteur", "filiere", "module"].every(k => keys.some(r => r.includes(k)));
-  if (!isTemplate) return null;
+
+  // Format OFPPT : Intitulé du module + Apprentissage de base
+  const isOfpptFormat = keys.some(k => k.includes("intitule") || k.includes("intitulé"))
+    && keys.some(k => k.includes("apprentissage"));
+
+  // Format générique : secteur + filière + module + compétence
+  const isGenericFormat = keys.some(k => k.includes("secteur"))
+    && keys.some(k => k.includes("filiere") || k.includes("filière"))
+    && keys.some(k => k.includes("module"));
+
+  if (!isOfpptFormat && !isGenericFormat) return null;
 
   const result: ExtractedReferentiel = { secteur: "", filiere: "", modules: [] };
 
   for (const row of rows) {
-    const secteur = col(row, "Secteur");
-    const filiere = col(row, "Filière", "Filiere");
-    const filiereCode = col(row, "Code Filière", "Code Filiere");
-    const moduleCode = col(row, "Code Module");
-    const moduleNom = col(row, "Module", "Nom Module", "Intitulé module");
-    const mhgStr = col(row, "MHG", "Masse Horaire");
-    const mhg = mhgStr ? parseFloat(mhgStr) : undefined;
-    const competenceTitre = col(row, "Compétence", "Competence");
-    const objectifTitre = col(row, "Objectif");
-    const critereTitre = col(row, "Critère", "Critere", "Critère de performance");
+    if (isOfpptFormat) {
+      // Format OFPPT officiel
+      const secteur = col(row, "Secteur");
+      const filiere = col(row, "Filière", "Filiere");
+      const moduleNom = col(row, "Intitulé du module", "Intitule du module", "Module");
+      const mhgStr = col(row, "Masse horaire (h)", "Masse horaire", "MHG");
+      const mhg = mhgStr ? parseFloat(mhgStr) : undefined;
+      const sousElement = col(row, "Sous-élément", "Sous-element", "Sous élément");
+      const apprentissage = col(row, "Apprentissage de base", "Apprentissage");
 
-    if (!result.secteur && secteur) result.secteur = secteur;
-    if (!result.filiere && filiere) result.filiere = filiere;
-    if (!result.filiereCode && filiereCode) result.filiereCode = filiereCode;
-    if (!moduleNom) continue;
+      if (!result.secteur && secteur) result.secteur = secteur;
+      if (!result.filiere && filiere) result.filiere = filiere;
+      // Valeurs par défaut si colonnes Secteur/Filière absentes
+      if (!result.secteur) result.secteur = "OFPPT";
+      if (!result.filiere) result.filiere = "Formation";
 
-    let mod = result.modules.find(m =>
-      (moduleCode && m.code?.toLowerCase() === moduleCode.toLowerCase()) ||
-      m.nom.toLowerCase() === moduleNom.toLowerCase()
-    );
-    if (!mod) {
-      mod = { nom: moduleNom, code: moduleCode || undefined, mhg: mhg || undefined, competences: [], sequences: [] };
-      result.modules.push(mod);
+      if (!moduleNom) continue;
+
+      let mod = result.modules.find(m => m.nom.toLowerCase() === moduleNom.toLowerCase());
+      if (!mod) {
+        mod = { nom: moduleNom, mhg: mhg || undefined, competences: [], sequences: [] };
+        result.modules.push(mod);
+      }
+      if (mhg && !mod.mhg) mod.mhg = mhg;
+
+      if (!apprentissage) continue;
+
+      // Chaque "Apprentissage de base" devient une compétence
+      // Le code du Sous-élément (A1, B2…) est utilisé comme identifiant
+      const titre = sousElement ? `${sousElement} — ${apprentissage}` : apprentissage;
+      if (!mod.competences!.some(c => c.titre === titre)) {
+        mod.competences!.push({ titre, objectifs: [] });
+      }
+    } else {
+      // Format générique avec toutes les colonnes
+      const secteur = col(row, "Secteur");
+      const filiere = col(row, "Filière", "Filiere");
+      const filiereCode = col(row, "Code Filière", "Code Filiere");
+      const moduleCode = col(row, "Code Module");
+      const moduleNom = col(row, "Module", "Nom Module", "Intitulé module");
+      const mhgStr = col(row, "MHG", "Masse Horaire");
+      const mhg = mhgStr ? parseFloat(mhgStr) : undefined;
+      const competenceTitre = col(row, "Compétence", "Competence");
+      const objectifTitre = col(row, "Objectif");
+      const critereTitre = col(row, "Critère", "Critere", "Critère de performance");
+
+      if (!result.secteur && secteur) result.secteur = secteur;
+      if (!result.filiere && filiere) result.filiere = filiere;
+      if (!result.filiereCode && filiereCode) result.filiereCode = filiereCode;
+      if (!moduleNom) continue;
+
+      let mod = result.modules.find(m =>
+        (moduleCode && m.code?.toLowerCase() === moduleCode.toLowerCase()) ||
+        m.nom.toLowerCase() === moduleNom.toLowerCase()
+      );
+      if (!mod) {
+        mod = { nom: moduleNom, code: moduleCode || undefined, mhg: mhg || undefined, competences: [], sequences: [] };
+        result.modules.push(mod);
+      }
+      if (!competenceTitre) continue;
+
+      let comp = mod.competences!.find(c => c.titre.toLowerCase() === competenceTitre.toLowerCase());
+      if (!comp) { comp = { titre: competenceTitre, objectifs: [] }; mod.competences!.push(comp); }
+      if (!objectifTitre) continue;
+
+      let obj = comp.objectifs.find(o => o.titre.toLowerCase() === objectifTitre.toLowerCase());
+      if (!obj) { obj = { titre: objectifTitre, criteres: [] }; comp.objectifs.push(obj); }
+      if (critereTitre && !obj.criteres.includes(critereTitre)) obj.criteres.push(critereTitre);
     }
-    if (!competenceTitre) continue;
-
-    let comp = mod.competences!.find(c => c.titre.toLowerCase() === competenceTitre.toLowerCase());
-    if (!comp) { comp = { titre: competenceTitre, objectifs: [] }; mod.competences!.push(comp); }
-    if (!objectifTitre) continue;
-
-    let obj = comp.objectifs.find(o => o.titre.toLowerCase() === objectifTitre.toLowerCase());
-    if (!obj) { obj = { titre: objectifTitre, criteres: [] }; comp.objectifs.push(obj); }
-
-    if (critereTitre && !obj.criteres.includes(critereTitre)) obj.criteres.push(critereTitre);
   }
 
-  return result.secteur && result.filiere && result.modules.length > 0 ? result : null;
+  return result.modules.length > 0 ? result : null;
 }
 
 function generateTemplateExcel(): Buffer {
   const wb = utils.book_new();
   const data = [
     TEMPLATE_HEADERS,
-    ["Informatique et Digital", "Développement Digital", "DD", "M101", "Programmation Orientée Objet", "80",
-      "Analyser les besoins", "Identifier les exigences", "Les exigences fonctionnelles sont correctement identifiées"],
-    ["Informatique et Digital", "Développement Digital", "DD", "M101", "Programmation Orientée Objet", "80",
-      "Analyser les besoins", "Identifier les exigences", "Les exigences sont validées avec le client"],
-    ["Informatique et Digital", "Développement Digital", "DD", "M101", "Programmation Orientée Objet", "80",
-      "Analyser les besoins", "Définir l'architecture", "L'architecture retenue est justifiée"],
-    ["Informatique et Digital", "Développement Digital", "DD", "M102", "Bases de données", "60",
-      "Concevoir une base de données", "Modéliser le schéma", "Le modèle conceptuel est correct et complet"],
+    ["Informatique et Digital", "Développement Digital", "Métier et formation", "30", "A1", "Connaître les techniques de prise de notes"],
+    ["Informatique et Digital", "Développement Digital", "Métier et formation", "30", "A2", "Consulter des ouvrages spécialisés"],
+    ["Informatique et Digital", "Développement Digital", "Métier et formation", "30", "B1", "Distinguer la nature et les exigences de l'emploi"],
+    ["Informatique et Digital", "Développement Digital", "Métier et formation", "30", "B2", "Décrire les conditions générales d'exercice du métier"],
+    ["Informatique et Digital", "Développement Digital", "Programmation Web", "80", "A1", "Analyser les besoins du projet"],
+    ["Informatique et Digital", "Développement Digital", "Programmation Web", "80", "A2", "Concevoir l'architecture de l'application"],
+    ["Informatique et Digital", "Développement Digital", "Programmation Web", "80", "B1", "Implémenter les fonctionnalités selon les spécifications"],
   ];
   const ws = utils.aoa_to_sheet(data);
-  ws["!cols"] = TEMPLATE_HEADERS.map(() => ({ wch: 28 }));
+  ws["!cols"] = [{ wch: 22 }, { wch: 22 }, { wch: 28 }, { wch: 16 }, { wch: 14 }, { wch: 50 }];
   utils.book_append_sheet(wb, ws, "Référentiel");
   return Buffer.from(write(wb, { type: "buffer", bookType: "xlsx" }));
 }
