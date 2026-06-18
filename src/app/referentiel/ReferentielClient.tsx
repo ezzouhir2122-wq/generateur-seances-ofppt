@@ -160,6 +160,13 @@ export default function ReferentielClient({ secteurs }: Props) {
     });
   }, []);
 
+  const deleteSecteur = useCallback(async (secteurId: string, secteurNom: string) => {
+    if (!confirm(`Supprimer "${secteurNom}" et tous ses modules / compétences ?`)) return;
+    const res = await fetch(`/api/referentiel?secteurId=${secteurId}`, { method: "DELETE" });
+    if (res.ok) { toast.success(`"${secteurNom}" supprimé`); router.refresh(); }
+    else toast.error("Erreur lors de la suppression");
+  }, [router]);
+
   const expandAll = () =>
     setExpanded(new Set(filtered.map((m) => m.id)));
   const collapseAll = () => setExpanded(new Set());
@@ -471,22 +478,27 @@ export default function ReferentielClient({ secteurs }: Props) {
             Tous
           </button>
           {secteurs.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setSelectedSecteur(s.id)}
-              className="text-xs px-3 py-1.5 rounded-lg transition-colors"
-              style={
-                selectedSecteur === s.id
-                  ? {
-                      background: "#0A4DA814",
-                      color: "#0A4DA8",
-                      border: "1px solid #0A4DA840",
-                    }
-                  : { color: "#6B7280", border: "1px solid transparent" }
-              }
+            <span key={s.id} className="inline-flex items-center gap-0.5 rounded-lg overflow-hidden"
+              style={selectedSecteur === s.id
+                ? { background: "#0A4DA814", border: "1px solid #0A4DA840" }
+                : { border: "1px solid transparent" }}
             >
-              {s.nom}
-            </button>
+              <button
+                onClick={() => setSelectedSecteur(s.id)}
+                className="text-xs px-3 py-1.5 transition-colors"
+                style={selectedSecteur === s.id ? { color: "#0A4DA8" } : { color: "#6B7280" }}
+              >
+                {s.nom}
+              </button>
+              <button
+                onClick={() => deleteSecteur(s.id, s.nom)}
+                className="text-xs px-1.5 py-1.5 transition-colors hover:bg-red-50"
+                style={{ color: "#9CA3AF" }}
+                title={`Supprimer "${s.nom}"`}
+              >
+                ×
+              </button>
+            </span>
           ))}
         </div>
 

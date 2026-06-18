@@ -374,28 +374,62 @@ function parseCsvRows(buffer: Buffer): Record<string, unknown>[] | null {
 // ── Markdown table parser ────────────────────────────────────────────────────
 // Supports GFM tables: | Col1 | Col2 | … |
 function parseMarkdownTable(buffer: Buffer): Record<string, unknown>[] | null {
-  const text = buffer.toString("utf-8");
+  // Strip UTF-8 BOM if present
+  let text = buffer.toString("utf-8");
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+
   const lines = text.split(/\r?\n/);
 
   function parseMdRow(line: string): string[] {
     return line.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
   }
 
-  const tableLines = lines.filter(l => l.trim().startsWith("|") && l.includes("|", 1));
-  if (tableLines.length < 3) return null;
+  function isSeparatorRow(cells: string[]): boolean {
+    return cells.length > 0 && cells.every(c => /^[-: ]+$/.test(c) && c.includes("-"));
+  }
 
-  const headers = parseMdRow(tableLines[0]);
-  if (headers.length === 0) return null;
+  // Collect all table lines and find the first valid header
+  const allRows: Record<string, unknown>[] = [];
+  let headers: string[] | null = null;
+  let expectSeparator = false;
 
-  const dataLines = tableLines.slice(1).filter(l => !parseMdRow(l).every(c => /^[-:]+$/.test(c)));
-  if (dataLines.length === 0) return null;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith("|")) {
+      // Non-table line — reset table state (new section starts)
+      headers = null;
+      expectSeparator = false;
+      continue;
+    }
+    const cells = parseMdRow(trimmed);
+    if (cells.length === 0) continue;
 
-  return dataLines.map(line => {
-    const vals = parseMdRow(line);
+    if (headers === null) {
+      // Could be a header row
+      if (!isSeparatorRow(cells)) {
+        headers = cells;
+        expectSeparator = true;
+      }
+      continue;
+    }
+
+    if (expectSeparator) {
+      // Next line after header must be separator
+      if (isSeparatorRow(cells)) { expectSeparator = false; continue; }
+      // Not a separator — treat previous line as data (no separator table)
+      expectSeparator = false;
+    }
+
+    // Skip rows with same column count as separator (malformed)
+    if (isSeparatorRow(cells)) { headers = null; continue; }
+
     const row: Record<string, unknown> = {};
-    headers.forEach((h, i) => { row[h] = vals[i] ?? ""; });
-    return row;
-  });
+    headers.forEach((h, i) => { row[h] = cells[i] ?? ""; });
+    // Only add rows that have at least one non-empty cell
+    if (Object.values(row).some(v => v !== "")) allRows.push(row);
+  }
+
+  return allRows.length > 0 ? allRows : null;
 }
 
 function generateTemplateMd(): string {
