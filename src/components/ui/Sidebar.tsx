@@ -71,6 +71,8 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
   const [refListLoading, setRefListLoading] = useState(false);
   const [refListError, setRefListError] = useState(false);
+  const [templateUploading, setTemplateUploading] = useState(false);
+  const templateFileRef = useRef<HTMLInputElement>(null);
 
   const saveProfile = async () => {
     setSavingProfile(true);
@@ -386,14 +388,49 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
             <div className="mt-2 rounded-lg p-3 text-xs" style={{ background: "#E8F5E9", border: "1px solid #A5D6A7" }}>
               <p className="font-semibold mb-1" style={{ color: "#2E7D32" }}>⚡ Import sans IA (instantané)</p>
               <p style={{ color: "#388E3C" }}>Téléchargez le modèle Excel, remplissez-le et importez-le — aucune clé API requise.</p>
-              <a
-                href="/api/referentiel?mode=template"
-                download="modele-referentiel-ofppt.xlsx"
-                className="inline-block mt-2 rounded px-3 py-1 text-[10px] font-semibold"
-                style={{ background: "#2E7D32", color: "#fff" }}
-              >
-                📥 Télécharger le modèle Excel
-              </a>
+              <input
+                ref={templateFileRef}
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                className="hidden"
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  e.target.value = "";
+                  setTemplateUploading(true);
+                  try {
+                    const fd = new FormData();
+                    fd.append("file", file);
+                    const res = await fetch("/api/referentiel", { method: "POST", body: fd });
+                    const json = await res.json().catch(() => ({}));
+                    if (!res.ok) throw new Error(json.error ?? `Erreur ${res.status}`);
+                    toast.success(`✅ Importé — ${json.stats?.modulesCreated ?? 0} modules`);
+                    loadReferentiels();
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : "Erreur import");
+                  } finally {
+                    setTemplateUploading(false);
+                  }
+                }}
+              />
+              <div className="flex gap-2 mt-2 flex-wrap">
+                <button
+                  onClick={() => templateFileRef.current?.click()}
+                  disabled={templateUploading}
+                  className="rounded px-3 py-1 text-[10px] font-semibold disabled:opacity-50 transition-opacity"
+                  style={{ background: "#2E7D32", color: "#fff" }}
+                >
+                  {templateUploading ? "Import…" : "📂 Importer mon fichier Excel"}
+                </button>
+                <a
+                  href="/api/referentiel?mode=template"
+                  download="modele-referentiel-ofppt.xlsx"
+                  className="inline-block rounded px-3 py-1 text-[10px] font-semibold"
+                  style={{ background: "#FFFFFF", color: "#2E7D32", border: "1px solid #A5D6A7" }}
+                >
+                  📥 Télécharger le modèle
+                </a>
+              </div>
             </div>
           </section>
 
