@@ -276,6 +276,31 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(filieres);
   }
 
+  // Lightweight list mode for sidebar — no competences/objectifs/criteres
+  if (mode === "list") {
+    const secteurs = await prisma.secteur.findMany({
+      select: {
+        id: true,
+        nom: true,
+        code: true,
+        filieres: {
+          select: {
+            id: true,
+            nom: true,
+            code: true,
+            modules: {
+              select: { id: true, nom: true, code: true, mhg: true },
+              orderBy: { nom: "asc" },
+            },
+          },
+          orderBy: { nom: "asc" },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+    return NextResponse.json(secteurs);
+  }
+
   const secteurs = await prisma.secteur.findMany({
     include: {
       filieres: {

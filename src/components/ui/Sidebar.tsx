@@ -120,7 +120,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
     setRefListLoading(true);
     setRefListError(false);
     try {
-      const res = await fetch("/api/referentiel");
+      const res = await fetch("/api/referentiel?mode=list");
       if (res.ok) {
         setReferentiels(await res.json());
       } else {
