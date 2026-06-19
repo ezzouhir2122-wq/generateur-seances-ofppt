@@ -10,7 +10,7 @@ interface RefSecteur { id: string; nom: string; filieres: RefFiliere[]; }
 interface ReferentielStructure { secteurs: RefSecteur[]; }
 interface RefCompetence { id: string; titre: string; objectifs: string[]; }
 
-function deriveAnnee(filiereNom: string): string {
+function deriveAnnee(filiereNom: string): "1ere-annee" | "2eme-annee" | "3eme-annee" {
   if (/2/u.test(filiereNom)) return "2eme-annee";
   if (/3/u.test(filiereNom)) return "3eme-annee";
   return "1ere-annee";
