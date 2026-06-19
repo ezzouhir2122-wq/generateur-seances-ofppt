@@ -10,7 +10,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.102.0",
+    "@anthropic-ai/sdk": "^0.105.0",
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^6.2.1",
     "@types/pdf-parse": "^1.1.5",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

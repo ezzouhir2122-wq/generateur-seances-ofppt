@@ -2,9 +2,10 @@ import OpenAI from "openai";
 import { SeanceParams } from "../../equipment/generate-seance";
 
 export const OPENAI_MODELS = [
-  { id: "gpt-4o",       label: "GPT-4o — Meilleur" },
-  { id: "gpt-4o-mini",  label: "GPT-4o Mini — Rapide" },
-  { id: "gpt-4-turbo",  label: "GPT-4 Turbo — Puissant" },
+  { id: "gpt-4o",      label: "GPT-4o — Meilleur"       },
+  { id: "gpt-4o-mini", label: "GPT-4o Mini — Rapide"    },
+  { id: "o4-mini",     label: "o4-mini — Raisonnement"  },
+  { id: "o3",          label: "o3 — Raisonnement avancé" },
 ];
 
 export async function generateWithOpenAI(

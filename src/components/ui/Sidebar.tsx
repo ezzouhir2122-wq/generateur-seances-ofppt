@@ -54,9 +54,10 @@ const MODELS_BY_PROVIDER: Record<ProviderId, { id: string; label: string }[]> = 
     { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 — Rapide"    },
   ],
   openai: [
-    { id: "gpt-4o",      label: "GPT-4o — Meilleur"      },
-    { id: "gpt-4o-mini", label: "GPT-4o Mini — Rapide"   },
-    { id: "o3-mini",     label: "o3-mini — Raisonnement" },
+    { id: "gpt-4o",      label: "GPT-4o — Meilleur"           },
+    { id: "gpt-4o-mini", label: "GPT-4o Mini — Rapide"        },
+    { id: "o4-mini",     label: "o4-mini — Raisonnement"      },
+    { id: "o3",          label: "o3 — Raisonnement avancé"    },
   ],
   google: [
     { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro — Meilleur"  },
@@ -64,15 +65,15 @@ const MODELS_BY_PROVIDER: Record<ProviderId, { id: string; label: string }[]> = 
     { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash — Léger"   },
   ],
   openrouter: [
-    { id: "openrouter/meta-llama/llama-4-maverick",  label: "Llama 4 Maverick — Meta" },
-    { id: "openrouter/mistralai/mistral-large-2411", label: "Mistral Large 2"          },
-    { id: "openrouter/deepseek/deepseek-r1",         label: "DeepSeek R1 — Raisonnement" },
-    { id: "openrouter/qwen/qwen-2.5-72b-instruct",  label: "Qwen 2.5 72B — Alibaba"  },
+    { id: "openrouter/meta-llama/llama-4-maverick",  label: "Llama 4 Maverick — Meta"      },
+    { id: "openrouter/meta-llama/llama-4-scout",     label: "Llama 4 Scout — Rapide"       },
+    { id: "openrouter/mistralai/mistral-large-2411", label: "Mistral Large — Mistral AI"   },
+    { id: "openrouter/deepseek/deepseek-r1",         label: "DeepSeek R1 — Raisonnement"   },
   ],
   xai: [
-    { id: "grok-3",      label: "Grok 3 — Meilleur"  },
-    { id: "grok-3-fast", label: "Grok 3 Fast — Rapide" },
-    { id: "grok-2-1212", label: "Grok 2 — Précédent" },
+    { id: "grok-3",        label: "Grok 3 — Meilleur"    },
+    { id: "grok-3-fast",   label: "Grok 3 Fast — Rapide" },
+    { id: "grok-3-mini",   label: "Grok 3 Mini — Léger"  },
   ],
 };
 

@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ─── OpenAI ──────────────────────────────────────────────────────────────
-  if (preferredModel.startsWith("gpt-") || preferredModel.startsWith("o1") || preferredModel.startsWith("o3")) {
+  if (preferredModel.startsWith("gpt-") || preferredModel.startsWith("o1") || preferredModel.startsWith("o3") || preferredModel.startsWith("o4")) {
     try {
       const contenu = await withTimeout(
         generateWithOpenAI(params, { apiKey: userOpenaiKey ?? undefined, model: preferredModel }),
