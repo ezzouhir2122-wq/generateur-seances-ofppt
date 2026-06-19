@@ -125,7 +125,7 @@ export default function SeancesPage() {
       <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
         {!contenu && (
           <div className="lg:col-span-2">
-            <SeanceForm onGenerate={handleGenerate} isLoading={isLoading} initial={initial} forceReferentiel={!!initial} />
+            <SeanceForm onGenerate={handleGenerate} isLoading={isLoading} initial={initial} />
           </div>
         )}
 
