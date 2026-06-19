@@ -74,6 +74,7 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
 
   const [refCompetences, setRefCompetences] = useState<RefCompetence[]>([]);
   const [selectedCompetences, setSelectedCompetences] = useState<string[]>([]);
+  const [moduleSearch, setModuleSearch] = useState("");
 
   useEffect(() => {
     fetch("/api/referentiel/structure")
@@ -121,6 +122,12 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
   const filieres = secteurs.find((s) => s.id === selectedSecteurId)?.filieres ?? [];
   const refModules = filieres.find((f) => f.id === selectedFiliereId)?.modules ?? [];
   const selectedModule = refModules.find((m) => m.id === selectedModuleId);
+  const filteredModules = moduleSearch
+    ? refModules.filter((m) =>
+        (m.code ?? "").toLowerCase().includes(moduleSearch.toLowerCase()) ||
+        m.nom.toLowerCase().includes(moduleSearch.toLowerCase())
+      )
+    : refModules;
 
   const handleSecteurChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
@@ -238,33 +245,57 @@ export default function SeanceForm({ onGenerate, isLoading, initial, forceRefere
             </div>
           )}
 
-          {/* ── Cases 3 + 4 : N° Module + Intitulé ── */}
+          {/* ── Cases 3 + 4 : N° Module (filtrable) + Intitulé (auto-rempli) ── */}
           {selectedFiliereId && (
-            <div className="grid grid-cols-4 gap-2">
-              <div>
-                <CaseLabel num={3} label="N° Module" />
+            <div className="space-y-2">
+              <div
+                className="flex items-center gap-2 rounded-lg px-2.5 py-1.5"
+                style={{ background: "#F9FAFB", border: "1px solid #E2E8F0" }}
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth="2.5">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
                 <input
                   type="text"
-                  className="input-field font-mono text-sm text-center"
-                  style={{ background: "#F3F4F6", color: "#4B5563" }}
-                  value={form.codeModule ?? ""}
-                  readOnly
-                  placeholder="—"
+                  className="flex-1 bg-transparent text-xs outline-none"
+                  style={{ color: "#374151" }}
+                  placeholder="Filtrer par N° ou nom de module…"
+                  value={moduleSearch}
+                  onChange={(e) => { setModuleSearch(e.target.value); setSelectedModuleId(""); }}
                 />
+                {moduleSearch && (
+                  <button type="button" onClick={() => setModuleSearch("")} className="text-xs leading-none" style={{ color: "#9CA3AF" }}>✕</button>
+                )}
               </div>
-              <div className="col-span-3">
-                <CaseLabel num={4} label="Intitulé du module" />
-                <select
-                  className="input-field"
-                  value={selectedModuleId}
-                  onChange={handleRefModuleChange}
-                  required
-                >
-                  <option value="">— Choisir un module —</option>
-                  {refModules.map((m) => (
-                    <option key={m.id} value={m.id}>{m.code ? `${m.code} — ` : ""}{m.nom}</option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-4 gap-2">
+                <div>
+                  <CaseLabel num={3} label="N° Module" />
+                  <select
+                    className="input-field font-mono text-sm text-center"
+                    value={selectedModuleId}
+                    onChange={handleRefModuleChange}
+                    required
+                  >
+                    <option value="">—</option>
+                    {filteredModules.map((m) => (
+                      <option key={m.id} value={m.id}>{m.code ?? "—"}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-3">
+                  <CaseLabel num={4} label="Intitulé du module" />
+                  <div
+                    className="rounded-lg px-3 py-2 text-sm flex items-center truncate"
+                    style={{
+                      minHeight: "38px",
+                      background: selectedModule ? "#FFFFFF" : "#F3F4F6",
+                      border: `1px solid ${selectedModule ? "#D1D5DB" : "#E2E8F0"}`,
+                      color: selectedModule ? "#374151" : "#9CA3AF",
+                    }}
+                  >
+                    {selectedModule ? selectedModule.nom : "— sélectionnez un module —"}
+                  </div>
+                </div>
               </div>
             </div>
           )}

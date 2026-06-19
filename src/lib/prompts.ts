@@ -2,7 +2,23 @@ import type { SeanceFormData } from "@/types/seance";
 import type { FicheFormData } from "@/types/seance";
 
 export function buildSeancePrompt(data: SeanceFormData): string {
-  const theme = data.competence ? data.competence : data.module;
+  const comps = (data.competences && data.competences.length > 0)
+    ? data.competences
+    : data.competence ? [data.competence] : [];
+  const multi = comps.length > 1;
+
+  const themeStr = multi
+    ? `Compétences visées (${comps.length}) :\n${comps.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}`
+    : `Thème / Compétence : ${comps[0] ?? "(thème général du module)"}`;
+
+  const title = multi
+    ? `${data.module} — ${comps.length} compétences groupées`
+    : (comps[0] || data.module);
+
+  const develSection = multi
+    ? comps.map((c, i) => `## ${i + 1}. ${c}\n### Définitions et concepts clés\n### Développement\n### Exemples pratiques`).join("\n\n")
+    : `## 1. Définitions et concepts clés\n## 2. Développement (sous-parties 2.1, 2.2, 2.3 — explications approfondies)\n## 3. Exemples expliqués (Énoncé + Explication détaillée étape par étape)`;
+
   return `Tu es un expert formateur OFPPT. Rédige un COURS DÉTAILLÉ complet (SANS section "Objectifs pédagogiques").
 
 Filière : ${data.filiere}
@@ -10,16 +26,14 @@ Module : ${data.module}
 Durée : ${data.duree}
 Niveau : ${data.niveau}
 Type : ${data.type}
-Thème / Compétence : ${data.competence ?? "(thème général du module)"}
-
+${themeStr}
+${multi ? "\nIMPORTANT : Ce document couvre TOUTES les compétences listées dans un seul document cohérent. Traite chaque compétence dans sa propre section numérotée.\n" : ""}
 Format la réponse en markdown avec les sections suivantes :
-# ${theme}
+# ${title}
 ## En-tête (Filière | Module | Durée | Niveau | Type)
 ## Introduction
-## 1. Définitions et concepts clés
-## 2. Développement (sous-parties 2.1, 2.2, 2.3 — explications approfondies)
-## 3. Exemples expliqués (Énoncé + Explication détaillée étape par étape)
-## 4. Synthèse — points clés à retenir`;
+${develSection}
+## Synthèse — points clés à retenir`;
 }
 
 const FICHE_ANNEE_LABELS: Record<string, string> = {
@@ -34,6 +48,15 @@ export function buildFichePrompt(data: FicheFormData): string {
   const niveauFull = anneeLabel ? `${niveauLabel} — ${anneeLabel}` : niveauLabel;
   const moduleLabel = data.codeModule ? `${data.codeModule} — ${data.module}` : data.module;
 
+  const comps = (data.competences && data.competences.length > 0)
+    ? data.competences
+    : data.competence ? [data.competence] : [];
+  const multi = comps.length > 1;
+
+  const competenceSection = multi
+    ? `\nCompétences pédagogiques visées (${comps.length}) :\n${comps.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}`
+    : (comps[0] ? `\nCompétence visée : ${comps[0]}` : "");
+
   return `Tu es un expert en pédagogie OFPPT. Génère une fiche pédagogique complète au format officiel OFPPT.
 
 Filière : ${data.filiere}
@@ -42,23 +65,23 @@ Intitulé de la séance : ${data.intitule}
 Formateur : ${data.formateur}
 Durée : ${data.duree}
 Type : ${data.type}
-Niveau : ${niveauFull}
+Niveau : ${niveauFull}${competenceSection}
 
 Prérequis des stagiaires : ${data.prerequis || "À déterminer selon le module"}
 
-**IMPORTANT — Objectifs pédagogiques :** Tu dois FORMULER TOI-MÊME des objectifs pédagogiques pertinents et réalistes, déduits de la filière, du module, de l'intitulé de la séance, du type et du niveau. Rédige-les selon la taxonomie OFPPT (verbes d'action mesurables, commençant par « À la fin de la séance, le stagiaire sera capable de… ») répartis en trois catégories : Savoir (connaissances), Savoir-faire (compétences pratiques) et Savoir-être (attitudes professionnelles).
-
+**IMPORTANT — Objectifs pédagogiques :** Tu dois FORMULER TOI-MÊME des objectifs pédagogiques pertinents et réalistes, déduits de la filière, du module, de l'intitulé de la séance, du type, du niveau${comps.length > 0 ? " et des compétences visées" : ""}. Rédige-les selon la taxonomie OFPPT (verbes d'action mesurables, commençant par « À la fin de la séance, le stagiaire sera capable de… ») répartis en trois catégories : Savoir (connaissances), Savoir-faire (compétences pratiques) et Savoir-être (attitudes professionnelles).
+${multi ? "\nIMPORTANT : Cette fiche couvre TOUTES les compétences listées. Les objectifs, le déroulement et les activités doivent intégrer chacune des compétences de manière cohérente dans un seul document pédagogique.\n" : ""}
 Génère une fiche pédagogique structurée en markdown avec exactement ces sections :
 ## En-tête
 (Tableau récapitulatif : Établissement OFPPT | Filière | Module | Formateur | Durée | Date | Niveau | Type)
 
 ## Objectifs pédagogiques
-(Tableau à 3 colonnes : Savoir | Savoir-faire | Savoir-être — objectifs que TU as formulés)
+(Tableau à 3 colonnes : Savoir | Savoir-faire | Savoir-être — objectifs que TU as formulés${multi ? ", couvrant toutes les compétences" : ""})
 
 ## Déroulement de la séance
 (Tableau détaillé avec colonnes : Phase | Durée | Activités formateur | Activités stagiaires | Supports/Méthodes)
 ### Phase 1 : Introduction / Mise en situation
-### Phase 2 : Développement
+### Phase 2 : Développement${multi ? ` (${comps.length} compétences traitées successivement)` : ""}
 ### Phase 3 : Synthèse et évaluation formative
 
 ## Ressources et matériel pédagogique

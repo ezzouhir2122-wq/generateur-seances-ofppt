@@ -16,6 +16,7 @@ export interface SeanceParams {
   type: "theorique" | "tp" | "ta";
   objectifs?: string;
   competence?: string;
+  competences?: string[];
   niveauApprentissage?: "debutant" | "intermediaire" | "avance";
   mode?: "presentiel" | "distanciel" | "hybride";
 }
@@ -46,7 +47,20 @@ function buildPrompt(p: SeanceParams): string {
   const niveauFull = anneeLabel ? `${niveauLabel} — ${anneeLabel}` : niveauLabel;
   const moduleLabel = p.codeModule ? `${p.codeModule} — ${p.module}` : p.module;
   const typeLabel = p.type === "theorique" ? "Cours théorique" : p.type === "tp" ? "Travaux Pratiques" : "Travaux d'Application";
-  const theme = p.competence ? p.competence : moduleLabel;
+
+  const comps = (p.competences && p.competences.length > 0)
+    ? p.competences
+    : p.competence ? [p.competence] : [];
+  const multi = comps.length > 1;
+
+  const themeStr = multi
+    ? `Compétences visées (${comps.length}) :\n${comps.map((c, i) => `  ${i + 1}. ${c}`).join("\n")}`
+    : `Thème / Compétence : ${comps[0] ?? "(thème général du module)"}`;
+  const title = multi ? `${p.module} — ${comps.length} compétences groupées` : (comps[0] || moduleLabel);
+
+  const develSection = multi
+    ? comps.map((c, i) => `## ${i + 1}. ${c}\n### Définitions et concepts clés\n### Développement\n### Exemples pratiques`).join("\n\n")
+    : `## 1. Définitions et concepts clés\n...\n\n## 2. Développement\n### 2.1 ...\n### 2.2 ...\n(Explications approfondies et progressives.)\n\n## 3. Exemples expliqués\n### Exemple 1 — ...\n**Énoncé :** ...\n**Explication détaillée :** ...`;
 
   return `Tu es un expert formateur OFPPT. Rédige un COURS DÉTAILLÉ complet (SANS section "Objectifs pédagogiques").
 
@@ -56,11 +70,11 @@ function buildPrompt(p: SeanceParams): string {
 - Durée : ${p.duree}
 - Niveau : ${niveauFull}
 - Type : ${typeLabel}
-- Thème / Compétence : ${p.competence ?? "(thème général du module)"}
-
+- ${themeStr}
+${multi ? "\nIMPORTANT : Ce document couvre TOUTES les compétences listées dans un seul cours cohérent. Traite chaque compétence dans sa propre section numérotée.\n" : ""}
 **Format de sortie attendu (Markdown) :**
 
-# ${theme}
+# ${title}
 
 ## En-tête
 | Filière | Module | Durée | Niveau | Type |
@@ -68,22 +82,11 @@ function buildPrompt(p: SeanceParams): string {
 | ${p.filiere} | ${moduleLabel} | ${p.duree} | ${niveauFull} | ${typeLabel} |
 
 ## Introduction
-(Mise en contexte du thème.)
+(Mise en contexte${multi ? " des compétences groupées" : " du thème"}.)
 
-## 1. Définitions et concepts clés
-...
+${develSection}
 
-## 2. Développement
-### 2.1 ...
-### 2.2 ...
-(Explications approfondies et progressives.)
-
-## 3. Exemples expliqués
-### Exemple 1 — ...
-**Énoncé :** ...
-**Explication détaillée :** ...
-
-## 4. Synthèse — points clés à retenir
+## Synthèse — points clés à retenir
 ...
 
 Génère un cours réaliste, riche et directement utilisable en formation OFPPT.`;
