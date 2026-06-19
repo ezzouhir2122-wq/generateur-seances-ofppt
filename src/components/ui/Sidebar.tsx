@@ -37,6 +37,61 @@ interface SidebarProps {
   openaiKey?: boolean;
 }
 
+const PROVIDERS = [
+  { id: "anthropic",  label: "Anthropic (Claude)" },
+  { id: "openai",     label: "OpenAI (GPT)"       },
+  { id: "google",     label: "Google (Gemini)"    },
+  { id: "openrouter", label: "OpenRouter"          },
+  { id: "xai",        label: "xAI (Grok)"         },
+] as const;
+
+type ProviderId = typeof PROVIDERS[number]["id"];
+
+const MODELS_BY_PROVIDER: Record<ProviderId, { id: string; label: string }[]> = {
+  anthropic: [
+    { id: "claude-opus-4-8",           label: "Claude Opus 4.8 — Meilleur"   },
+    { id: "claude-sonnet-4-6",         label: "Claude Sonnet 4.6 — Équilibré" },
+    { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5 — Rapide"    },
+  ],
+  openai: [
+    { id: "gpt-4o",      label: "GPT-4o — Meilleur"      },
+    { id: "gpt-4o-mini", label: "GPT-4o Mini — Rapide"   },
+    { id: "o3-mini",     label: "o3-mini — Raisonnement" },
+  ],
+  google: [
+    { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro — Meilleur"  },
+    { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash — Rapide"  },
+    { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash — Léger"   },
+  ],
+  openrouter: [
+    { id: "openrouter/meta-llama/llama-4-maverick",  label: "Llama 4 Maverick — Meta" },
+    { id: "openrouter/mistralai/mistral-large-2411", label: "Mistral Large 2"          },
+    { id: "openrouter/deepseek/deepseek-r1",         label: "DeepSeek R1 — Raisonnement" },
+    { id: "openrouter/qwen/qwen-2.5-72b-instruct",  label: "Qwen 2.5 72B — Alibaba"  },
+  ],
+  xai: [
+    { id: "grok-3",      label: "Grok 3 — Meilleur"  },
+    { id: "grok-3-fast", label: "Grok 3 Fast — Rapide" },
+    { id: "grok-2-1212", label: "Grok 2 — Précédent" },
+  ],
+};
+
+const PROVIDER_COLORS: Record<ProviderId, string> = {
+  anthropic:  "#E8651A",
+  openai:     "#10A37F",
+  google:     "#4285F4",
+  openrouter: "#6366F1",
+  xai:        "#111827",
+};
+
+const KEY_PLACEHOLDERS: Record<ProviderId, string> = {
+  anthropic:  "sk-ant-api03-...",
+  openai:     "sk-proj-...",
+  google:     "AIzaSy...",
+  openrouter: "sk-or-v1-...",
+  xai:        "xai-...",
+};
+
 export default function Sidebar({ open, onClose, user }: SidebarProps) {
   // Référentiel pédagogique state
   const [refFile, setRefFile] = useState<File | null>(null);
@@ -63,12 +118,10 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [hasOpenrouterKey, setHasOpenrouterKey] = useState(false);
   const [hasGoogleKey, setHasGoogleKey] = useState(false);
   const [hasGrokKey, setHasGrokKey] = useState(false);
-  const [showClaudeKey, setShowClaudeKey] = useState(false);
-  const [showOpenaiKey, setShowOpenaiKey] = useState(false);
-  const [showOpenrouterKey, setShowOpenrouterKey] = useState(false);
-  const [showGoogleKey, setShowGoogleKey] = useState(false);
-  const [showGrokKey, setShowGrokKey] = useState(false);
-  const [apiProvider, setApiProvider] = useState<"anthropic" | "openai" | "google" | "openrouter" | "xai">("anthropic");
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [testingApi, setTestingApi] = useState(false);
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
+  const [apiProvider, setApiProvider] = useState<ProviderId>("anthropic");
 
   const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
@@ -153,6 +206,53 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       toast.error("Erreur lors de la sauvegarde");
     } finally {
       setSavingApi(false);
+    }
+  };
+
+  // Computed: single key/hasKey derived from active provider
+  const currentKey = apiProvider === "anthropic" ? claudeKey
+    : apiProvider === "openai" ? openaiKey
+    : apiProvider === "google" ? googleKey
+    : apiProvider === "openrouter" ? openrouterKey
+    : grokKey;
+
+  const currentHasKey = apiProvider === "anthropic" ? hasClaudeKey
+    : apiProvider === "openai" ? hasOpenaiKey
+    : apiProvider === "google" ? hasGoogleKey
+    : apiProvider === "openrouter" ? hasOpenrouterKey
+    : hasGrokKey;
+
+  const setCurrentKey = (val: string) => {
+    if (apiProvider === "anthropic") setClaudeKey(val);
+    else if (apiProvider === "openai") setOpenaiKey(val);
+    else if (apiProvider === "google") setGoogleKey(val);
+    else if (apiProvider === "openrouter") setOpenrouterKey(val);
+    else setGrokKey(val);
+  };
+
+  const handleProviderChange = (prov: ProviderId) => {
+    setApiProvider(prov);
+    setTestResult(null);
+    const first = MODELS_BY_PROVIDER[prov][0]?.id;
+    if (first) setPreferredModel(first);
+  };
+
+  const testApiConnection = async () => {
+    setTestingApi(true);
+    setTestResult(null);
+    try {
+      const keyToSend = currentKey.includes("•") ? "" : currentKey.trim();
+      const res = await fetch("/api/user/test-api", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ provider: apiProvider, apiKey: keyToSend, model: preferredModel }),
+      });
+      const data = await res.json();
+      setTestResult({ ok: res.ok, message: data.message ?? (res.ok ? "Connexion réussie" : "Erreur inconnue") });
+    } catch {
+      setTestResult({ ok: false, message: "Erreur réseau" });
+    } finally {
+      setTestingApi(false);
     }
   };
 
@@ -560,234 +660,117 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
 
           {/* Paramètres API */}
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
-            <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>🔑 Paramètres API & Modèle IA</h3>
-            <p className="text-xs mb-4" style={{ color: "#6B7280" }}>Sélectionnez votre fournisseur, choisissez un modèle et saisissez votre clé API.</p>
+            <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: "#4B5563" }}>🔑 Paramètres API & Modèle IA</h3>
 
-            {/* Onglets fournisseur — 3 × 2 */}
-            <div className="grid grid-cols-3 gap-1 mb-4 p-1 rounded-xl" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
-              {([
-                { id: "anthropic",  label: "Anthropic",  dot: "#E8651A", badge: hasClaudeKey },
-                { id: "openai",     label: "OpenAI",     dot: "#10A37F", badge: hasOpenaiKey },
-                { id: "google",     label: "Google",     dot: "#4285F4", badge: hasGoogleKey },
-                { id: "openrouter", label: "OpenRouter", dot: "#6366F1", badge: hasOpenrouterKey },
-                { id: "xai",        label: "xAI (Grok)", dot: "#111827", badge: hasGrokKey },
-              ] as const).map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setApiProvider(p.id)}
-                  className="flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-semibold transition-all relative"
-                  style={
-                    apiProvider === p.id
-                      ? { background: "#FFFFFF", color: "#111827", boxShadow: "0 1px 3px rgba(0,0,0,0.08)" }
-                      : { color: "#6B7280" }
-                  }
+            {/* 1. Fournisseur IA */}
+            <div className="mb-3">
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1.5" style={{ color: "#6B7280" }}>Fournisseur IA</label>
+              <div className="relative">
+                <select
+                  value={apiProvider}
+                  onChange={e => handleProviderChange(e.target.value as ProviderId)}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg outline-none appearance-none cursor-pointer"
+                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
                 >
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: p.dot }} />
-                  {p.label}
-                  {p.badge && (
-                    <span className="w-1.5 h-1.5 rounded-full absolute top-1.5 right-1.5" style={{ background: p.dot }} />
-                  )}
-                </button>
-              ))}
+                  {PROVIDERS.map(p => (
+                    <option key={p.id} value={p.id}>{p.label}</option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[10px]" style={{ color: "#9CA3AF" }}>▼</span>
+              </div>
             </div>
 
-            {/* Modèles selon fournisseur */}
+            {/* 2. Modèle IA */}
+            <div className="mb-3">
+              <label className="text-[10px] font-bold uppercase tracking-wider block mb-1.5" style={{ color: "#6B7280" }}>Modèle IA</label>
+              <div className="relative">
+                <select
+                  value={preferredModel}
+                  onChange={e => setPreferredModel(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg outline-none appearance-none cursor-pointer"
+                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                >
+                  {MODELS_BY_PROVIDER[apiProvider].map(m => (
+                    <option key={m.id} value={m.id}>{m.label}</option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-[10px]" style={{ color: "#9CA3AF" }}>▼</span>
+              </div>
+            </div>
+
+            {/* 3. Clé API */}
             <div className="mb-4">
-              <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Modèle IA</p>
-              <div className="space-y-1.5">
-                {(apiProvider === "anthropic" ? [
-                  { id: "claude-opus-4-8",           label: "Claude Opus 4.8",   sub: "Meilleur · Anthropic",  color: "#E8651A" },
-                  { id: "claude-sonnet-4-6",         label: "Claude Sonnet 4.6", sub: "Équilibré · Anthropic", color: "#E8651A" },
-                  { id: "claude-haiku-4-5-20251001", label: "Claude Haiku 4.5",  sub: "Rapide · Anthropic",    color: "#E8651A" },
-                ] : apiProvider === "openai" ? [
-                  { id: "gpt-4o",       label: "GPT-4o",      sub: "Meilleur · OpenAI",      color: "#10A37F" },
-                  { id: "gpt-4o-mini",  label: "GPT-4o Mini", sub: "Rapide · OpenAI",        color: "#10A37F" },
-                  { id: "o3-mini",      label: "o3-mini",     sub: "Raisonnement · OpenAI",  color: "#10A37F" },
-                ] : apiProvider === "google" ? [
-                  { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro",   sub: "Meilleur · Google",  color: "#4285F4" },
-                  { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", sub: "Rapide · Google",    color: "#4285F4" },
-                  { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash", sub: "Léger · Google",     color: "#4285F4" },
-                ] : apiProvider === "xai" ? [
-                  { id: "grok-3",      label: "Grok 3",      sub: "Meilleur · xAI",  color: "#111827" },
-                  { id: "grok-3-fast", label: "Grok 3 Fast", sub: "Rapide · xAI",    color: "#111827" },
-                  { id: "grok-2-1212", label: "Grok 2",      sub: "Précédent · xAI", color: "#111827" },
-                ] : [
-                  { id: "openrouter/meta-llama/llama-4-maverick",        label: "Llama 4 Maverick",   sub: "Meta · Open Source",   color: "#6366F1" },
-                  { id: "openrouter/mistralai/mistral-large-2411",        label: "Mistral Large 2",    sub: "Mistral AI",           color: "#6366F1" },
-                  { id: "openrouter/deepseek/deepseek-r1",                label: "DeepSeek R1",        sub: "Raisonnement",         color: "#6366F1" },
-                  { id: "openrouter/qwen/qwen-2.5-72b-instruct",         label: "Qwen 2.5 72B",       sub: "Alibaba",              color: "#6366F1" },
-                ]).map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => setPreferredModel(m.id)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all"
-                    style={{
-                      background: preferredModel === m.id ? `${m.color}12` : "#F3F4F6",
-                      border: `1px solid ${preferredModel === m.id ? m.color + "50" : "#E2E8F0"}`,
-                    }}
-                  >
-                    <span
-                      className="w-3.5 h-3.5 rounded-full flex-shrink-0 flex items-center justify-center"
-                      style={{ background: preferredModel === m.id ? m.color : "transparent", border: `2px solid ${preferredModel === m.id ? m.color : "#D1D5DB"}` }}
-                    >
-                      {preferredModel === m.id && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                    </span>
-                    <div>
-                      <p className="text-xs font-semibold leading-tight" style={{ color: preferredModel === m.id ? m.color : "#111827" }}>{m.label}</p>
-                      <p className="text-[10px] leading-tight mt-0.5" style={{ color: "#9CA3AF" }}>{m.sub}</p>
-                    </div>
-                  </button>
-                ))}
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API</label>
+                <span
+                  className="text-[10px] font-medium px-1.5 py-0.5 rounded"
+                  style={{
+                    background: currentHasKey ? `${PROVIDER_COLORS[apiProvider]}14` : "#F3F4F6",
+                    color: currentHasKey ? PROVIDER_COLORS[apiProvider] : "#9CA3AF",
+                  }}
+                >
+                  {currentHasKey ? "✓ Active" : "Non configurée"}
+                </span>
+              </div>
+              <div className="relative">
+                <input
+                  type={showApiKey ? "text" : "password"}
+                  placeholder={currentHasKey ? "••••••••••••••••••••••" : KEY_PLACEHOLDERS[apiProvider]}
+                  value={currentKey}
+                  onChange={e => setCurrentKey(e.target.value)}
+                  className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
+                  style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]"
+                  style={{ color: "#9CA3AF" }}
+                >
+                  {showApiKey ? "Cacher" : "Voir"}
+                </button>
               </div>
             </div>
 
-            {/* Clé API selon fournisseur */}
-            {apiProvider === "anthropic" && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API Anthropic</p>
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasClaudeKey ? "#E8651A14" : "#F3F4F6", color: hasClaudeKey ? "#E8651A" : "#9CA3AF" }}>
-                    {hasClaudeKey ? "✓ Active" : "Non configurée"}
+            {/* 4. Actions */}
+            <div className="flex gap-2 mb-2">
+              <button
+                onClick={testApiConnection}
+                disabled={testingApi}
+                className="flex-1 text-xs py-2.5 rounded-lg font-semibold transition-all disabled:opacity-40"
+                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#374151" }}
+              >
+                {testingApi ? (
+                  <span className="flex items-center justify-center gap-1.5">
+                    <span className="w-3 h-3 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin inline-block" />
+                    Test…
                   </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showClaudeKey ? "text" : "password"}
-                    placeholder={hasClaudeKey ? "••••••••••••••••••••••" : "sk-ant-api03-..."}
-                    value={claudeKey}
-                    onChange={e => setClaudeKey(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
-                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                  />
-                  <button type="button" onClick={() => setShowClaudeKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
-                    {showClaudeKey ? "Cacher" : "Voir"}
-                  </button>
-                </div>
+                ) : "🔌 Tester la connexion"}
+              </button>
+              <button
+                onClick={saveApiSettings}
+                disabled={savingApi}
+                className="flex-1 text-xs py-2.5 rounded-lg font-semibold transition-all disabled:opacity-50 text-white"
+                style={{ background: PROVIDER_COLORS[apiProvider] }}
+              >
+                {savingApi ? "Sauvegarde…" : "💾 Sauvegarder"}
+              </button>
+            </div>
+
+            {testResult && (
+              <div
+                className="rounded-lg px-3 py-2 text-xs mb-2"
+                style={{
+                  background: testResult.ok ? "#E8F5E9" : "#FEF2F2",
+                  border: `1px solid ${testResult.ok ? "#A5D6A7" : "#FECACA"}`,
+                  color: testResult.ok ? "#2E7D32" : "#DC2626",
+                }}
+              >
+                {testResult.message}
               </div>
             )}
 
-            {apiProvider === "openai" && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API OpenAI</p>
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasOpenaiKey ? "#10A37F14" : "#F3F4F6", color: hasOpenaiKey ? "#10A37F" : "#9CA3AF" }}>
-                    {hasOpenaiKey ? "✓ Active" : "Non configurée"}
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showOpenaiKey ? "text" : "password"}
-                    placeholder={hasOpenaiKey ? "••••••••••••••••••••••" : "sk-proj-..."}
-                    value={openaiKey}
-                    onChange={e => setOpenaiKey(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
-                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                  />
-                  <button type="button" onClick={() => setShowOpenaiKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
-                    {showOpenaiKey ? "Cacher" : "Voir"}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {apiProvider === "openrouter" && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API OpenRouter</p>
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasOpenrouterKey ? "#6366F114" : "#F3F4F6", color: hasOpenrouterKey ? "#6366F1" : "#9CA3AF" }}>
-                    {hasOpenrouterKey ? "✓ Active" : "Non configurée"}
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showOpenrouterKey ? "text" : "password"}
-                    placeholder={hasOpenrouterKey ? "••••••••••••••••••••••" : "sk-or-v1-..."}
-                    value={openrouterKey}
-                    onChange={e => setOpenrouterKey(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
-                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                  />
-                  <button type="button" onClick={() => setShowOpenrouterKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
-                    {showOpenrouterKey ? "Cacher" : "Voir"}
-                  </button>
-                </div>
-                <p className="text-[10px] mt-1.5 rounded-lg px-2 py-1.5" style={{ background: "#6366F10D", color: "#6366F1", border: "1px solid #6366F130" }}>
-                  Obtenez une clé gratuite sur <span className="font-mono">openrouter.ai</span> — accès à +200 modèles
-                </p>
-              </div>
-            )}
-
-            {apiProvider === "google" && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API Google AI</p>
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasGoogleKey ? "#4285F414" : "#F3F4F6", color: hasGoogleKey ? "#4285F4" : "#9CA3AF" }}>
-                    {hasGoogleKey ? "✓ Active" : "Non configurée"}
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showGoogleKey ? "text" : "password"}
-                    placeholder={hasGoogleKey ? "••••••••••••••••••••••" : "AIzaSy..."}
-                    value={googleKey}
-                    onChange={e => setGoogleKey(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
-                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                  />
-                  <button type="button" onClick={() => setShowGoogleKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
-                    {showGoogleKey ? "Cacher" : "Voir"}
-                  </button>
-                </div>
-                <p className="text-[10px] mt-1.5 rounded-lg px-2 py-1.5" style={{ background: "#4285F40D", color: "#4285F4", border: "1px solid #4285F430" }}>
-                  Obtenez une clé sur <span className="font-mono">aistudio.google.com</span> — accès gratuit aux modèles Gemini
-                </p>
-              </div>
-            )}
-
-            {apiProvider === "xai" && (
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-1.5">
-                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API xAI (Grok)</p>
-                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasGrokKey ? "#11182714" : "#F3F4F6", color: hasGrokKey ? "#111827" : "#9CA3AF" }}>
-                    {hasGrokKey ? "✓ Active" : "Non configurée"}
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showGrokKey ? "text" : "password"}
-                    placeholder={hasGrokKey ? "••••••••••••••••••••••" : "xai-..."}
-                    value={grokKey}
-                    onChange={e => setGrokKey(e.target.value)}
-                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
-                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
-                  />
-                  <button type="button" onClick={() => setShowGrokKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
-                    {showGrokKey ? "Cacher" : "Voir"}
-                  </button>
-                </div>
-                <p className="text-[10px] mt-1.5 rounded-lg px-2 py-1.5" style={{ background: "#11182708", color: "#374151", border: "1px solid #E2E8F0" }}>
-                  Obtenez une clé sur <span className="font-mono">console.x.ai</span> — accès aux modèles Grok
-                </p>
-              </div>
-            )}
-
-            <button
-              onClick={saveApiSettings}
-              disabled={savingApi}
-              className="w-full text-xs py-2.5 rounded-lg font-semibold transition-all disabled:opacity-50"
-              style={{
-                background: apiProvider === "openrouter" ? "#6366F1"
-                  : apiProvider === "openai" ? "#10A37F"
-                  : apiProvider === "google" ? "#4285F4"
-                  : apiProvider === "xai" ? "#111827"
-                  : "#E8651A",
-                color: "#fff"
-              }}
-            >
-              {savingApi ? "Sauvegarde…" : "💾 Sauvegarder les paramètres"}
-            </button>
-
-            <p className="text-[10px] mt-2 text-center" style={{ color: "#9CA3AF" }}>
+            <p className="text-[10px] text-center" style={{ color: "#9CA3AF" }}>
               Vos clés sont chiffrées et stockées en sécurité.
             </p>
           </section>
