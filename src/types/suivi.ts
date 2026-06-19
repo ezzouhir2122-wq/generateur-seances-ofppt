@@ -42,5 +42,17 @@ export interface GroupeDetail {
 export interface FiliereOption {
   id: string;
   nom: string;
-  secteurNom: string;
+  secteurNom: string; // valeur du champ Filiere.filiere (libellé "Filière" OFPPT)
+}
+
+// Shape retournée par GET /api/referentiel (et mode=list) — groupFilieres()
+export interface SecteurGroup {
+  id: string;   // = Filiere.filiere text value (ex: "TSC")
+  nom: string;
+  code: null;
+  filieres: Array<{
+    id: string;   // = Filiere.id (CUID)
+    nom: string;  // = Filiere.nom ("Niveau de formation")
+    code: string | null;
+  }>;
 }

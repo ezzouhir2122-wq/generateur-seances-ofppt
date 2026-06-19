@@ -9,22 +9,18 @@ export default async function ReferentielPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const secteurs = await prisma.secteur.findMany({
+  // Filiere.filiere = libellé "Filière" (ex: "TSC") — regroupement côté serveur
+  const filieres = await prisma.filiere.findMany({
     include: {
-      filieres: {
+      modules: {
         include: {
-          modules: {
-            include: {
-              competences: {
-                select: {
-                  id: true,
-                  titre: true,
-                  objectifs: { select: { titre: true } },
-                },
-                orderBy: { titre: "asc" },
-              },
+          competences: {
+            select: {
+              id: true,
+              titre: true,
+              objectifs: { select: { titre: true } },
             },
-            orderBy: { nom: "asc" },
+            orderBy: { titre: "asc" },
           },
         },
         orderBy: { nom: "asc" },
@@ -33,7 +29,19 @@ export default async function ReferentielPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const data = secteurs.map((s) => ({
+  // Grouper les Filiere par leur champ `filiere` (= "Filière" OFPPT, ex: "TSC")
+  const groupMap = new Map<
+    string,
+    { id: string; nom: string; code: null; filieres: typeof filieres }
+  >();
+  for (const f of filieres) {
+    const key = f.filiere ?? f.nom;
+    if (!groupMap.has(key))
+      groupMap.set(key, { id: key, nom: key, code: null, filieres: [] });
+    groupMap.get(key)!.filieres.push(f);
+  }
+
+  const data = Array.from(groupMap.values()).map((s) => ({
     id: s.id,
     nom: s.nom,
     code: s.code,

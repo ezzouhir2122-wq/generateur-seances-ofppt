@@ -101,20 +101,11 @@ model ChatMessage {
 
 // ─── Référentiel Pédagogique OFPPT ───────────────────────────────────────────
 
-model Secteur {
-  id        String    @id @default(cuid())
-  nom       String
-  code      String?
-  filieres  Filiere[]
-  createdAt DateTime  @default(now())
-}
-
 model Filiere {
   id        String      @id @default(cuid())
-  nom       String
+  nom       String      // "Niveau de formation" (ex: "Technicien Spécialisé", "1ère Année")
   code      String?
-  secteurId String
-  secteur   Secteur     @relation(fields: [secteurId], references: [id], onDelete: Cascade)
+  filiere   String?     // "Filière" label (ex: "TSC", "GEOCF") — remplace l'ancienne relation Secteur
   modules   RefModule[]
   createdAt DateTime    @default(now())
 }

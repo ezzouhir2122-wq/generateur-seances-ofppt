@@ -242,13 +242,13 @@ async function extractTextFromBuffer(buffer: Buffer, mimeType: string, fileName:
 
 // ── Fast batch save for template imports (no AI objectifs) ────────────────────
 async function saveReferentielBatch(extracted: ExtractedReferentiel) {
-  // 1. Upsert secteur
-  let secteur = await prisma.secteur.findFirst({ where: { nom: extracted.secteur } });
-  if (!secteur) secteur = await prisma.secteur.create({ data: { nom: extracted.secteur, code: extracted.secteurCode ?? null } });
-
-  // 2. Upsert filiere
-  let filiere = await prisma.filiere.findFirst({ where: { nom: extracted.filiere, secteurId: secteur.id } });
-  if (!filiere) filiere = await prisma.filiere.create({ data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, secteurId: secteur.id } });
+  // Upsert filiere (secteur supprimé — stocké comme champ texte filiere)
+  let filiere = await prisma.filiere.findFirst({
+    where: { nom: extracted.filiere, filiere: extracted.secteur || null },
+  });
+  if (!filiere) filiere = await prisma.filiere.create({
+    data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, filiere: extracted.secteur || null },
+  });
 
   // 3. Load all existing modules in one query
   const existingMods = await prisma.refModule.findMany({
@@ -293,11 +293,12 @@ async function saveReferentielBatch(extracted: ExtractedReferentiel) {
 
 // ── Sequential save for AI imports (has nested objectifs/criteres) ─────────────
 async function saveReferentielFull(extracted: ExtractedReferentiel) {
-  let secteur = await prisma.secteur.findFirst({ where: { nom: extracted.secteur } });
-  if (!secteur) secteur = await prisma.secteur.create({ data: { nom: extracted.secteur, code: extracted.secteurCode ?? null } });
-
-  let filiere = await prisma.filiere.findFirst({ where: { nom: extracted.filiere, secteurId: secteur.id } });
-  if (!filiere) filiere = await prisma.filiere.create({ data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, secteurId: secteur.id } });
+  let filiere = await prisma.filiere.findFirst({
+    where: { nom: extracted.filiere, filiere: extracted.secteur || null },
+  });
+  if (!filiere) filiere = await prisma.filiere.create({
+    data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, filiere: extracted.secteur || null },
+  });
 
   let modulesCreated = 0, sequencesCreated = 0, competencesCreated = 0, objectifsCreated = 0, criteresCreated = 0;
 
@@ -685,54 +686,42 @@ export async function GET(req: NextRequest) {
 
   // Lightweight list mode for sidebar — no competences/objectifs/criteres
   if (mode === "list") {
-    const secteurs = await prisma.secteur.findMany({
+    const filieres = await prisma.filiere.findMany({
       select: {
         id: true,
         nom: true,
         code: true,
-        filieres: {
-          select: {
-            id: true,
-            nom: true,
-            code: true,
-            modules: {
-              select: { id: true, nom: true, code: true, mhg: true },
-              orderBy: { nom: "asc" },
-            },
-          },
+        filiere: true,
+        modules: {
+          select: { id: true, nom: true, code: true, mhg: true },
           orderBy: { nom: "asc" },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { nom: "asc" },
     });
-    return NextResponse.json(secteurs);
+    return NextResponse.json(groupFilieres(filieres));
   }
 
-  const secteurs = await prisma.secteur.findMany({
-    include: {
-      filieres: {
-        include: {
-          modules: {
-            include: {
-              sequences: {
-                include: {
-                  competences: {
-                    include: { objectifs: { include: { criteres: true } } },
-                  },
-                },
-              },
-              competences: {
-                include: { objectifs: { include: { criteres: true } } },
-              },
-            },
-          },
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
+  // Default GET — grouped filieres (used by GroupeForm and other clients)
+  const filieres = await prisma.filiere.findMany({
+    select: { id: true, nom: true, code: true, filiere: true },
+    orderBy: { nom: "asc" },
   });
+  return NextResponse.json(groupFilieres(filieres));
+}
 
-  return NextResponse.json(secteurs);
+// ── Group Filiere records by their filiere text field ─────────────────────────
+// Produces the same { id, nom, code, filieres[] } shape previously returned by Secteur
+function groupFilieres<T extends { id: string; nom: string; code: string | null; filiere: string | null }>(
+  filieres: T[]
+): { id: string; nom: string; code: null; filieres: T[] }[] {
+  const map = new Map<string, { id: string; nom: string; code: null; filieres: T[] }>();
+  for (const f of filieres) {
+    const key = f.filiere ?? f.nom;
+    if (!map.has(key)) map.set(key, { id: key, nom: key, code: null, filieres: [] });
+    map.get(key)!.filieres.push(f);
+  }
+  return Array.from(map.values());
 }
 
 export async function DELETE(req: NextRequest) {
@@ -740,12 +729,16 @@ export async function DELETE(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const { searchParams } = new URL(req.url);
+  // secteurId = filière group name (ex: "TSC") — supprime toutes les Filiere de ce groupe
   const secteurId = searchParams.get("secteurId");
+  const filiereId = searchParams.get("filiereId");
 
-  if (secteurId) {
-    await prisma.secteur.delete({ where: { id: secteurId } });
+  if (filiereId) {
+    await prisma.filiere.delete({ where: { id: filiereId } });
+  } else if (secteurId) {
+    await prisma.filiere.deleteMany({ where: { filiere: secteurId } });
   } else {
-    await prisma.secteur.deleteMany({});
+    await prisma.filiere.deleteMany({});
   }
 
   return NextResponse.json({ success: true });

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FiliereOption } from "@/types/suivi";
+import { FiliereOption, SecteurGroup } from "@/types/suivi";
 import CompetenceSelector, { CompetenceModuleGroup } from "@/components/suivi/CompetenceSelector";
 
 const ANNEES = ["2024-2025", "2025-2026", "2026-2027", "2027-2028"];
@@ -24,13 +24,10 @@ export default function GroupeForm() {
   useEffect(() => {
     fetch("/api/referentiel")
       .then((r) => r.json())
-      .then((secteurs: { nom: string; filieres: { id: string; nom: string }[] }[]) => {
-        const opts: FiliereOption[] = [];
-        for (const s of secteurs) {
-          for (const f of s.filieres) {
-            opts.push({ id: f.id, nom: f.nom, secteurNom: s.nom });
-          }
-        }
+      .then((secteurs: SecteurGroup[]) => {
+        const opts: FiliereOption[] = secteurs.flatMap((s) =>
+          s.filieres.map((f) => ({ id: f.id, nom: f.nom, secteurNom: s.nom }))
+        );
         setFilieres(opts);
       })
       .catch(() => {});
@@ -40,7 +37,7 @@ export default function GroupeForm() {
   useEffect(() => {
     if (!filiereId) { setCompGroups([]); setSelected([]); return; }
     setCompLoading(true);
-    fetch(`/api/competences?filiereId=${filiereId}`)
+    fetch(`/api/competences?filiereId=${encodeURIComponent(filiereId)}`)
       .then((r) => r.json())
       .then((groups: CompetenceModuleGroup[]) => {
         setCompGroups(groups);

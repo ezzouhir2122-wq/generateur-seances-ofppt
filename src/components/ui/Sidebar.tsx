@@ -203,10 +203,10 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   };
 
   const deleteSecteur = async (secteurId: string, nom: string) => {
-    if (!confirm(`Supprimer le secteur « ${nom} » et toutes ses filières ?`)) return;
-    await fetch(`/api/referentiel?secteurId=${secteurId}`, { method: "DELETE" });
+    if (!confirm(`Supprimer « ${nom} » et toutes ses filières / modules ?`)) return;
+    await fetch(`/api/referentiel?secteurId=${encodeURIComponent(secteurId)}`, { method: "DELETE" });
     setReferentiels(prev => prev.filter(s => s.id !== secteurId));
-    toast.success(`Secteur « ${nom} » supprimé`);
+    toast.success(`« ${nom} » supprimé`);
   };
 
   const exportSecteurExcel = (secteur: ReferentielItem) => {
@@ -224,7 +224,8 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
     ws["!cols"] = [{ wch: 22 }, { wch: 30 }, { wch: 12 }, { wch: 50 }, { wch: 10 }];
     const wb = utils.book_new();
     utils.book_append_sheet(wb, ws, "Référentiel");
-    writeFile(wb, `referentiel-${secteur.nom.replace(/\s+/g, "-").toLowerCase()}.xlsx`);
+    const safeName = secteur.nom.replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").toLowerCase();
+    writeFile(wb, `referentiel-${safeName}.xlsx`);
   };
 
   return (
@@ -481,22 +482,23 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                         <div className="flex items-center gap-1 ml-2 shrink-0">
                           <button
                             onClick={e => { e.stopPropagation(); exportSecteurExcel(secteur); }}
-                            className="text-[10px] px-2 py-0.5 rounded transition-colors"
+                            className="text-[10px] px-2 py-0.5 rounded transition-colors font-medium"
                             style={{ color: "#0A4DA8", border: "1px solid transparent" }}
-                            title="Exporter Excel"
+                            title="Exporter en Excel"
                             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#0A4DA830"; (e.currentTarget as HTMLButtonElement).style.background = "#0A4DA810"; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
                           >
-                            ↓
+                            ↓ Excel
                           </button>
                           <button
                             onClick={e => { e.stopPropagation(); deleteSecteur(secteur.id, secteur.nom); }}
-                            className="text-[10px] px-2 py-0.5 rounded transition-colors"
+                            className="text-[10px] px-2 py-0.5 rounded transition-colors font-medium"
                             style={{ color: "#EF4444", border: "1px solid transparent" }}
+                            title="Supprimer ce référentiel"
                             onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444410"; }}
                             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "transparent"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
                           >
-                            🗑
+                            Supprimer
                           </button>
                         </div>
                       </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef } from "react";
+import { Fragment, useState, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { utils, writeFile } from "xlsx";
 import Link from "next/link";
@@ -162,7 +162,7 @@ export default function ReferentielClient({ secteurs }: Props) {
 
   const deleteSecteur = useCallback(async (secteurId: string, secteurNom: string) => {
     if (!confirm(`Supprimer "${secteurNom}" et tous ses modules / compétences ?`)) return;
-    const res = await fetch(`/api/referentiel?secteurId=${secteurId}`, { method: "DELETE" });
+    const res = await fetch(`/api/referentiel?secteurId=${encodeURIComponent(secteurId)}`, { method: "DELETE" });
     if (res.ok) { toast.success(`"${secteurNom}" supprimé`); router.refresh(); }
     else toast.error("Erreur lors de la suppression");
   }, [router]);
@@ -171,7 +171,8 @@ export default function ReferentielClient({ secteurs }: Props) {
     setExpanded(new Set(filtered.map((m) => m.id)));
   const collapseAll = () => setExpanded(new Set());
 
-  function genererSeance(
+  function handleGenerate(
+    target: "/seances" | "/fiches",
     row: (typeof allModules)[number],
     comp: CompetenceItem
   ) {
@@ -183,22 +184,7 @@ export default function ReferentielClient({ secteurs }: Props) {
       objectifs: comp.objectifs.join("\n"),
       criteres: "",
     });
-    router.push("/seances");
-  }
-
-  function genererFiche(
-    row: (typeof allModules)[number],
-    comp: CompetenceItem
-  ) {
-    setReferentielContext({
-      filiere: row.filiere,
-      module: row.nom,
-      codeModule: row.code ?? "",
-      competence: comp.titre,
-      objectifs: comp.objectifs.join("\n"),
-      criteres: "",
-    });
-    router.push("/fiches");
+    router.push(target);
   }
 
   const exportFiltered = () => {
@@ -596,10 +582,9 @@ export default function ReferentielClient({ secteurs }: Props) {
                     const isExpanded = expanded.has(row.id);
                     const hasComps = row.competences.length > 0;
                     return (
-                      <>
+                      <Fragment key={row.id}>
                         {/* Module row */}
                         <tr
-                          key={row.id}
                           onClick={() => hasComps && toggleExpand(row.id)}
                           style={{
                             borderBottom: isExpanded
@@ -721,7 +706,6 @@ export default function ReferentielClient({ secteurs }: Props) {
                         {/* Expanded competences sub-row */}
                         {isExpanded && (
                           <tr
-                            key={`${row.id}-comp`}
                             style={{
                               background:
                                 i % 2 === 0 ? "#F0F4FF" : "#EBF0FC",
@@ -780,7 +764,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                                       {/* Quick actions */}
                                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                                         <button
-                                          onClick={() => genererSeance(row, comp)}
+                                          onClick={() => handleGenerate("/seances", row, comp)}
                                           className="text-[10px] px-2 py-0.5 rounded font-medium"
                                           style={{
                                             background: "#0A4DA8",
@@ -790,7 +774,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                                           Séance
                                         </button>
                                         <button
-                                          onClick={() => genererFiche(row, comp)}
+                                          onClick={() => handleGenerate("/fiches", row, comp)}
                                           className="text-[10px] px-2 py-0.5 rounded font-medium"
                                           style={{
                                             background: "#0A4DA814",
@@ -808,7 +792,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </Fragment>
                     );
                   })
                 )}
@@ -926,7 +910,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                             </div>
                             <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 pt-0.5">
                               <button
-                                onClick={() => genererSeance(row, comp)}
+                                onClick={() => handleGenerate("/seances", row, comp)}
                                 className="text-xs px-3 py-1 rounded-lg font-medium"
                                 style={{
                                   background: "#0A4DA8",
@@ -936,7 +920,7 @@ export default function ReferentielClient({ secteurs }: Props) {
                                 → Séance
                               </button>
                               <button
-                                onClick={() => genererFiche(row, comp)}
+                                onClick={() => handleGenerate("/fiches", row, comp)}
                                 className="text-xs px-3 py-1 rounded-lg font-medium"
                                 style={{
                                   background: "#0A4DA814",
