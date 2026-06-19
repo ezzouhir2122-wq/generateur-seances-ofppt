@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { generateWithClaude, streamWithClaude } from "@/lib/claude";
 import { generateWithOpenAI } from "@/lib/openai";
 import { generateWithGoogle } from "@/lib/google";
+import { generateWithGrok } from "@/lib/grok";
 import { generateWithOpenRouter } from "@/lib/openrouter";
 import { prisma } from "@/lib/db";
 import { SeanceParams } from "../../../../equipment/generate-seance";
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
   let userOpenaiKey: string | null = null;
   let userGoogleKey: string | null = null;
   let userOpenrouterKey: string | null = null;
+  let userGrokKey: string | null = null;
   let preferredModel = "claude-opus-4-8";
 
   if (session?.user?.id) {
@@ -73,6 +75,7 @@ export async function POST(req: NextRequest) {
           openaiApiKey: true,
           googleApiKey: true,
           openrouterApiKey: true,
+          grokApiKey: true,
           preferredModel: true,
         },
       });
@@ -80,11 +83,28 @@ export async function POST(req: NextRequest) {
       if (userSettings?.openaiApiKey) userOpenaiKey = userSettings.openaiApiKey;
       if (userSettings?.googleApiKey) userGoogleKey = userSettings.googleApiKey;
       if (userSettings?.openrouterApiKey) userOpenrouterKey = userSettings.openrouterApiKey;
+      if (userSettings?.grokApiKey) userGrokKey = userSettings.grokApiKey;
       if (userSettings?.preferredModel) preferredModel = userSettings.preferredModel;
     } catch {}
   }
 
   const userId = session?.user?.id ?? null;
+
+  // ─── Grok (xAI) ──────────────────────────────────────────────────────────
+  if (preferredModel.startsWith("grok-")) {
+    try {
+      const contenu = await withTimeout(
+        generateWithGrok(params, { apiKey: userGrokKey ?? undefined, model: preferredModel }),
+        55_000,
+        "Grok"
+      );
+      const seanceId = userId ? await saveSeance(params, contenu, userId) : undefined;
+      return NextResponse.json({ contenu, source: "grok", seanceId });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur Grok";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  }
 
   // ─── Gemini ──────────────────────────────────────────────────────────────
   if (preferredModel.startsWith("gemini")) {

@@ -55,17 +55,20 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [openaiKey, setOpenaiKey] = useState("");
   const [openrouterKey, setOpenrouterKey] = useState("");
   const [googleKey, setGoogleKey] = useState("");
+  const [grokKey, setGrokKey] = useState("");
   const [preferredModel, setPreferredModel] = useState("claude-sonnet-4-6");
   const [savingApi, setSavingApi] = useState(false);
   const [hasClaudeKey, setHasClaudeKey] = useState(false);
   const [hasOpenaiKey, setHasOpenaiKey] = useState(false);
   const [hasOpenrouterKey, setHasOpenrouterKey] = useState(false);
   const [hasGoogleKey, setHasGoogleKey] = useState(false);
+  const [hasGrokKey, setHasGrokKey] = useState(false);
   const [showClaudeKey, setShowClaudeKey] = useState(false);
   const [showOpenaiKey, setShowOpenaiKey] = useState(false);
   const [showOpenrouterKey, setShowOpenrouterKey] = useState(false);
   const [showGoogleKey, setShowGoogleKey] = useState(false);
-  const [apiProvider, setApiProvider] = useState<"anthropic" | "openai" | "google" | "openrouter">("anthropic");
+  const [showGrokKey, setShowGrokKey] = useState(false);
+  const [apiProvider, setApiProvider] = useState<"anthropic" | "openai" | "google" | "openrouter" | "xai">("anthropic");
 
   const [referentiels, setReferentiels] = useState<ReferentielItem[]>([]);
   const [expandedSecteur, setExpandedSecteur] = useState<string | null>(null);
@@ -118,14 +121,17 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
         setHasOpenaiKey(data.hasOpenaiKey);
         setHasOpenrouterKey(data.hasOpenrouterKey ?? false);
         setHasGoogleKey(data.hasGoogleKey ?? false);
+        setHasGrokKey(data.hasGrokKey ?? false);
         if (data.claudeApiKey) setClaudeKey(data.claudeApiKey);
         if (data.openaiApiKey) setOpenaiKey(data.openaiApiKey);
         if (data.openrouterApiKey) setOpenrouterKey(data.openrouterApiKey);
         if (data.googleApiKey) setGoogleKey(data.googleApiKey);
+        if (data.grokApiKey) setGrokKey(data.grokApiKey);
         // Auto-select tab based on preferredModel
         const m = data.preferredModel ?? "";
         if (m.startsWith("gpt") || m.startsWith("o1") || m.startsWith("o3")) setApiProvider("openai");
         else if (m.startsWith("gemini")) setApiProvider("google");
+        else if (m.startsWith("grok-")) setApiProvider("xai");
         else if (m.startsWith("openrouter/") || m.includes("/")) setApiProvider("openrouter");
         else setApiProvider("anthropic");
       }
@@ -138,7 +144,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       const res = await fetch("/api/user/api-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, googleApiKey: googleKey, preferredModel }),
+        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, googleApiKey: googleKey, grokApiKey: grokKey, preferredModel }),
       });
       if (!res.ok) throw new Error();
       toast.success("Paramètres API sauvegardés");
@@ -557,13 +563,14 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#4B5563" }}>🔑 Paramètres API & Modèle IA</h3>
             <p className="text-xs mb-4" style={{ color: "#6B7280" }}>Sélectionnez votre fournisseur, choisissez un modèle et saisissez votre clé API.</p>
 
-            {/* Onglets fournisseur — 2 × 2 */}
-            <div className="grid grid-cols-2 gap-1 mb-4 p-1 rounded-xl" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
+            {/* Onglets fournisseur — 3 × 2 */}
+            <div className="grid grid-cols-3 gap-1 mb-4 p-1 rounded-xl" style={{ background: "#F3F4F6", border: "1px solid #E2E8F0" }}>
               {([
                 { id: "anthropic",  label: "Anthropic",  dot: "#E8651A", badge: hasClaudeKey },
                 { id: "openai",     label: "OpenAI",     dot: "#10A37F", badge: hasOpenaiKey },
                 { id: "google",     label: "Google",     dot: "#4285F4", badge: hasGoogleKey },
                 { id: "openrouter", label: "OpenRouter", dot: "#6366F1", badge: hasOpenrouterKey },
+                { id: "xai",        label: "xAI (Grok)", dot: "#111827", badge: hasGrokKey },
               ] as const).map((p) => (
                 <button
                   key={p.id}
@@ -597,9 +604,13 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                   { id: "gpt-4o-mini",  label: "GPT-4o Mini", sub: "Rapide · OpenAI",        color: "#10A37F" },
                   { id: "o3-mini",      label: "o3-mini",     sub: "Raisonnement · OpenAI",  color: "#10A37F" },
                 ] : apiProvider === "google" ? [
-                  { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro",   sub: "Meilleur · Google",      color: "#4285F4" },
-                  { id: "gemini-1.5-pro",   label: "Gemini 1.5 Pro",   sub: "Équilibré · Google",     color: "#4285F4" },
-                  { id: "gemini-1.5-flash", label: "Gemini 1.5 Flash", sub: "Rapide · Google",        color: "#4285F4" },
+                  { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro",   sub: "Meilleur · Google",  color: "#4285F4" },
+                  { id: "gemini-2.5-flash", label: "Gemini 2.5 Flash", sub: "Rapide · Google",    color: "#4285F4" },
+                  { id: "gemini-2.0-flash", label: "Gemini 2.0 Flash", sub: "Léger · Google",     color: "#4285F4" },
+                ] : apiProvider === "xai" ? [
+                  { id: "grok-3",      label: "Grok 3",      sub: "Meilleur · xAI",  color: "#111827" },
+                  { id: "grok-3-fast", label: "Grok 3 Fast", sub: "Rapide · xAI",    color: "#111827" },
+                  { id: "grok-2-1212", label: "Grok 2",      sub: "Précédent · xAI", color: "#111827" },
                 ] : [
                   { id: "openrouter/meta-llama/llama-4-maverick",        label: "Llama 4 Maverick",   sub: "Meta · Open Source",   color: "#6366F1" },
                   { id: "openrouter/mistralai/mistral-large-2411",        label: "Mistral Large 2",    sub: "Mistral AI",           color: "#6366F1" },
@@ -733,6 +744,33 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
               </div>
             )}
 
+            {apiProvider === "xai" && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#6B7280" }}>Clé API xAI (Grok)</p>
+                  <span className="text-[10px] font-medium px-1.5 py-0.5 rounded" style={{ background: hasGrokKey ? "#11182714" : "#F3F4F6", color: hasGrokKey ? "#111827" : "#9CA3AF" }}>
+                    {hasGrokKey ? "✓ Active" : "Non configurée"}
+                  </span>
+                </div>
+                <div className="relative">
+                  <input
+                    type={showGrokKey ? "text" : "password"}
+                    placeholder={hasGrokKey ? "••••••••••••••••••••••" : "xai-..."}
+                    value={grokKey}
+                    onChange={e => setGrokKey(e.target.value)}
+                    className="w-full text-xs px-3 py-2.5 rounded-lg pr-14 outline-none font-mono"
+                    style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
+                  />
+                  <button type="button" onClick={() => setShowGrokKey(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: "#9CA3AF" }}>
+                    {showGrokKey ? "Cacher" : "Voir"}
+                  </button>
+                </div>
+                <p className="text-[10px] mt-1.5 rounded-lg px-2 py-1.5" style={{ background: "#11182708", color: "#374151", border: "1px solid #E2E8F0" }}>
+                  Obtenez une clé sur <span className="font-mono">console.x.ai</span> — accès aux modèles Grok
+                </p>
+              </div>
+            )}
+
             <button
               onClick={saveApiSettings}
               disabled={savingApi}
@@ -741,6 +779,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                 background: apiProvider === "openrouter" ? "#6366F1"
                   : apiProvider === "openai" ? "#10A37F"
                   : apiProvider === "google" ? "#4285F4"
+                  : apiProvider === "xai" ? "#111827"
                   : "#E8651A",
                 color: "#fff"
               }}
