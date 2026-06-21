@@ -133,13 +133,6 @@ const navSections = [
       { href: "/assistant", label: "Assistant IA", icon: <AssistantIcon />, exact: false },
     ],
   },
-  {
-    id: "aide",
-    label: "Aide",
-    items: [
-      { href: "/guide", label: "Guide application", icon: <GuideIcon />, exact: false },
-    ],
-  },
 ];
 
 /* ─── NavItem component ─── */
@@ -239,26 +232,31 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           </div>
         ))}
 
-        {/* ─ Système ─ */}
-        <div>
-          <div className="flex items-center gap-2 px-2 mb-1.5">
-            <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none" style={{ color: "rgba(255,255,255,0.28)" }}>
-              Système
-            </span>
-            <span className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-          </div>
-          <button
-            onClick={onSettingsClick}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
-            style={{ color: "rgba(255,255,255,0.50)" }}
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.85)"; }}
-            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.50)"; }}
-          >
-            <span style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }}><GearIcon /></span>
-            Modules & Paramètres
-          </button>
-        </div>
       </nav>
+
+      {/* ─ Zone fixe : Guide + Paramètres (toujours visible) ─ */}
+      <div className="px-3 pt-2 pb-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <Link
+          href="/guide"
+          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
+          style={{ color: isActive("/guide", false) ? "#F1F5F9" : "rgba(255,255,255,0.50)", background: isActive("/guide", false) ? "rgba(232,101,26,0.14)" : undefined }}
+          onMouseEnter={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.85)"; } }}
+          onMouseLeave={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.50)"; } }}
+        >
+          <span style={{ color: isActive("/guide", false) ? "#E8651A" : "rgba(255,255,255,0.35)", flexShrink: 0 }}><GuideIcon /></span>
+          Guide application
+        </Link>
+        <button
+          onClick={onSettingsClick}
+          className="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
+          style={{ color: "rgba(255,255,255,0.50)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.85)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.50)"; }}
+        >
+          <span style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }}><GearIcon /></span>
+          Modules & Paramètres
+        </button>
+      </div>
 
       {/* ─ User card ─ */}
       <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>

@@ -147,7 +147,7 @@ const techFlow = [
 
 export default async function GuidePage() {
   const session = await auth();
-  if (!session?.user?.id) redirect("/login");
+  if (!session) redirect("/login");
 
   return (
     <div style={{ maxWidth: "1060px", margin: "0 auto", padding: "40px 28px 80px" }}>
