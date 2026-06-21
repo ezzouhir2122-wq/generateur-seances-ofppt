@@ -76,6 +76,13 @@ const AssistantIcon = () => (
     <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
   </svg>
 );
+const GuideIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/>
+    <line x1="12" y1="17" x2="12.01" y2="17"/>
+  </svg>
+);
 const GearIcon = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="3"/>
@@ -124,6 +131,13 @@ const navSections = [
     label: "Intelligence Artificielle",
     items: [
       { href: "/assistant", label: "Assistant IA", icon: <AssistantIcon />, exact: false },
+    ],
+  },
+  {
+    id: "aide",
+    label: "Aide",
+    items: [
+      { href: "/guide", label: "Guide application", icon: <GuideIcon />, exact: false },
     ],
   },
 ];

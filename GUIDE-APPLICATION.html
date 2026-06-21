@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compétencia IA — Guide Application</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --ofppt-blue: #0A4DA8;
+    --ofppt-navy: #003087;
+    --ofppt-orange: #E8651A;
+    --surface: #0D1117;
+    --surface2: #131922;
+    --surface3: #1C2533;
+    --border: rgba(255,255,255,0.07);
+    --text-primary: #F1F5F9;
+    --text-muted: rgba(255,255,255,0.40);
+    --text-dim: rgba(255,255,255,0.20);
+    --green: #4ADE80;
+    --blue-accent: #4B8EE8;
+    --purple: #A78BFA;
+    --yellow: #FBBF24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--surface);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ──── NOISE TEXTURE ──── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 60px 32px 80px;
+  }
+
+  /* ──── HEADER ──── */
+  .header {
+    margin-bottom: 64px;
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232,101,26,0.12);
+    border: 1px solid rgba(232,101,26,0.25);
+    border-radius: 100px;
+    padding: 6px 16px;
+    margin-bottom: 28px;
+  }
+
+  .badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--ofppt-orange);
+    box-shadow: 0 0 8px rgba(232,101,26,0.6);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.85); }
+  }
+
+  .badge-text {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ofppt-orange);
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    line-height: 1.1;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .header h1 em {
+    color: var(--ofppt-orange);
+    font-style: italic;
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin: 0 auto 32px;
+  }
+
+  .tech-pills {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .tech-pill {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ──── DIVIDER ──── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(232,101,26,0.3), rgba(75,142,232,0.3), transparent);
+    margin-bottom: 56px;
+  }
+
+  /* ──── SECTION TITLE ──── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .section-label-text {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .section-label-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ──── FLOW ENTRY ──── */
+  .entry-block {
+    display: grid;
+    grid-template-columns: 1fr 120px 1fr;
+    gap: 0;
+    align-items: start;
+    margin-bottom: 56px;
+  }
+
+  /* ──── CARDS ──── */
+  .card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .card:hover {
+    border-color: rgba(232,101,26,0.25);
+    transform: translateY(-2px);
+  }
+
+  .card.accent-orange { border-left: 3px solid var(--ofppt-orange); }
+  .card.accent-blue   { border-left: 3px solid var(--blue-accent); }
+  .card.accent-green  { border-left: 3px solid var(--green); }
+  .card.accent-purple { border-left: 3px solid var(--purple); }
+  .card.accent-yellow { border-left: 3px solid var(--yellow); }
+  .card.accent-navy   { border-left: 3px solid #60A5FA; }
+
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .card-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+
+  .card-features {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.4;
+  }
+
+  .feature-dot {
+    width: 4px; height: 4px;
+    border-radius: 50%;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+
+  /* ──── ARROW connector ──── */
+  .arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 50px;
+    gap: 4px;
+  }
+
+  .arrow-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .arrow-line {
+    width: 40px; height: 1px;
+    background: linear-gradient(90deg, rgba(232,101,26,0.4), rgba(75,142,232,0.4));
+  }
+
+  .arrow-head {
+    font-size: 14px;
+    color: var(--text-dim);
+    transform: rotate(0deg);
+  }
+
+  /* ──── BIG FLOW DIAGRAM ──── */
+  .flow-diagram {
+    position: relative;
+    margin-bottom: 56px;
+  }
+
+  /* ──── ROW LAYOUT ──── */
+  .flow-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: stretch;
+  }
+
+  .flow-row .card {
+    flex: 1;
+  }
+
+  /* ──── CENTER NODE ──── */
+  .center-node {
+    background: linear-gradient(135deg, rgba(10,77,168,0.4), rgba(232,101,26,0.2));
+    border: 1px solid rgba(10,77,168,0.4);
+    border-radius: 20px;
+    padding: 32px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .center-node::before {
+    content: '';
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle at 50% 50%, rgba(10,77,168,0.15), transparent 60%);
+    pointer-events: none;
+  }
+
+  .center-node-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .center-node-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+  }
+
+  .center-node-sub {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--ofppt-orange);
+    margin-bottom: 16px;
+  }
+
+  .center-ai-badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ai-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .ai-badge.claude { background: rgba(232,101,26,0.15); color: var(--ofppt-orange); border: 1px solid rgba(232,101,26,0.3); }
+  .ai-badge.gpt { background: rgba(74,222,128,0.10); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+  .ai-badge.router { background: rgba(167,139,250,0.10); color: var(--purple); border: 1px solid rgba(167,139,250,0.25); }
+  .ai-badge.grok { background: rgba(75,142,232,0.10); color: var(--blue-accent); border: 1px solid rgba(75,142,232,0.25); }
+
+  /* ──── MODULE TAG ──── */
+  .module-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  /* ──── EXPORT TAGS ──── */
+  .export-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .export-tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .export-tag.pdf { background: rgba(239,68,68,0.12); color: #F87171; border: 1px solid rgba(239,68,68,0.2); }
+  .export-tag.word { background: rgba(75,142,232,0.12); color: var(--blue-accent); border: 1px solid rgba(75,142,232,0.2); }
+  .export-tag.excel { background: rgba(74,222,128,0.10); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+
+  /* ──── STAT INLINE ──── */
+  .inline-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 16px;
+  }
+
+  .inline-stat {
+    background: var(--surface2);
+    padding: 12px;
+    text-align: center;
+  }
+
+  .inline-stat-val {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--ofppt-orange);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
+  .inline-stat-lbl {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* ──── USER FLOW ──── */
+  .user-flow {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 40px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .flow-step {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 100px;
+    max-width: 120px;
+  }
+
+  .flow-step-circle {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    border: 2px solid var(--border);
+    background: var(--surface2);
+    position: relative;
+  }
+
+  .flow-step-num {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--ofppt-orange);
+    font-size: 8px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+  }
+
+  .flow-step-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.3;
+  }
+
+  .flow-connector {
+    flex: 1;
+    min-width: 32px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(232,101,26,0.3), rgba(75,142,232,0.3));
+    position: relative;
+    top: -14px;
+  }
+
+  .flow-connector::after {
+    content: '▸';
+    position: absolute;
+    right: -4px;
+    top: -7px;
+    font-size: 11px;
+    color: rgba(75,142,232,0.5);
+  }
+
+  /* ──── 3-COL GRID ──── */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  /* ──── LEGEND ──── */
+  .legend {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 20px 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 40px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  /* ──── FOOTER ──── */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 16px;
+  }
+
+  .footer-left {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .footer-left strong { color: var(--ofppt-orange); }
+
+  .footer-right {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+
+  /* ──── BIG LABEL ──── */
+  .big-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 13px;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: 4px;
+  }
+
+  /* ──── SCROLL ──── */
+  .scroll-hint {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    margin-bottom: 32px;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  /* ──── PRINT ──── */
+  @media print {
+    body { background: white; color: black; }
+    .card { border: 1px solid #ddd; background: #f9f9f9; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ══ HEADER ══ -->
+  <div class="header">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span class="badge-text">Guide Utilisateur · Compétencia IA</span>
+    </div>
+    <h1>Flow <em>Schématique</em><br>de l'Application</h1>
+    <p class="header-sub">
+      Plateforme pédagogique intelligente pour formateurs OFPPT —
+      génération de contenu assistée par IA.
+    </p>
+    <div class="tech-pills">
+      <span class="tech-pill">Next.js 16</span>
+      <span class="tech-pill">Claude API</span>
+      <span class="tech-pill">OpenAI GPT</span>
+      <span class="tech-pill">PostgreSQL</span>
+      <span class="tech-pill">NextAuth v5</span>
+      <span class="tech-pill">Prisma ORM</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══ SECTION 1 — FLUX UTILISATEUR PRINCIPAL ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Flux Principal — Parcours Formateur</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="user-flow">
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        🔐
+        <span class="flow-step-num">1</span>
+      </div>
+      <span class="flow-step-label">Connexion<br>NextAuth</span>
+    </div>
+    <div class="flow-connector"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        📊
+        <span class="flow-step-num">2</span>
+      </div>
+      <span class="flow-step-label">Tableau<br>de Bord</span>
+    </div>
+    <div class="flow-connector"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        📥
+        <span class="flow-step-num">3</span>
+      </div>
+      <span class="flow-step-label">Import<br>Modules Excel</span>
+    </div>
+    <div class="flow-connector"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        ⚡
+        <span class="flow-step-num">4</span>
+      </div>
+      <span class="flow-step-label">Génération<br>IA</span>
+    </div>
+    <div class="flow-connector"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        📋
+        <span class="flow-step-num">5</span>
+      </div>
+      <span class="flow-step-label">Révision<br>&amp; Édition</span>
+    </div>
+    <div class="flow-connector"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        📤
+        <span class="flow-step-num">6</span>
+      </div>
+      <span class="flow-step-label">Export<br>PDF / Word</span>
+    </div>
+    <div class="flow-connector"></div>
+
+    <div class="flow-step">
+      <div class="flow-step-circle">
+        📈
+        <span class="flow-step-num">7</span>
+      </div>
+      <span class="flow-step-label">Suivi<br>Stagiaires</span>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2 — MOTEUR IA CENTRAL ══ -->
+  <div class="section-label" style="margin-top: 8px;">
+    <span class="section-label-text">Moteur IA — Cœur de l'Application</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="center-node" style="margin-bottom: 32px;">
+    <span class="center-node-icon">🤖</span>
+    <div class="center-node-title">Moteur IA Multi-Modèles</div>
+    <div class="center-node-sub">Cascade intelligente avec fallback automatique</div>
+    <div class="center-ai-badges">
+      <span class="ai-badge claude">Claude (Anthropic) — Primaire</span>
+      <span class="ai-badge gpt">GPT (OpenAI) — Fallback</span>
+      <span class="ai-badge router">OpenRouter — Alternatif</span>
+      <span class="ai-badge grok">Grok — Alternatif</span>
+    </div>
+    <div style="margin-top: 16px; font-size: 11px; color: rgba(255,255,255,0.30); max-width: 480px; margin-left: auto; margin-right: auto;">
+      Chaque génération utilise d'abord Claude. Si l'API est indisponible,
+      le système bascule automatiquement vers le modèle suivant.
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3 — LES 4 MODULES GÉNÉRATION ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Module 1 — Génération IA</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 16px;">
+
+    <!-- Séance -->
+    <div class="card accent-orange">
+      <div class="card-icon" style="background: rgba(232,101,26,0.12);">⚡</div>
+      <span class="module-tag" style="background: rgba(232,101,26,0.12); color: var(--ofppt-orange);">SÉANCE PÉDAGOGIQUE</span>
+      <div class="card-title">Générateur de Séances</div>
+      <div class="card-desc">
+        Génère automatiquement une séance pédagogique complète (3h) à partir
+        d'un formulaire structuré par filière, module, compétence et objectifs.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Sélection cascade : Filière → Module → Compétence
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Choix de méthode (Magistrale, Active, Projet, Cas pratique…)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Durée paramétrable (30 min à 6h)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Niveaux : Acquisition, Maîtrise, Perfectionnement
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Génération streaming en temps réel
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Activités, ressources, évaluation finale incluses
+        </div>
+      </div>
+      <div class="export-tags">
+        <span class="export-tag pdf">PDF</span>
+        <span class="export-tag word">Word .docx</span>
+      </div>
+    </div>
+
+    <!-- Fiche -->
+    <div class="card accent-blue">
+      <div class="card-icon" style="background: rgba(75,142,232,0.12);">📋</div>
+      <span class="module-tag" style="background: rgba(75,142,232,0.12); color: var(--blue-accent);">FICHE PÉDAGOGIQUE</span>
+      <div class="card-title">Générateur de Fiches</div>
+      <div class="card-desc">
+        Crée des fiches pédagogiques standardisées format OFPPT couvrant
+        les objectifs, contenus, méthodes et critères d'évaluation.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Formulaire : Filière, Module, Compétence, Durée totale
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Structure : Objectifs → Contenus → Activités → Évaluation
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Conformité au référentiel OFPPT intégré
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Historique dédié des fiches générées
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Pré-remplissage depuis le Référentiel (/referentiel/generer)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Suppression et consultation individuelle
+        </div>
+      </div>
+      <div class="export-tags">
+        <span class="export-tag pdf">PDF</span>
+        <span class="export-tag word">Word .docx</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 40px;">
+
+    <!-- Évaluation -->
+    <div class="card accent-green">
+      <div class="card-icon" style="background: rgba(74,222,128,0.10);">📝</div>
+      <span class="module-tag" style="background: rgba(74,222,128,0.10); color: var(--green);">ÉVALUATION</span>
+      <div class="card-title">Générateur d'Évaluations</div>
+      <div class="card-desc">
+        Crée des épreuves d'évaluation (QCM, questions ouvertes, études de cas)
+        adaptées au niveau et à la compétence ciblée.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Types : QCM, Vrai/Faux, Questions ouvertes, Cas pratique
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Paramètre : nombre de questions, difficulté, durée
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Barème et critères de notation inclus
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Corrigé type généré avec l'évaluation
+        </div>
+      </div>
+      <div class="export-tags">
+        <span class="export-tag pdf">PDF</span>
+        <span class="export-tag word">Word .docx</span>
+      </div>
+    </div>
+
+    <!-- Correction IA -->
+    <div class="card accent-yellow">
+      <div class="card-icon" style="background: rgba(251,191,36,0.10);">✏️</div>
+      <span class="module-tag" style="background: rgba(251,191,36,0.10); color: var(--yellow);">CORRECTION IA</span>
+      <div class="card-title">Correction Automatique de Copies</div>
+      <div class="card-desc">
+        Analyse et note automatiquement des copies de stagiaires
+        selon un barème défini par le formateur.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--yellow);"></span>
+          Saisie ou upload du texte de la copie
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--yellow);"></span>
+          Notation automatique avec justification détaillée
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--yellow);"></span>
+          Commentaires personnalisés par question
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--yellow);"></span>
+          Points forts / axes d'amélioration identifiés
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SECTION 4 — PÉDAGOGIE ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Module 2 — Pédagogie</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 40px;">
+
+    <!-- Référentiel -->
+    <div class="card accent-navy">
+      <div class="card-icon" style="background: rgba(96,165,250,0.10);">📚</div>
+      <span class="module-tag" style="background: rgba(96,165,250,0.10); color: #60A5FA;">RÉFÉRENTIEL</span>
+      <div class="card-title">Référentiel OFPPT</div>
+      <div class="card-desc">
+        Accès et extraction structurée des référentiels de filières.
+        Extraction IA par fichier PDF ou texte brut.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: #60A5FA;"></span>
+          Arborescence Filière → Modules → Séquences → Compétences
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: #60A5FA;"></span>
+          Extraction IA depuis PDF du référentiel
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: #60A5FA;"></span>
+          Page /generer : pré-remplit séance / fiche / évaluation
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: #60A5FA;"></span>
+          Stockage Supabase PostgreSQL (compétences, modules)
+        </div>
+      </div>
+    </div>
+
+    <!-- Suivi compétences -->
+    <div class="card accent-blue">
+      <div class="card-icon" style="background: rgba(75,142,232,0.12);">📈</div>
+      <span class="module-tag" style="background: rgba(75,142,232,0.12); color: var(--blue-accent);">SUIVI</span>
+      <div class="card-title">Suivi des Compétences</div>
+      <div class="card-desc">
+        Gestion des groupes de stagiaires et suivi individuel
+        des progressions par compétence.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Création de groupes (filière, année)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Import stagiaires Excel (.xlsx)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Saisie des notes et pourcentages par compétence
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Import notes Excel en masse
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Graphiques de progression (barres, courbes)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--blue-accent);"></span>
+          Vue globale par groupe + vue individuelle stagiaire
+        </div>
+      </div>
+    </div>
+
+    <!-- Bibliothèque -->
+    <div class="card accent-purple">
+      <div class="card-icon" style="background: rgba(167,139,250,0.10);">📖</div>
+      <span class="module-tag" style="background: rgba(167,139,250,0.10); color: var(--purple);">BIBLIOTHÈQUE</span>
+      <div class="card-title">Bibliothèque Collaborative</div>
+      <div class="card-desc">
+        Espace de partage de ressources pédagogiques entre formateurs.
+        Upload, recherche, likes et commentaires.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--purple);"></span>
+          Upload de ressources (PDF, images, documents)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--purple);"></span>
+          Stockage Vercel Blob (BLOB_READ_WRITE_TOKEN)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--purple);"></span>
+          Recherche par filière, module, type
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--purple);"></span>
+          Système de likes et commentaires
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--purple);"></span>
+          Mes ressources : gestion de ses propres publications
+        </div>
+      </div>
+      <div class="export-tags">
+        <span class="export-tag excel">Vercel Blob</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SECTION 5 — ASSISTANT + DOCS ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Module 3 — Assistant IA &amp; Documents</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 40px;">
+
+    <!-- Assistant IA -->
+    <div class="card accent-orange">
+      <div class="card-icon" style="background: rgba(232,101,26,0.12);">💬</div>
+      <span class="module-tag" style="background: rgba(232,101,26,0.12); color: var(--ofppt-orange);">ASSISTANT IA</span>
+      <div class="card-title">Chat Assistant Pédagogique</div>
+      <div class="card-desc">
+        Conversation libre avec un assistant IA spécialisé en pédagogie OFPPT.
+        Sessions multiples sauvegardées en base de données.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Interface chat temps réel (streaming)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Historique de sessions multiples
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Contexte OFPPT injecté dans chaque conversation
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Questions pédagogiques, didactiques, réglementaires
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--ofppt-orange);"></span>
+          Persistance en base (ChatSession + ChatMessage)
+        </div>
+      </div>
+    </div>
+
+    <!-- Historique documents -->
+    <div class="card" style="border-left: 3px solid rgba(255,255,255,0.2);">
+      <div class="card-icon" style="background: rgba(255,255,255,0.06);">🗂️</div>
+      <span class="module-tag" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.40);">MES DOCUMENTS</span>
+      <div class="card-title">Historique &amp; Archives</div>
+      <div class="card-desc">
+        Accès à toutes les séances et fiches générées, avec consultation
+        détaillée, suppression et re-téléchargement à tout moment.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.30);"></span>
+          Historique séances : liste paginée + filtres
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.30);"></span>
+          Historique fiches : liste dédiée
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.30);"></span>
+          Vue détaillée de chaque document
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.30);"></span>
+          Re-export PDF/Word depuis l'historique
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.30);"></span>
+          Suppression unitaire ou en masse
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SECTION 6 — TABLEAU DE BORD + PARAMÈTRES ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Module 4 — Tableau de Bord &amp; Système</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="grid-2" style="margin-bottom: 40px;">
+
+    <!-- Dashboard -->
+    <div class="card accent-green">
+      <div class="card-icon" style="background: rgba(74,222,128,0.10);">📊</div>
+      <span class="module-tag" style="background: rgba(74,222,128,0.10); color: var(--green);">TABLEAU DE BORD</span>
+      <div class="card-title">Dashboard Formateur</div>
+      <div class="card-desc">
+        Vue centralisée de toute l'activité pédagogique du formateur
+        avec statistiques temps réel et accès rapide.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          KPIs : séances, fiches, modules, groupes, stagiaires
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Temps économisé estimé (45 min/séance, 30 min/fiche)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Répartition par filière (graphique horizontal)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Activités récentes (séances + fiches)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Progression globale des stagiaires (%)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Widget suivi par compétence sur le dashboard
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: var(--green);"></span>
+          Accès rapide : 4 actions principales
+        </div>
+      </div>
+    </div>
+
+    <!-- Paramètres -->
+    <div class="card" style="border-left: 3px solid rgba(255,255,255,0.15);">
+      <div class="card-icon" style="background: rgba(255,255,255,0.06);">⚙️</div>
+      <span class="module-tag" style="background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.35);">SYSTÈME</span>
+      <div class="card-title">Modules &amp; Paramètres</div>
+      <div class="card-desc">
+        Panneau latéral de configuration : import de modules OFPPT,
+        clés API personnelles et profil utilisateur.
+      </div>
+      <div class="card-features">
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.25);"></span>
+          Import modules OFPPT (fichier Excel .xlsx)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.25);"></span>
+          Dropdowns auto-peuplés depuis les modules importés
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.25);"></span>
+          Clé API Claude personnelle (optionnel)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.25);"></span>
+          Clé API OpenAI personnelle (optionnel)
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.25);"></span>
+          Test de validité des clés API en un clic
+        </div>
+        <div class="feature-item">
+          <span class="feature-dot" style="background: rgba(255,255,255,0.25);"></span>
+          Profil : nom, email, établissement
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SECTION 7 — ARCHITECTURE DONNÉES ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Architecture — Données &amp; Infrastructure</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="grid-3" style="margin-bottom: 40px;">
+
+    <div class="card" style="border-color: rgba(10,77,168,0.3);">
+      <div style="font-size: 24px; margin-bottom: 12px;">🗄️</div>
+      <div class="card-title">Base de données</div>
+      <div class="card-desc">PostgreSQL via Supabase + Prisma ORM</div>
+      <div class="card-features">
+        <div class="feature-item"><span class="feature-dot" style="background: var(--blue-accent);"></span>Seance, Fiche, UserModule</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--blue-accent);"></span>Groupe, Stagiaire, ProgressionCompetence</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--blue-accent);"></span>Filiere, Module, Competence (Référentiel)</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--blue-accent);"></span>Ressource (Bibliothèque)</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--blue-accent);"></span>ChatSession, ChatMessage (Assistant)</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--blue-accent);"></span>User, ApiSettings (Auth)</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color: rgba(232,101,26,0.2);">
+      <div style="font-size: 24px; margin-bottom: 12px;">🔐</div>
+      <div class="card-title">Authentification</div>
+      <div class="card-desc">NextAuth v5 — Credentials Provider</div>
+      <div class="card-features">
+        <div class="feature-item"><span class="feature-dot" style="background: var(--ofppt-orange);"></span>Login / Inscription formateur</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--ofppt-orange);"></span>Mot de passe hashé (bcryptjs)</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--ofppt-orange);"></span>Sessions JWT sécurisées</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--ofppt-orange);"></span>Middleware de protection des routes</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--ofppt-orange);"></span>Déconnexion propre (signOut)</div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color: rgba(74,222,128,0.2);">
+      <div style="font-size: 24px; margin-bottom: 12px;">🚀</div>
+      <div class="card-title">Déploiement</div>
+      <div class="card-desc">Vercel + Supabase PostgreSQL</div>
+      <div class="card-features">
+        <div class="feature-item"><span class="feature-dot" style="background: var(--green);"></span>CI/CD automatique (git push → deploy)</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--green);"></span>Edge Runtime pour le middleware Auth</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--green);"></span>Vercel Blob pour les ressources binaires</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--green);"></span>Variables d'env. sécurisées (Vercel Env)</div>
+        <div class="feature-item"><span class="feature-dot" style="background: var(--green);"></span>Timeout 60s pour les API de génération</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ SECTION 8 — FLOW API ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Flow Technique — Génération d'une Séance</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="card" style="margin-bottom: 40px; padding: 32px;">
+    <div style="display: flex; flex-direction: column; gap: 0;">
+
+      <!-- Step 1 -->
+      <div style="display: flex; gap: 20px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border);">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(232,101,26,0.15); border: 1px solid rgba(232,101,26,0.3); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--ofppt-orange); flex-shrink: 0;">1</div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Formateur remplit le formulaire</div>
+          <div style="font-size: 11px; color: var(--text-muted);">SeanceForm.tsx — Sélection Filière / Module / Compétence / Méthode / Durée / Niveau via dropdowns intelligents peuplés depuis la DB</div>
+          <div style="margin-top: 6px;"><span style="font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.25);">POST /api/generate</span></div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div style="display: flex; gap: 20px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border);">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(75,142,232,0.12); border: 1px solid rgba(75,142,232,0.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--blue-accent); flex-shrink: 0;">2</div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Enrichissement du contexte</div>
+          <div style="font-size: 11px; color: var(--text-muted);">referentiel-context.ts — Injection du référentiel OFPPT + modules importés + historique du formateur dans le prompt système</div>
+          <div style="margin-top: 6px;"><span style="font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.25);">prompts.ts → buildSeancePrompt()</span></div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div style="display: flex; gap: 20px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border);">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(232,101,26,0.12); border: 1px solid rgba(232,101,26,0.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--ofppt-orange); flex-shrink: 0;">3</div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Appel API IA (Claude → GPT fallback)</div>
+          <div style="font-size: 11px; color: var(--text-muted);">claude.ts → streamText() avec claude-sonnet-4-5 / haiku-3-5. Si erreur : bascule OpenAI gpt-4o-mini. Réponse en streaming (ReadableStream)</div>
+          <div style="margin-top: 6px;"><span style="font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.25);">src/lib/claude.ts · src/lib/openai.ts</span></div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div style="display: flex; gap: 20px; align-items: flex-start; padding: 16px 0; border-bottom: 1px solid var(--border);">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(74,222,128,0.10); border: 1px solid rgba(74,222,128,0.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--green); flex-shrink: 0;">4</div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Affichage streaming + sauvegarde</div>
+          <div style="font-size: 11px; color: var(--text-muted);">SeanceResult.tsx affiche le contenu généré en temps réel. À la fin du stream : prisma.seance.create() sauvegarde en DB avec userId</div>
+          <div style="margin-top: 6px;"><span style="font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.25);">SeanceResult.tsx · Prisma.seance</span></div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div style="display: flex; gap: 20px; align-items: flex-start; padding: 16px 0;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: rgba(167,139,250,0.10); border: 1px solid rgba(167,139,250,0.25); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: var(--purple); flex-shrink: 0;">5</div>
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Export PDF ou Word</div>
+          <div style="font-size: 11px; color: var(--text-muted);">export.ts → jsPDF (client) pour PDF avec mise en page OFPPT + docx (server) pour Word structuré. Téléchargement direct navigateur</div>
+          <div style="margin-top: 6px;"><span style="font-size: 10px; font-family: 'DM Mono', monospace; color: rgba(255,255,255,0.25);">src/lib/export.ts · jsPDF · docx</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ LÉGENDE ══ -->
+  <div class="section-label">
+    <span class="section-label-text">Légende des Modules</span>
+    <span class="section-label-line"></span>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background: var(--ofppt-orange);"></div>
+      <span>Génération IA (Séances, Correction)</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: var(--blue-accent);"></div>
+      <span>Documents &amp; Fiches pédagogiques</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: var(--green);"></div>
+      <span>Évaluations &amp; Dashboard</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: var(--purple);"></div>
+      <span>Bibliothèque collaborative</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: var(--yellow);"></div>
+      <span>Correction automatique</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: #60A5FA;"></div>
+      <span>Référentiel OFPPT</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background: rgba(255,255,255,0.25);"></div>
+      <span>Système &amp; Infrastructure</span>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <div class="footer-left">
+      Développé par <strong>EZZOUIR ELMUSTAPHA 9998</strong> · OFPPT ISGI Marrakech<br>
+      <span style="color: rgba(255,255,255,0.15);">Mémoire de fin de formation · 2024</span>
+    </div>
+    <div class="footer-right">
+      COMPÉTENCIA IA · v1.0<br>
+      Next.js · Claude API · Supabase
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
