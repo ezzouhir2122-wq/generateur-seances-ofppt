@@ -2,10 +2,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import QuickActionLink from "@/components/ui/QuickActionLink";
 import DashboardSuiviWidget from "@/components/suivi/DashboardSuiviWidget";
 
-/* ── Stat box (style grille 2×2 inspiré de l'image) ── */
+/* ── Stat box ── */
 function StatBox({
   value,
   label,
@@ -27,49 +26,72 @@ function StatBox({
         borderBottom: "1px solid rgba(255,255,255,0.07)",
       }}
     >
-      <div
-        style={{
-          fontSize: "clamp(2rem, 4vw, 2.75rem)",
-          fontWeight: 800,
-          letterSpacing: "-0.04em",
-          lineHeight: 1,
-          color: accent,
-          marginBottom: "8px",
-        }}
-      >
+      <div style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, color: accent, marginBottom: "8px" }}>
         {value}
       </div>
-      <div
-        style={{
-          fontSize: "10px",
-          fontWeight: 700,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          color: "rgba(255,255,255,0.45)",
-          marginBottom: sub ? "4px" : 0,
-        }}
-      >
+      <div style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: "rgba(255,255,255,0.45)", marginBottom: sub ? "4px" : 0 }}>
         {label}
       </div>
-      {sub && (
-        <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.30)", marginTop: "2px" }}>
-          {sub}
-        </div>
-      )}
+      {sub && <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.30)", marginTop: "2px" }}>{sub}</div>}
     </div>
   );
 }
 
-/* ── KPI row léger ── */
+/* ── Section label with horizontal line ── */
+function SectionLabel({ text, accent }: { text: string; accent?: string }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
+      <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase" as const, color: accent || "rgba(255,255,255,0.28)", whiteSpace: "nowrap" as const }}>
+        {text}
+      </span>
+      <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.07)" }} />
+    </div>
+  );
+}
+
+/* ── KPI row ── */
 function KpiRow({ label, value, accent }: { label: string; value: string | number; accent: string }) {
   return (
-    <div
-      className="flex items-center justify-between py-2"
-      style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
-    >
+    <div className="flex items-center justify-between py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
       <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.45)" }}>{label}</span>
       <span style={{ fontSize: "13px", fontWeight: 700, color: accent }}>{value}</span>
     </div>
+  );
+}
+
+/* ── Action card ── */
+function ActionCard({
+  href, icon, tag, tagColor, title, desc, accent,
+}: {
+  href: string; icon: string; tag: string; tagColor: string;
+  title: string; desc: string; accent: string;
+}) {
+  return (
+    <Link href={href} style={{ display: "block", textDecoration: "none" }}>
+      <div style={{
+        background: "#131922",
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderLeft: `3px solid ${accent}`,
+        borderRadius: "16px",
+        padding: "20px",
+        height: "100%",
+        transition: "border-color 0.2s, transform 0.2s",
+      }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "12px" }}>
+          <span style={{ fontSize: "22px" }}>{icon}</span>
+          <span style={{
+            fontSize: "9px", fontWeight: 700, letterSpacing: "0.10em",
+            textTransform: "uppercase" as const, padding: "3px 8px", borderRadius: "6px",
+            background: `${tagColor}18`, color: tagColor, border: `1px solid ${tagColor}30`,
+          }}>
+            {tag}
+          </span>
+        </div>
+        <div style={{ fontSize: "14px", fontWeight: 700, color: "#F1F5F9", marginBottom: "6px", letterSpacing: "-0.01em" }}>{title}</div>
+        <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.40)", lineHeight: 1.6, marginBottom: "16px" }}>{desc}</div>
+        <div style={{ fontSize: "11px", fontWeight: 600, color: accent }}>Accéder →</div>
+      </div>
+    </Link>
   );
 }
 
@@ -184,108 +206,69 @@ export default async function DashboardPage() {
     year: "numeric",
   }).toUpperCase();
 
-  const quickActions = [
-    { href: "/seances", label: "Nouvelle séance", desc: "Générer une séance pédagogique", accent: "#E8651A", bg: "rgba(232,101,26,0.10)", icon: "⚡" },
-    { href: "/fiches", label: "Nouvelle fiche", desc: "Générer une fiche pédagogique", accent: "#4B8EE8", bg: "rgba(75,142,232,0.08)", icon: "📋" },
-    { href: "/evaluations", label: "Créer une évaluation", desc: "Générer une évaluation IA", accent: "#4ADE80", bg: "rgba(74,222,128,0.08)", icon: "📝" },
-    { href: "/corrections", label: "Correction IA", desc: "Corriger et noter une copie", accent: "#FBBF24", bg: "rgba(251,191,36,0.08)", icon: "✏️" },
-  ];
-
   return (
-    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 28px" }}>
+    <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 28px 80px", position: "relative" }}>
 
-      {/* ══ Header éditorial ══ */}
-      <div style={{ marginBottom: "36px" }}>
+      {/* ══ HEADER ÉDITORIAL ══ */}
+      <div style={{ marginBottom: "48px" }}>
 
-        {/* Fil d'Ariane + Date */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", color: "#E8651A" }}>
-              TABLEAU DE BORD
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.20)", fontSize: "10px" }}>·</span>
-            <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", color: "rgba(255,255,255,0.40)" }}>
-              FORMATEUR OFPPT
-            </span>
-          </div>
-          <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.06em", color: "rgba(255,255,255,0.35)" }}>
-            {dateLabel}
+        {/* Badge animé */}
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: "8px",
+          background: "rgba(232,101,26,0.10)", border: "1px solid rgba(232,101,26,0.25)",
+          borderRadius: "100px", padding: "5px 16px", marginBottom: "24px",
+        }}>
+          <span
+            className="animate-ping"
+            style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", background: "#E8651A", animationDuration: "2s", flexShrink: 0 }}
+          />
+          <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#E8651A" }}>
+            Tableau de Bord · Compétencia IA
           </span>
         </div>
 
-        {/* Séparateur */}
-        <div style={{ height: "1px", background: "rgba(255,255,255,0.08)", marginBottom: "24px" }} />
-
-        {/* Titre éditorial */}
-        <div>
-          <h1
-            style={{
-              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.15,
-              color: "#F1F5F9",
-              marginBottom: "10px",
-            }}
-          >
-            {greeting}, {userName} —{" "}
-            <span style={{ color: "#E8651A" }}>
-              plateforme pédagogique
-            </span>
-          </h1>
-          <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.01em" }}>
-            Générez vos séances, fiches et évaluations avec l&apos;intelligence artificielle.
-          </p>
-        </div>
+        {/* Titre éditorial — DM Serif Display */}
+        <h1 style={{
+          fontFamily: "var(--font-serif, 'DM Serif Display', serif)",
+          fontSize: "clamp(2rem, 4.5vw, 3.2rem)",
+          lineHeight: 1.15,
+          color: "#F1F5F9",
+          marginBottom: "12px",
+          letterSpacing: "-0.02em",
+          fontWeight: 400,
+        }}>
+          {greeting},{" "}
+          <em style={{ color: "#E8651A", fontStyle: "italic" }}>{userName}</em>
+        </h1>
+        <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.40)", letterSpacing: "0.01em" }}>
+          {dateLabel} · Plateforme pédagogique intelligente OFPPT
+        </p>
       </div>
 
-      {/* ══ Grille stats 2×2 (style image) ══ */}
-      <div
-        style={{
-          background: "#131922",
-          border: "1px solid rgba(255,255,255,0.07)",
-          borderRadius: "16px",
-          overflow: "hidden",
-          marginBottom: "24px",
-        }}
-      >
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
-          <StatBox
-            value={seancesCount}
-            label="Séances générées"
-            sub={`+${seancesThisMonth} ce mois`}
-            accent="#E8651A"
-            border
-          />
-          <StatBox
-            value={fichesCount}
-            label="Fiches pédagogiques"
-            sub={`+${fichesThisMonth} ce mois`}
-            accent="#F1F5F9"
-          />
-          <StatBox
-            value={generationsTotal}
-            label="Total générations IA"
-            sub="Séances + Fiches"
-            accent="#4B8EE8"
-            border
-          />
-          <StatBox
-            value={tempsEconomiseLabel}
-            label="Temps économisé"
-            sub="estimé à ~45 min/séance"
-            accent="#4ADE80"
-          />
-        </div>
+      {/* Gradient divider */}
+      <div style={{
+        height: "1px",
+        background: "linear-gradient(90deg, transparent, rgba(232,101,26,0.35), rgba(75,142,232,0.35), transparent)",
+        marginBottom: "48px",
+      }} />
 
-        {/* Ligne supplémentaire : modules + groupes + stagiaires */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            borderTop: "1px solid rgba(255,255,255,0.07)",
-          }}
-        >
+      {/* ══ SECTION 1 — STATISTIQUES ══ */}
+      <SectionLabel text="Vue d'ensemble — Statistiques" accent="#E8651A" />
+
+      <div style={{
+        background: "#131922",
+        border: "1px solid rgba(255,255,255,0.07)",
+        borderRadius: "16px",
+        overflow: "hidden",
+        marginBottom: "48px",
+      }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr" }}>
+          <StatBox value={seancesCount} label="Séances générées" sub={`+${seancesThisMonth} ce mois`} accent="#E8651A" border />
+          <StatBox value={fichesCount} label="Fiches pédagogiques" sub={`+${fichesThisMonth} ce mois`} accent="#F1F5F9" />
+          <StatBox value={generationsTotal} label="Total générations IA" sub="Séances + Fiches" accent="#4B8EE8" border />
+          <StatBox value={tempsEconomiseLabel} label="Temps économisé" sub="estimé à ~45 min/séance" accent="#4ADE80" />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
           {[
             { value: modulesCount, label: "Modules importés" },
             { value: groupesCount, label: "Groupes actifs" },
@@ -296,9 +279,7 @@ export default async function DashboardPage() {
               style={{
                 padding: "18px 24px",
                 borderRight: i < 2 ? "1px solid rgba(255,255,255,0.07)" : undefined,
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
+                display: "flex", alignItems: "center", gap: "14px",
               }}
             >
               <span style={{ fontSize: "1.5rem", fontWeight: 800, color: "rgba(255,255,255,0.70)", letterSpacing: "-0.03em" }}>
@@ -312,35 +293,69 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ══ Grille principale ══ */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
+      {/* ══ SECTION 2 — GÉNÉRATION IA ══ */}
+      <SectionLabel text="Génération IA — Module 1" accent="#E8651A" />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px", marginBottom: "48px" }}>
+        <ActionCard
+          href="/seances"
+          icon="⚡"
+          tag="Séance"
+          tagColor="#E8651A"
+          title="Nouvelle séance pédagogique"
+          desc="Génère une séance complète (activités, ressources, évaluation) à partir du référentiel OFPPT."
+          accent="#E8651A"
+        />
+        <ActionCard
+          href="/fiches"
+          icon="📋"
+          tag="Fiche"
+          tagColor="#4B8EE8"
+          title="Nouvelle fiche pédagogique"
+          desc="Crée une fiche standardisée format OFPPT avec objectifs, contenus et critères d'évaluation."
+          accent="#4B8EE8"
+        />
+        <ActionCard
+          href="/evaluations"
+          icon="📝"
+          tag="Évaluation"
+          tagColor="#4ADE80"
+          title="Créer une évaluation"
+          desc="QCM, questions ouvertes ou cas pratiques — avec barème et corrigé type inclus automatiquement."
+          accent="#4ADE80"
+        />
+        <ActionCard
+          href="/corrections"
+          icon="✏️"
+          tag="Correction IA"
+          tagColor="#FBBF24"
+          title="Corriger une copie"
+          desc="Notation automatique avec justification détaillée, commentaires et axes d'amélioration."
+          accent="#FBBF24"
+        />
+      </div>
+
+      {/* ══ SECTION 3 — ACTIVITÉ ══ */}
+      <SectionLabel text="Activité — Suivi & Historique" />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "48px" }}>
 
         {/* Activité par filière */}
-        <div
-          style={{
-            background: "#131922",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: "16px",
-            padding: "24px",
-          }}
-        >
+        <div style={{ background: "#131922", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "16px", padding: "24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#E8651A" }}>
-              ACTIVITÉ
-            </span>
+            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#E8651A" }}>ACTIVITÉ</span>
             <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "9px" }}>·</span>
-            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
-              PAR FILIÈRE
-            </span>
+            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>PAR FILIÈRE</span>
           </div>
 
           {seancesParFiliere.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 0", gap: "12px" }}>
               <svg width="28" height="28" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" viewBox="0 0 24 24">
-                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-                <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+                <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" /><line x1="2" y1="20" x2="22" y2="20" />
               </svg>
               <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.30)" }}>Générez des séances pour voir la répartition</p>
+              <Link href="/seances" style={{ fontSize: "11px", fontWeight: 600, color: "#E8651A" }}>Générer ma première séance →</Link>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -352,9 +367,7 @@ export default async function DashboardPage() {
                       <span style={{ fontSize: "12px", fontWeight: 600, color: "#F1F5F9", maxWidth: "65%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {f.filiere}
                       </span>
-                      <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>
-                        {f._count.id} · {pct}%
-                      </span>
+                      <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.35)" }}>{f._count.id} · {pct}%</span>
                     </div>
                     <div style={{ height: "3px", borderRadius: "99px", background: "rgba(255,255,255,0.07)", overflow: "hidden" }}>
                       <div style={{ height: "3px", borderRadius: "99px", width: `${pct}%`, background: "linear-gradient(90deg, #E8651A, #4B8EE8)" }} />
@@ -367,30 +380,17 @@ export default async function DashboardPage() {
         </div>
 
         {/* Activités récentes */}
-        <div
-          style={{
-            background: "#131922",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: "16px",
-            padding: "24px",
-          }}
-        >
+        <div style={{ background: "#131922", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "16px", padding: "24px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#E8651A" }}>
-              RÉCENT
-            </span>
+            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#E8651A" }}>RÉCENT</span>
             <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "9px" }}>·</span>
-            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
-              ACTIVITÉS
-            </span>
+            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>ACTIVITÉS</span>
           </div>
 
           {recentSeances.length === 0 && recentFiches.length === 0 ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 0", gap: "12px" }}>
               <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.30)" }}>Aucune activité pour l&apos;instant</p>
-              <Link href="/seances" style={{ fontSize: "12px", fontWeight: 600, color: "#E8651A" }}>
-                Générer ma première séance →
-              </Link>
+              <Link href="/seances" style={{ fontSize: "12px", fontWeight: 600, color: "#E8651A" }}>Générer ma première séance →</Link>
             </div>
           ) : (
             <>
@@ -433,103 +433,138 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ══ À NOTER (callout style image) + Progression ══ */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "20px" }}>
+      {/* ══ SECTION 4 — DIRECTION ══ */}
+      <SectionLabel text="Direction — Vue Globale" accent="#4B8EE8" />
 
-        {/* Accès rapide — style "À NOTER" */}
-        <div
-          style={{
-            background: "#131922",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderLeft: "3px solid #E8651A",
-            borderRadius: "16px",
-            padding: "24px",
-          }}
-        >
-          <p style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", color: "#E8651A", marginBottom: "16px" }}>
-            ACCÈS RAPIDE
-          </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            {quickActions.map((item) => (
-              <QuickActionLink key={item.href} {...item} />
-            ))}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "48px" }}>
+
+        {/* KPIs */}
+        <div style={{
+          background: "#131922",
+          border: "1px solid rgba(255,255,255,0.07)",
+          borderLeft: "3px solid #4B8EE8",
+          borderRadius: "16px",
+          padding: "24px",
+        }}>
+          <div style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", color: "#4B8EE8", marginBottom: "20px" }}>
+            INDICATEURS CLÉS
           </div>
-        </div>
-
-        {/* Suivi + stats direction */}
-        <div
-          style={{
-            background: "#131922",
-            border: "1px solid rgba(255,255,255,0.07)",
-            borderRadius: "16px",
-            padding: "24px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B8EE8" }}>
-              DIRECTION
-            </span>
-            <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "9px" }}>·</span>
-            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>
-              VUE GLOBALE
-            </span>
-          </div>
-
-          <KpiRow
-            label="Activité ce mois"
-            value={`${activiteMois} génération${activiteMois !== 1 ? "s" : ""}`}
-            accent="#E8651A"
-          />
-          <KpiRow
-            label="Filière principale"
-            value={topFiliere ? topFiliere.slice(0, 24) : "—"}
-            accent="#F1F5F9"
-          />
-          <KpiRow
-            label="Groupes actifs"
-            value={groupesCount > 0 ? `${groupesCount} groupe${groupesCount > 1 ? "s" : ""}` : "—"}
-            accent="#4B8EE8"
-          />
-
-          {/* Progression globale */}
-          <div style={{ marginTop: "16px", paddingTop: "14px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-              <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.40)" }}>Progression globale stagiaires</span>
-              <span style={{ fontSize: "14px", fontWeight: 800, color: "#4ADE80" }}>
-                {stagiairesCount > 0 ? `${progressionGlobale}%` : "—"}
-              </span>
-            </div>
-            {stagiairesCount > 0 && (
-              <div style={{ height: "3px", borderRadius: "99px", background: "rgba(255,255,255,0.07)" }}>
-                <div style={{ height: "3px", borderRadius: "99px", width: `${progressionGlobale}%`, background: "#4ADE80" }} />
-              </div>
-            )}
-          </div>
+          <KpiRow label="Activité ce mois" value={`${activiteMois} génération${activiteMois !== 1 ? "s" : ""}`} accent="#E8651A" />
+          <KpiRow label="Filière principale" value={topFiliere ? topFiliere.slice(0, 24) : "—"} accent="#F1F5F9" />
+          <KpiRow label="Groupes actifs" value={groupesCount > 0 ? `${groupesCount} groupe${groupesCount > 1 ? "s" : ""}` : "—"} accent="#4B8EE8" />
+          <KpiRow label="Temps économisé (total)" value={tempsEconomiseLabel} accent="#4ADE80" />
+          <KpiRow label="Stagiaires suivis" value={stagiairesCount > 0 ? `${stagiairesCount} stagiaire${stagiairesCount > 1 ? "s" : ""}` : "—"} accent="#A78BFA" />
 
           {groupesCount > 0 && (
-            <Link
-              href="/suivi"
-              style={{ display: "inline-block", marginTop: "14px", fontSize: "11px", fontWeight: 600, color: "#4B8EE8" }}
-            >
+            <Link href="/suivi" style={{ display: "inline-block", marginTop: "16px", fontSize: "11px", fontWeight: 600, color: "#4B8EE8" }}>
               Voir le suivi des compétences →
             </Link>
           )}
         </div>
+
+        {/* Progression globale */}
+        <div style={{ background: "#131922", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "16px", padding: "24px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
+            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4ADE80" }}>PROGRESSION</span>
+            <span style={{ color: "rgba(255,255,255,0.15)", fontSize: "9px" }}>·</span>
+            <span style={{ fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "rgba(255,255,255,0.35)" }}>STAGIAIRES</span>
+          </div>
+
+          <div style={{ textAlign: "center", padding: "16px 0 24px" }}>
+            <div style={{
+              fontFamily: "var(--font-serif, 'DM Serif Display', serif)",
+              fontSize: "clamp(3rem, 7vw, 4.5rem)",
+              fontWeight: 400,
+              color: "#4ADE80",
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+            }}>
+              {stagiairesCount > 0 ? `${progressionGlobale}%` : "—"}
+            </div>
+            <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.30)", marginTop: "10px", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+              progression globale
+            </div>
+          </div>
+
+          {stagiairesCount > 0 && (
+            <div style={{ height: "4px", borderRadius: "99px", background: "rgba(255,255,255,0.07)" }}>
+              <div style={{ height: "4px", borderRadius: "99px", width: `${progressionGlobale}%`, background: "linear-gradient(90deg, #4ADE80, #4B8EE8)", transition: "width 0.6s ease" }} />
+            </div>
+          )}
+
+          {stagiairesCount === 0 && (
+            <div style={{ textAlign: "center" }}>
+              <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.30)", marginBottom: "12px" }}>
+                Aucun groupe créé — commencez le suivi
+              </p>
+              <Link href="/suivi/nouveau" style={{ display: "inline-block", fontSize: "11px", fontWeight: 600, color: "#4B8EE8" }}>
+                Créer un groupe →
+              </Link>
+            </div>
+          )}
+
+          {stagiairesCount > 0 && (
+            <div style={{ marginTop: "16px", paddingTop: "14px", borderTop: "1px solid rgba(255,255,255,0.07)", display: "flex", gap: "16px" }}>
+              <Link href="/suivi" style={{ fontSize: "11px", fontWeight: 600, color: "#4ADE80" }}>Voir le suivi →</Link>
+              <Link href="/suivi/nouveau" style={{ fontSize: "11px", fontWeight: 600, color: "rgba(255,255,255,0.30)" }}>Nouveau groupe →</Link>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* ══ Widget suivi ══ */}
-      {groupesCount > 0 && (
-        <DashboardSuiviWidget
-          competences={topCompetences}
-          stagiaires={allStagiaires}
-          groupesCount={groupesCount}
+      {/* ══ SECTION 5 — PÉDAGOGIE ══ */}
+      <SectionLabel text="Pédagogie — Module 2" accent="#60A5FA" />
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "48px" }}>
+        <ActionCard
+          href="/referentiel"
+          icon="📚"
+          tag="Référentiel"
+          tagColor="#60A5FA"
+          title="Référentiel OFPPT"
+          desc="Extraction IA depuis PDF. Arborescence Filière → Modules → Compétences."
+          accent="#60A5FA"
         />
+        <ActionCard
+          href="/suivi"
+          icon="📈"
+          tag="Suivi"
+          tagColor="#4B8EE8"
+          title="Suivi des compétences"
+          desc="Gestion des groupes, import Excel, progression individuelle par stagiaire."
+          accent="#4B8EE8"
+        />
+        <ActionCard
+          href="/bibliotheque"
+          icon="📖"
+          tag="Bibliothèque"
+          tagColor="#A78BFA"
+          title="Bibliothèque collaborative"
+          desc="Partage de ressources entre formateurs — upload, likes et commentaires."
+          accent="#A78BFA"
+        />
+      </div>
+
+      {/* ══ WIDGET SUIVI ══ */}
+      {groupesCount > 0 && (
+        <div style={{ marginBottom: "48px" }}>
+          <SectionLabel text="Suivi des Compétences — Graphique" accent="#4B8EE8" />
+          <DashboardSuiviWidget
+            competences={topCompetences}
+            stagiaires={allStagiaires}
+            groupesCount={groupesCount}
+          />
+        </div>
       )}
 
-      {/* ══ Footer éditorial ══ */}
-      <div style={{ marginTop: "36px", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+      {/* ══ FOOTER ══ */}
+      <div style={{ height: "1px", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent)", marginBottom: "20px" }} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
         <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.18)", letterSpacing: "0.04em" }}>
-          Source : OFPPT — Competencia IA · Propulsé par Claude (Anthropic) &amp; GPT (OpenAI)
+          <strong style={{ color: "#E8651A" }}>OFPPT</strong> · Compétencia IA · Propulsé par Claude (Anthropic) &amp; GPT (OpenAI)
+        </p>
+        <p style={{ fontSize: "10px", color: "rgba(255,255,255,0.18)", letterSpacing: "0.06em", fontFamily: "monospace" }}>
+          v1.0 · {dateLabel}
         </p>
       </div>
 

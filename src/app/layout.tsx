@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
 import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
 import AppShell from "@/components/ui/AppShell";
@@ -9,6 +9,14 @@ const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const fontSerif = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -24,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="fr">
-      <body className={`${font.variable} font-sans`}>
+      <body className={`${font.variable} ${fontSerif.variable} font-sans`}>
         <Providers>
           <AppShell user={session?.user ?? null} claudeKey={claudeKey} openaiKey={openaiKey}>
             {children}
