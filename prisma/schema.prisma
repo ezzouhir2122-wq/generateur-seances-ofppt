@@ -21,6 +21,7 @@ model User {
   openrouterApiKey  String?
   googleApiKey      String?
   grokApiKey        String?
+  glmApiKey         String?
   preferredModel    String?  @default("claude-sonnet-4-6")
   seances       Seance[]
   modules       UserModule[]

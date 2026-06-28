@@ -5,6 +5,7 @@ import { generateWithOpenAI } from "@/lib/openai";
 import { generateWithGoogle } from "@/lib/google";
 import { generateWithGrok } from "@/lib/grok";
 import { generateWithOpenRouter } from "@/lib/openrouter";
+import { generateWithGLM } from "@/lib/glm";
 import { prisma } from "@/lib/db";
 import { SeanceParams } from "../../../../equipment/generate-seance";
 
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
   let userGoogleKey: string | null = null;
   let userOpenrouterKey: string | null = null;
   let userGrokKey: string | null = null;
+  let userGlmKey: string | null = null;
   let preferredModel = "claude-opus-4-8";
 
   if (session?.user?.id) {
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
           googleApiKey: true,
           openrouterApiKey: true,
           grokApiKey: true,
+          glmApiKey: true,
           preferredModel: true,
         },
       });
@@ -84,11 +87,28 @@ export async function POST(req: NextRequest) {
       if (userSettings?.googleApiKey) userGoogleKey = userSettings.googleApiKey;
       if (userSettings?.openrouterApiKey) userOpenrouterKey = userSettings.openrouterApiKey;
       if (userSettings?.grokApiKey) userGrokKey = userSettings.grokApiKey;
+      if (userSettings?.glmApiKey) userGlmKey = userSettings.glmApiKey;
       if (userSettings?.preferredModel) preferredModel = userSettings.preferredModel;
     } catch {}
   }
 
   const userId = session?.user?.id ?? null;
+
+  // ─── GLM (Zhipu AI) ──────────────────────────────────────────────────────
+  if (preferredModel.startsWith("glm-") || preferredModel.startsWith("glm")) {
+    try {
+      const contenu = await withTimeout(
+        generateWithGLM(params, { apiKey: userGlmKey ?? undefined, model: preferredModel }),
+        55_000,
+        "GLM"
+      );
+      const seanceId = userId ? await saveSeance(params, contenu, userId) : undefined;
+      return NextResponse.json({ contenu, source: "glm", seanceId });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur GLM";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  }
 
   // ─── Grok (xAI) ──────────────────────────────────────────────────────────
   if (preferredModel.startsWith("grok-")) {

@@ -43,6 +43,7 @@ const PROVIDERS = [
   { id: "google",     label: "Google (Gemini)"    },
   { id: "openrouter", label: "OpenRouter"          },
   { id: "xai",        label: "xAI (Grok)"         },
+  { id: "zhipu",      label: "Zhipu AI (GLM)"     },
 ] as const;
 
 type ProviderId = typeof PROVIDERS[number]["id"];
@@ -75,6 +76,12 @@ const MODELS_BY_PROVIDER: Record<ProviderId, { id: string; label: string }[]> = 
     { id: "grok-3-fast",   label: "Grok 3 Fast — Rapide" },
     { id: "grok-3-mini",   label: "Grok 3 Mini — Léger"  },
   ],
+  zhipu: [
+    { id: "glm-4",       label: "GLM-4 — Meilleur"          },
+    { id: "glm-4-air",   label: "GLM-4 Air — Équilibré"     },
+    { id: "glm-4-flash", label: "GLM-4 Flash — Rapide/Gratuit" },
+    { id: "glm-z1",      label: "GLM-Z1 — Raisonnement"     },
+  ],
 };
 
 const PROVIDER_COLORS: Record<ProviderId, string> = {
@@ -83,6 +90,7 @@ const PROVIDER_COLORS: Record<ProviderId, string> = {
   google:     "#4285F4",
   openrouter: "#6366F1",
   xai:        "#111827",
+  zhipu:      "#7B2FBE",
 };
 
 const KEY_PLACEHOLDERS: Record<ProviderId, string> = {
@@ -91,6 +99,7 @@ const KEY_PLACEHOLDERS: Record<ProviderId, string> = {
   google:     "AIzaSy...",
   openrouter: "sk-or-v1-...",
   xai:        "xai-...",
+  zhipu:      "xxxxxxxx.xxxxxxxxx",
 };
 
 export default function Sidebar({ open, onClose, user }: SidebarProps) {
@@ -112,6 +121,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [openrouterKey, setOpenrouterKey] = useState("");
   const [googleKey, setGoogleKey] = useState("");
   const [grokKey, setGrokKey] = useState("");
+  const [glmKey, setGlmKey] = useState("");
   const [preferredModel, setPreferredModel] = useState("claude-sonnet-4-6");
   const [savingApi, setSavingApi] = useState(false);
   const [hasClaudeKey, setHasClaudeKey] = useState(false);
@@ -119,6 +129,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
   const [hasOpenrouterKey, setHasOpenrouterKey] = useState(false);
   const [hasGoogleKey, setHasGoogleKey] = useState(false);
   const [hasGrokKey, setHasGrokKey] = useState(false);
+  const [hasGlmKey, setHasGlmKey] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
   const [testingApi, setTestingApi] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -176,16 +187,19 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
         setHasOpenrouterKey(data.hasOpenrouterKey ?? false);
         setHasGoogleKey(data.hasGoogleKey ?? false);
         setHasGrokKey(data.hasGrokKey ?? false);
+        setHasGlmKey(data.hasGlmKey ?? false);
         if (data.claudeApiKey) setClaudeKey(data.claudeApiKey);
         if (data.openaiApiKey) setOpenaiKey(data.openaiApiKey);
         if (data.openrouterApiKey) setOpenrouterKey(data.openrouterApiKey);
         if (data.googleApiKey) setGoogleKey(data.googleApiKey);
         if (data.grokApiKey) setGrokKey(data.grokApiKey);
+        if (data.glmApiKey) setGlmKey(data.glmApiKey);
         // Auto-select tab based on preferredModel
         const m = data.preferredModel ?? "";
         if (m.startsWith("gpt") || m.startsWith("o1") || m.startsWith("o3")) setApiProvider("openai");
         else if (m.startsWith("gemini")) setApiProvider("google");
         else if (m.startsWith("grok-")) setApiProvider("xai");
+        else if (m.startsWith("glm") || m.startsWith("glm-")) setApiProvider("zhipu");
         else if (m.startsWith("openrouter/") || m.includes("/")) setApiProvider("openrouter");
         else setApiProvider("anthropic");
       }
@@ -198,7 +212,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
       const res = await fetch("/api/user/api-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, googleApiKey: googleKey, grokApiKey: grokKey, preferredModel }),
+        body: JSON.stringify({ claudeApiKey: claudeKey, openaiApiKey: openaiKey, openrouterApiKey: openrouterKey, googleApiKey: googleKey, grokApiKey: grokKey, glmApiKey: glmKey, preferredModel }),
       });
       if (!res.ok) throw new Error();
       toast.success("Paramètres API sauvegardés");
@@ -215,12 +229,14 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
     : apiProvider === "openai" ? openaiKey
     : apiProvider === "google" ? googleKey
     : apiProvider === "openrouter" ? openrouterKey
+    : apiProvider === "zhipu" ? glmKey
     : grokKey;
 
   const currentHasKey = apiProvider === "anthropic" ? hasClaudeKey
     : apiProvider === "openai" ? hasOpenaiKey
     : apiProvider === "google" ? hasGoogleKey
     : apiProvider === "openrouter" ? hasOpenrouterKey
+    : apiProvider === "zhipu" ? hasGlmKey
     : hasGrokKey;
 
   const setCurrentKey = (val: string) => {
@@ -228,6 +244,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
     else if (apiProvider === "openai") setOpenaiKey(val);
     else if (apiProvider === "google") setGoogleKey(val);
     else if (apiProvider === "openrouter") setOpenrouterKey(val);
+    else if (apiProvider === "zhipu") setGlmKey(val);
     else setGrokKey(val);
   };
 

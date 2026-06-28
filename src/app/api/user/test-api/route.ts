@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
         googleApiKey: true,
         openrouterApiKey: true,
         grokApiKey: true,
+        glmApiKey: true,
       },
     });
     if (provider === "anthropic")  key = user?.claudeApiKey ?? null;
@@ -29,6 +30,7 @@ export async function POST(req: NextRequest) {
     if (provider === "google")     key = user?.googleApiKey ?? null;
     if (provider === "openrouter") key = user?.openrouterApiKey ?? null;
     if (provider === "xai")        key = user?.grokApiKey ?? null;
+    if (provider === "zhipu")      key = user?.glmApiKey ?? null;
   }
 
   if (!key) {
@@ -126,6 +128,23 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: e?.error?.message ?? "Clé xAI invalide" }, { status: 400 });
       }
       return NextResponse.json({ message: "✓ Connexion xAI (Grok) réussie" });
+    }
+
+    if (provider === "zhipu") {
+      const res = await fetch("https://open.bigmodel.cn/api/paie/v4/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: model || "glm-4-flash",
+          max_tokens: 1,
+          messages: [{ role: "user", content: "hi" }],
+        }),
+      });
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({})) as { error?: { message?: string } };
+        return NextResponse.json({ message: e?.error?.message ?? "Clé Zhipu AI (GLM) invalide" }, { status: 400 });
+      }
+      return NextResponse.json({ message: "✓ Connexion Zhipu AI (GLM) réussie" });
     }
 
     return NextResponse.json({ message: "Fournisseur inconnu" }, { status: 400 });
