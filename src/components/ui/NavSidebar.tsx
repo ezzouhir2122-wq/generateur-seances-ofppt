@@ -89,6 +89,13 @@ const GearIcon = () => (
     <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
   </svg>
 );
+const LogoutIcon = () => (
+  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+    <polyline points="16 17 21 12 16 7"/>
+    <line x1="21" y1="12" x2="9" y2="12"/>
+  </svg>
+);
 
 /* ─── Navigation structure ─── */
 const navSections = [
@@ -140,13 +147,13 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
+      className="group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
       style={active
-        ? { background: "rgba(232,101,26,0.14)", color: "#F1F5F9" }
-        : { color: "rgba(255,255,255,0.50)" }
+        ? { background: "rgba(255,255,255,0.15)", color: "#FFFFFF" }
+        : { color: "rgba(255,255,255,0.60)" }
       }
-      onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.85)"; } }}
-      onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.50)"; } }}
+      onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.90)"; } }}
+      onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.60)"; } }}
     >
       {active && (
         <span
@@ -154,7 +161,7 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
           style={{ background: "#E8651A" }}
         />
       )}
-      <span style={{ color: active ? "#E8651A" : "rgba(255,255,255,0.35)", flexShrink: 0 }}>
+      <span style={{ color: active ? "#E8651A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
         {icon}
       </span>
       <span className="truncate">{label}</span>
@@ -176,41 +183,39 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   return (
     <aside
       className="w-[240px] flex-shrink-0 flex flex-col h-screen sticky top-0"
-      style={{ background: "#0D1117", borderRight: "1px solid rgba(255,255,255,0.07)" }}
+      style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.08)" }}
     >
       {/* ─ Branding ─ */}
-      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
         <div className="flex items-center gap-3">
           <div
-            className="w-9 h-9 rounded-xl overflow-hidden flex-shrink-0"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)" }}
+            className="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center"
+            style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.20)" }}
           >
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={36} height={36} className="object-cover w-full h-full" />
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-cover w-full h-full" />
           </div>
           <div className="min-w-0">
-            <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#F1F5F9" }}>OFPPT</div>
+            <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#FFFFFF" }}>OFPPT</div>
             <div className="text-[11px] font-medium leading-tight" style={{ color: "#E8651A" }}>Compétencia IA</div>
           </div>
         </div>
       </div>
 
       {/* ─ Navigation ─ */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-3">
+      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
         {navSections.map((section, sIdx) => (
           <div key={section.id}>
             {/* Section label */}
-            <div
-              className="flex items-center gap-2 px-2 mb-1.5"
-            >
+            <div className="flex items-center gap-2 px-2 mb-1.5">
               <span
                 className="text-[9px] font-bold tracking-[0.12em] uppercase select-none"
-                style={{ color: "rgba(255,255,255,0.28)" }}
+                style={{ color: "rgba(255,255,255,0.40)" }}
               >
                 {section.label}
               </span>
               <span
                 className="flex-1 h-px"
-                style={{ background: "rgba(255,255,255,0.07)" }}
+                style={{ background: "rgba(255,255,255,0.10)" }}
               />
             </div>
             {/* Items */}
@@ -227,43 +232,44 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
             </div>
             {/* Section divider (except after last) */}
             {sIdx < navSections.length - 1 && (
-              <div className="mt-2 h-px" style={{ background: "rgba(255,255,255,0.06)" }} />
+              <div className="mt-2 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
             )}
           </div>
         ))}
-
       </nav>
 
-      {/* ─ Zone fixe : Guide + Paramètres (toujours visible) ─ */}
-      <div className="px-3 pt-2 pb-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+      {/* ─ Guide + Paramètres ─ */}
+      <div className="px-3 pt-2 pb-1" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
         <Link
           href="/guide"
-          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
-          style={{ color: isActive("/guide", false) ? "#F1F5F9" : "rgba(255,255,255,0.50)", background: isActive("/guide", false) ? "rgba(232,101,26,0.14)" : undefined }}
-          onMouseEnter={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.85)"; } }}
-          onMouseLeave={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.50)"; } }}
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
+          style={{
+            color: isActive("/guide", false) ? "#FFFFFF" : "rgba(255,255,255,0.60)",
+            background: isActive("/guide", false) ? "rgba(255,255,255,0.15)" : undefined,
+          }}
+          onMouseEnter={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.90)"; } }}
+          onMouseLeave={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.60)"; } }}
         >
-          <span style={{ color: isActive("/guide", false) ? "#E8651A" : "rgba(255,255,255,0.35)", flexShrink: 0 }}><GuideIcon /></span>
+          <span style={{ color: isActive("/guide", false) ? "#E8651A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}><GuideIcon /></span>
           Guide application
         </Link>
         <button
           onClick={onSettingsClick}
-          className="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
-          style={{ color: "rgba(255,255,255,0.50)" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.85)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.50)"; }}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
+          style={{ color: "rgba(255,255,255,0.60)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.90)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.60)"; }}
         >
-          <span style={{ color: "rgba(255,255,255,0.35)", flexShrink: 0 }}><GearIcon /></span>
+          <span style={{ color: "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
           Modules & Paramètres
         </button>
       </div>
 
       {/* ─ User card ─ */}
-      <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-        {/* Avatar + name */}
+      <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
         <div
           className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-2"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.09)" }}
+          style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }}
         >
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 select-none"
@@ -272,24 +278,24 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
             {initials}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs font-semibold truncate leading-tight" style={{ color: "#F1F5F9" }}>{user.name ?? "Formateur"}</div>
-            <div className="text-[10px] truncate leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.40)" }}>{user.email}</div>
+            <div className="text-xs font-semibold truncate leading-tight" style={{ color: "#FFFFFF" }}>{user.name ?? "Formateur"}</div>
+            <div className="text-[10px] truncate leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.50)" }}>{user.email}</div>
           </div>
         </div>
 
         {/* Disconnect */}
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full text-xs rounded-lg py-2 transition-all duration-150 font-medium"
-          style={{ color: "rgba(255,255,255,0.40)", border: "1px solid rgba(255,255,255,0.09)" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.borderColor = "#EF444430"; (e.currentTarget as HTMLButtonElement).style.background = "#EF444408"; }}
+          className="w-full flex items-center justify-center gap-2 text-xs rounded-lg py-2 transition-all duration-150 font-medium"
+          style={{ color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.15)" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(239,68,68,0.40)"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
         >
+          <LogoutIcon />
           Déconnexion
         </button>
 
-        {/* Credit */}
-        <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "#E8651A" }}>
+        <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "rgba(255,255,255,0.30)" }}>
           Développé par EZZOUIR ELMUSTAPHA 9998 · OFPPT ISGI Marrakech
         </div>
       </div>
