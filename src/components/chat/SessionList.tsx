@@ -21,7 +21,7 @@ export default function SessionList({ sessions, activeId, onSelect, onNew, onDel
       <div className="p-3" style={{ borderBottom: "1px solid #E2E8F0" }}>
         <button
           onClick={onNew}
-          className="w-full text-black text-sm font-medium py-2 rounded-lg transition-colors"
+          className="w-full text-white text-sm font-medium py-2 rounded-lg transition-colors"
           style={{ background: "#0A4DA8" }}
           onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.background = "#65A30D")}
           onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.background = "#0A4DA8")}

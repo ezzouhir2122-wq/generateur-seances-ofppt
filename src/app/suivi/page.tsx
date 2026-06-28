@@ -33,7 +33,7 @@ export default function SuiviPage() {
         <Link
           href="/suivi/nouveau"
           className="px-4 py-2 text-sm font-semibold rounded-xl transition-colors"
-          style={{ background: "#0A4DA8", color: "#0B0B14" }}
+          style={{ background: "#0A4DA8", color: "#FFFFFF" }}
         >
           + Nouveau groupe
         </Link>
@@ -54,7 +54,7 @@ export default function SuiviPage() {
           <Link
             href="/suivi/nouveau"
             className="px-4 py-2 text-sm font-semibold rounded-xl"
-            style={{ background: "#0A4DA8", color: "#0B0B14" }}
+            style={{ background: "#0A4DA8", color: "#FFFFFF" }}
           >
             Créer un groupe
           </Link>

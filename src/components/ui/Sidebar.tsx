@@ -369,7 +369,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
           <section className="px-5 py-4" style={{ borderBottom: "1px solid #E2E8F0" }}>
             <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#4B5563" }}>👤 Profil</h3>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-black" style={{ background: "#0A4DA8" }}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg text-white" style={{ background: "#0A4DA8" }}>
                 {user.name?.[0]?.toUpperCase() ?? "F"}
               </div>
               <div>
@@ -393,7 +393,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                 value={matricule}
                 onChange={e => setMatricule(e.target.value)}
                 className="w-full text-xs px-3 py-2 rounded-lg outline-none"
-                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#E5E7EB" }}
+                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
               />
               <input
                 type="text"
@@ -401,12 +401,12 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                 value={etablissement}
                 onChange={e => setEtablissement(e.target.value)}
                 className="w-full text-xs px-3 py-2 rounded-lg outline-none"
-                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#E5E7EB" }}
+                style={{ background: "#F3F4F6", border: "1px solid #E2E8F0", color: "#111827" }}
               />
               <button
                 onClick={saveProfile}
                 disabled={savingProfile}
-                className="w-full text-xs py-2 rounded-lg font-medium text-black disabled:opacity-50 transition-colors"
+                className="w-full text-xs py-2 rounded-lg font-medium text-white disabled:opacity-50 transition-colors"
                 style={{ background: "#0A4DA8" }}
               >
                 {savingProfile ? "Sauvegarde…" : "Sauvegarder le profil"}
@@ -433,13 +433,13 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
             )}
 
             {refError && (
-              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#2A1010", border: "1px solid #7F1D1D" }}>
-                <p className="text-xs text-red-400">{refError}</p>
+              <div className="rounded-lg px-3 py-2 mb-3" style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
+                <p className="text-xs" style={{ color: "#DC2626" }}>{refError}</p>
               </div>
             )}
 
             {!refFile ? (
-              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-black text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#0A4DA8" }}>
+              <label className="flex items-center gap-2 cursor-pointer w-full justify-center text-white text-sm py-2.5 rounded-lg transition-colors font-medium" style={{ background: "#0A4DA8" }}>
                 <span>📥</span> Importer un référentiel
                 <input
                   ref={refFileRef}
@@ -459,12 +459,12 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                   <button
                     onClick={uploadReferentiel}
                     disabled={refUploading}
-                    className="flex-1 text-black text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
+                    className="flex-1 text-white text-sm py-2 rounded-lg transition-colors disabled:opacity-50 flex items-center justify-center gap-2 font-medium"
                     style={{ background: "#0A4DA8" }}
                   >
                     {refUploading ? (
                       <>
-                        <span className="w-3.5 h-3.5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         Extraction IA…
                       </>
                     ) : "🤖 Extraire & Importer"}
@@ -553,8 +553,8 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                 <p className="text-xs" style={{ color: "#9CA3AF" }}>Chargement…</p>
               </div>
             ) : refListError ? (
-              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#2A1010", border: "1px solid #7F1D1D" }}>
-                <p className="text-xs text-red-400">Impossible de charger les référentiels</p>
+              <div className="rounded-lg px-3 py-3 text-center" style={{ background: "#FEF2F2", border: "1px solid #FECACA" }}>
+                <p className="text-xs" style={{ color: "#DC2626" }}>Impossible de charger les référentiels</p>
                 <button onClick={loadReferentiels} className="text-[10px] mt-1" style={{ color: "#9CA3AF" }}>↺ Réessayer</button>
               </div>
             ) : referentiels.length === 0 ? (

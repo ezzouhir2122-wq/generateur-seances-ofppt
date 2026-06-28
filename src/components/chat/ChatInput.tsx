@@ -45,21 +45,28 @@ export default function ChatInput({ onSend, disabled }: Props) {
           rows={1}
           disabled={disabled}
           placeholder="Posez votre question pédagogique… (Entrée pour envoyer)"
-          className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm text-white placeholder-[#4B5563] focus:outline-none focus:ring-2 focus:ring-[#0A4DA8]/30 focus:border-[#0A4DA8] transition-colors disabled:opacity-50"
-          style={{ minHeight: "42px", maxHeight: "120px", background: "#1A1A24", border: "1px solid #E2E8F0" }}
+          className="flex-1 resize-none rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition-colors disabled:opacity-50"
+          style={{
+            minHeight: "42px",
+            maxHeight: "120px",
+            background: "#FFFFFF",
+            border: "1px solid #E2E8F0",
+            color: "#111827",
+            focusRingColor: "rgba(10,77,168,0.30)",
+          }}
         />
         <button
           type="submit"
           disabled={disabled || !value.trim()}
-          className="w-10 h-10 disabled:opacity-40 rounded-xl flex items-center justify-center transition-colors flex-shrink-0 text-black font-bold"
-          style={{ background: "#0A4DA8" }}
+          className="w-10 h-10 disabled:opacity-40 rounded-xl flex items-center justify-center transition-colors flex-shrink-0"
+          style={{ background: "#0A4DA8", color: "#FFFFFF" }}
         >
           <svg className="w-4 h-4 rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
           </svg>
         </button>
       </div>
-      <p className="text-[10px] mt-1.5" style={{ color: "#4B5563" }}>Entrée pour envoyer · Maj+Entrée pour nouvelle ligne</p>
+      <p className="text-[10px] mt-1.5" style={{ color: "#9CA3AF" }}>Entrée pour envoyer · Maj+Entrée pour nouvelle ligne</p>
     </form>
   );
 }

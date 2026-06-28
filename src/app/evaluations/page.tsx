@@ -94,8 +94,8 @@ export default function EvaluationsPage() {
           )}
 
           {error && (
-            <div className="card" style={{ borderColor: "#7F1D1D", background: "#2A1010" }}>
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="card" style={{ borderColor: "#FECACA", background: "#FEF2F2" }}>
+              <p className="text-sm" style={{ color: "#DC2626" }}>{error}</p>
             </div>
           )}
 

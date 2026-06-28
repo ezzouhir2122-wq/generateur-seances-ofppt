@@ -93,7 +93,7 @@ function FichesContent() {
             )}
           </div>
           {contenu ? (
-            <div className="prose prose-sm max-w-none prose-invert">
+            <div className="prose prose-sm max-w-none prose-ofppt">
               <ReactMarkdown>{contenu}</ReactMarkdown>
             </div>
           ) : (

@@ -14,7 +14,7 @@ interface Props {
 }
 
 const tooltipStyle = {
-  contentStyle: { background: "#12121E", border: "1px solid #E2E8F0", color: "#E5E7EB", fontSize: 12, borderRadius: 8 },
+  contentStyle: { background: "#FFFFFF", border: "1px solid #E2E8F0", color: "#374151", fontSize: 12, borderRadius: 8 },
   cursor: { fill: "#0A4DA810" },
 };
 

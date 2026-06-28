@@ -4,48 +4,43 @@
 
 @layer base {
   :root {
-    /* ── Backgrounds — thème sombre éditorial ── */
-    --bg-base:    #0B0E17;
-    --bg-surface: #131922;
-    --bg-raised:  #1A2235;
-    --bg-overlay: #1F2840;
-    --bg-input:   #141A28;
+    /* ── Backgrounds — thème light institutionnel OFPPT ── */
+    --bg-base:    #EEF2F7;
+    --bg-surface: #FFFFFF;
+    --bg-raised:  #F8FAFC;
+    --bg-overlay: #F1F5F9;
+    --bg-input:   #FFFFFF;
 
     /* ── Borders ── */
-    --border:        rgba(255, 255, 255, 0.07);
-    --border-strong: rgba(255, 255, 255, 0.12);
+    --border:        rgba(0, 0, 0, 0.08);
+    --border-strong: rgba(0, 0, 0, 0.14);
     --border-accent: rgba(232, 101, 26, 0.35);
 
     /* ── Accent primaire — orange OFPPT ── */
     --accent:       #E8651A;
     --accent-hover: #D05C16;
-    --accent-dim:   rgba(232, 101, 26, 0.12);
-    --accent-glow:  rgba(232, 101, 26, 0.28);
+    --accent-dim:   rgba(232, 101, 26, 0.10);
+    --accent-glow:  rgba(232, 101, 26, 0.20);
 
-    /* ── Accent secondaire — bleu OFPPT ── */
-    --accent-orange:       #E8651A;
-    --accent-orange-hover: #D05C16;
-    --accent-orange-dim:   rgba(232, 101, 26, 0.12);
-
-    /* ── Bleu marine institutionnel ── */
-    --blue:      #4B8EE8;
-    --blue-dim:  rgba(75, 142, 232, 0.12);
-    --blue-glow: rgba(75, 142, 232, 0.25);
+    /* ── Bleu OFPPT ── */
+    --blue:      #0A4DA8;
+    --blue-dim:  rgba(10, 77, 168, 0.08);
+    --blue-glow: rgba(10, 77, 168, 0.18);
 
     /* ── Tertiary accent — amber ── */
     --amber:     #F59E0B;
-    --amber-dim: rgba(245, 158, 11, 0.12);
+    --amber-dim: rgba(245, 158, 11, 0.10);
 
     /* ── Text ── */
-    --text-primary:   #F1F5F9;
-    --text-secondary: #94A3B8;
-    --text-muted:     #475569;
-    --text-disabled:  #2D3748;
+    --text-primary:   #111827;
+    --text-secondary: #374151;
+    --text-muted:     #9CA3AF;
+    --text-disabled:  #D1D5DB;
 
     /* ── Functional ── */
-    --error:   #F87171;
-    --success: #4ADE80;
-    --warning: #FBBF24;
+    --error:   #EF4444;
+    --success: #22C55E;
+    --warning: #F59E0B;
 
     /* ── Radius ── */
     --radius-sm: 8px;
@@ -54,14 +49,15 @@
     --radius-xl: 20px;
 
     /* ── Shadows ── */
-    --shadow-sm:     0 1px 4px rgba(0, 0, 0, 0.40);
-    --shadow-md:     0 4px 20px rgba(0, 0, 0, 0.50);
-    --shadow-lg:     0 12px 48px rgba(0, 0, 0, 0.60);
-    --shadow-accent: 0 4px 24px rgba(232, 101, 26, 0.30);
+    --shadow-sm:     0 1px 4px rgba(0, 0, 0, 0.06);
+    --shadow-md:     0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-lg:     0 12px 48px rgba(0, 0, 0, 0.12);
+    --shadow-accent: 0 4px 24px rgba(232, 101, 26, 0.20);
 
     /* ── OFPPT brand ── */
     --ofppt-orange:  #E8651A;
     --ofppt-navy:    #003087;
+    --ofppt-blue:    #0A4DA8;
     --ofppt-teal:    #0B6B72;
     --ofppt-gold:    #C8A84B;
   }
@@ -82,9 +78,6 @@
   body {
     font-family: var(--font-sans), -apple-system, ui-sans-serif, system-ui, sans-serif;
     background-color: var(--bg-base);
-    background-image:
-      radial-gradient(ellipse 100% 60% at 50% -10%, rgba(232, 101, 26, 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(10, 77, 168, 0.05) 0%, transparent 50%);
     color: var(--text-primary);
     line-height: 1.6;
     letter-spacing: -0.012em;
@@ -114,28 +107,28 @@
 
   /* ── Text selection ── */
   ::selection {
-    background: rgba(232, 101, 26, 0.25);
-    color: #F1F5F9;
+    background: rgba(232, 101, 26, 0.20);
+    color: #111827;
   }
 
   /* ── Scrollbars ── */
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.10) transparent;
+    scrollbar-color: rgba(0, 0, 0, 0.12) transparent;
   }
   *::-webkit-scrollbar { width: 5px; height: 5px; }
   *::-webkit-scrollbar-track { background: transparent; }
   *::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.10);
+    background: rgba(0, 0, 0, 0.12);
     border-radius: 99px;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.20);
   }
 
   /* ── Focus ── */
   :focus-visible {
-    outline: 2px solid rgba(232, 101, 26, 0.60);
+    outline: 2px solid rgba(10, 77, 168, 0.50);
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -166,18 +159,18 @@
     border: none;
     cursor: pointer;
     transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease, opacity 0.18s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.20), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.15);
     user-select: none;
     white-space: nowrap;
   }
   .btn-primary:hover:not(:disabled) {
     background: var(--accent-hover);
-    box-shadow: 0 4px 20px rgba(10, 77, 168, 0.35), 0 1px 3px rgba(0,0,0,0.20);
+    box-shadow: 0 4px 16px rgba(232, 101, 26, 0.30), 0 1px 3px rgba(0,0,0,0.15);
     transform: translateY(-1px);
   }
   .btn-primary:active:not(:disabled) {
     transform: translateY(0px);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.20);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
   .btn-primary:disabled {
     opacity: 0.4;
@@ -194,7 +187,7 @@
     font-weight: 500;
     letter-spacing: -0.01em;
     color: var(--text-secondary);
-    background: transparent;
+    background: white;
     padding: 9px 16px;
     border-radius: var(--radius-md);
     border: 1px solid var(--border);
@@ -217,30 +210,27 @@
   ════════════════════════════ */
 
   .card {
-    background: var(--bg-surface);
+    background: #FFFFFF;
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0, 0, 0, 0.07);
     padding: 24px;
     position: relative;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   }
 
   .card-hover {
-    background: var(--bg-surface);
+    background: #FFFFFF;
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0, 0, 0, 0.07);
     padding: 24px;
     position: relative;
-    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   }
   .card-hover:hover {
-    border-color: var(--border-accent);
-    background: var(--bg-raised);
-    box-shadow:
-      0 0 0 1px rgba(232, 101, 26, 0.10),
-      var(--shadow-md);
+    border-color: rgba(232, 101, 26, 0.30);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
     transform: translateY(-2px);
   }
 
@@ -255,20 +245,19 @@
     font-weight: 400;
     letter-spacing: -0.01em;
     color: var(--text-primary);
-    background: var(--bg-input);
-    border: 1px solid var(--border);
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
     border-radius: var(--radius-md);
     padding: 10px 14px;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
   }
   .input-field:focus {
     outline: none;
     border-color: rgba(10, 77, 168, 0.50);
-    box-shadow: 0 0 0 3px rgba(10, 77, 168, 0.12);
-    background: var(--bg-surface);
+    box-shadow: 0 0 0 3px rgba(10, 77, 168, 0.10);
   }
   .input-field::placeholder {
-    color: var(--text-muted);
+    color: #9CA3AF;
   }
 
   .label {
@@ -277,7 +266,7 @@
     font-weight: 700;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: #6B7280;
     margin-bottom: 7px;
   }
 
@@ -296,19 +285,24 @@
     border-radius: 99px;
   }
   .badge-green {
-    background: var(--accent-orange-dim);
-    color: var(--accent-orange);
-    border: 1px solid rgba(232, 101, 26, 0.2);
+    background: rgba(34, 197, 94, 0.10);
+    color: #16A34A;
+    border: 1px solid rgba(34, 197, 94, 0.20);
   }
   .badge-amber {
-    background: var(--amber-dim);
-    color: var(--amber);
-    border: 1px solid rgba(245, 158, 11, 0.2);
+    background: rgba(245, 158, 11, 0.10);
+    color: #D97706;
+    border: 1px solid rgba(245, 158, 11, 0.20);
   }
   .badge-red {
-    background: rgba(220, 38, 38, 0.08);
-    color: var(--error);
-    border: 1px solid rgba(220, 38, 38, 0.20);
+    background: rgba(239, 68, 68, 0.08);
+    color: #DC2626;
+    border: 1px solid rgba(239, 68, 68, 0.20);
+  }
+  .badge-blue {
+    background: rgba(10, 77, 168, 0.08);
+    color: #0A4DA8;
+    border: 1px solid rgba(10, 77, 168, 0.20);
   }
 
   /* ════════════════════════════
@@ -320,7 +314,7 @@
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: #9CA3AF;
   }
 
   /* ════════════════════════════
@@ -329,7 +323,7 @@
 
   .divider {
     height: 1px;
-    background: var(--border);
+    background: #E2E8F0;
     width: 100%;
   }
 
@@ -338,26 +332,26 @@
   ════════════════════════════ */
 
   .prose-ofppt {
-    color: var(--text-primary);
+    color: #374151;
     line-height: 1.75;
   }
   .prose-ofppt h1,
   .prose-ofppt h2,
   .prose-ofppt h3,
   .prose-ofppt h4 {
-    color: var(--blue);
+    color: #0A4DA8;
     margin-top: 1.5em;
     margin-bottom: 0.6em;
   }
   .prose-ofppt p {
     margin-bottom: 1em;
-    color: var(--text-secondary);
+    color: #374151;
   }
-  .prose-ofppt strong { color: var(--text-primary); font-weight: 600; }
+  .prose-ofppt strong { color: #111827; font-weight: 600; }
   .prose-ofppt ul, .prose-ofppt ol {
     padding-left: 1.5em;
     margin-bottom: 1em;
-    color: var(--text-secondary);
+    color: #374151;
   }
   .prose-ofppt li { margin-bottom: 0.35em; }
   .prose-ofppt table {
@@ -367,42 +361,42 @@
     margin-bottom: 1em;
   }
   .prose-ofppt th {
-    background: var(--bg-raised);
-    color: var(--text-muted);
+    background: #F8FAFC;
+    color: #6B7280;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 8px 12px;
     text-align: left;
-    border-bottom: 1px solid var(--border-strong);
+    border-bottom: 1px solid #E2E8F0;
   }
   .prose-ofppt td {
     padding: 8px 12px;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-secondary);
+    border-bottom: 1px solid #F3F4F6;
+    color: #374151;
   }
   .prose-ofppt tr:last-child td { border-bottom: none; }
   .prose-ofppt code {
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
     border-radius: 5px;
     padding: 2px 6px;
     font-size: 12px;
-    color: var(--blue);
+    color: #0A4DA8;
   }
   .prose-ofppt pre {
-    background: var(--bg-raised);
-    border: 1px solid var(--border);
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
     border-radius: var(--radius-md);
     padding: 16px;
     overflow-x: auto;
     margin-bottom: 1em;
   }
   .prose-ofppt blockquote {
-    border-left: 3px solid var(--blue);
+    border-left: 3px solid #0A4DA8;
     padding-left: 1em;
-    color: var(--text-secondary);
+    color: #6B7280;
     font-style: italic;
     margin-bottom: 1em;
   }
