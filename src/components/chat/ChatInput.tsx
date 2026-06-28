@@ -52,7 +52,6 @@ export default function ChatInput({ onSend, disabled }: Props) {
             background: "#FFFFFF",
             border: "1px solid #E2E8F0",
             color: "#111827",
-            focusRingColor: "rgba(10,77,168,0.30)",
           }}
         />
         <button
