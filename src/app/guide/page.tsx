@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import PageShell from "@/components/ui/PageShell";
 
 const steps = [
   { num: 1, color: "#E8651A", bg: "#FFF7ED", border: "#FED7AA", label: "Connexion NextAuth", desc: "Authentifiez-vous avec votre email et mot de passe formateur." },
@@ -159,27 +160,22 @@ export default async function GuidePage() {
   if (!session) redirect("/login");
 
   return (
-    <div style={{ maxWidth: "1060px", margin: "0 auto", padding: "40px 28px 80px", background: "transparent" }}>
+    <PageShell
+      title="Guide de l'application"
+      subtitle="Plateforme pédagogique intelligente pour formateurs OFPPT — génération de contenu assistée par IA"
+      icon="❓"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Guide" },
+      ]}
+    >
+    <div style={{ maxWidth: "1060px", margin: "0 auto" }}>
 
-      {/* ── Header ── */}
-      <div style={{ marginBottom: "48px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "20px" }}>
-          <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", color: "#E8651A" }}>GUIDE</span>
-          <span style={{ color: "#D1D5DB", fontSize: "10px" }}>·</span>
-          <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em", color: "#9CA3AF" }}>APPLICATION</span>
-        </div>
-        <div style={{ height: "1px", background: "#E2E8F0", marginBottom: "24px" }} />
-        <h1 style={{ fontSize: "clamp(1.8rem, 4vw, 2.6rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.15, color: "#111827", marginBottom: "10px" }}>
-          Guide de l&apos;application <span style={{ color: "#E8651A" }}>Compétencia IA</span>
-        </h1>
-        <p style={{ fontSize: "13px", color: "#6B7280" }}>
-          Plateforme pédagogique intelligente pour formateurs OFPPT — génération de contenu assistée par IA.
-        </p>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "16px" }}>
-          {["Next.js 16", "Claude API", "OpenAI GPT", "PostgreSQL", "NextAuth v5", "Prisma ORM"].map(t => (
-            <span key={t} style={{ fontSize: "10px", fontWeight: 600, fontFamily: "monospace", padding: "3px 10px", borderRadius: "100px", border: "1px solid #E2E8F0", color: "#6B7280", background: "#F8FAFC" }}>{t}</span>
-          ))}
-        </div>
+      {/* Badges tech */}
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "32px" }}>
+        {["Next.js 16", "Claude API", "OpenAI GPT", "PostgreSQL", "NextAuth v5", "Prisma ORM"].map(t => (
+          <span key={t} style={{ fontSize: "10px", fontWeight: 600, fontFamily: "monospace", padding: "3px 10px", borderRadius: "100px", border: "1px solid #E2E8F0", color: "#6B7280", background: "#F8FAFC" }}>{t}</span>
+        ))}
       </div>
 
       {/* ── 1. PARCOURS FORMATEUR ── */}
@@ -378,6 +374,7 @@ export default async function GuidePage() {
       </div>
 
     </div>
+    </PageShell>
   );
 }
 

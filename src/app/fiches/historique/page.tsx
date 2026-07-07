@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PageShell from "@/components/ui/PageShell";
 
 export default async function FichesHistoriquePage() {
   const session = await auth();
@@ -16,20 +17,22 @@ export default async function FichesHistoriquePage() {
   const typeLabel: Record<string, string> = { theorique: "Théorique", tp: "TP", ta: "TA" };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mes fiches pédagogiques</h1>
-          <p className="text-gray-500 text-sm mt-1">{fiches.length} fiche{fiches.length !== 1 ? "s" : ""}</p>
-        </div>
-        <Link href="/fiches" className="btn-primary text-sm">+ Nouvelle fiche</Link>
-      </div>
-
+    <PageShell
+      title="Mes fiches pédagogiques"
+      subtitle={`${fiches.length} fiche${fiches.length !== 1 ? "s" : ""} générée${fiches.length !== 1 ? "s" : ""}`}
+      icon="📁"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Mes Documents" },
+        { label: "Mes fiches" },
+      ]}
+      action={{ label: "+ Nouvelle fiche", href: "/fiches" }}
+    >
       {fiches.length === 0 ? (
         <div className="card text-center py-16 text-gray-400">
           <p className="text-4xl mb-3">📋</p>
           <p>Aucune fiche générée pour l&apos;instant.</p>
-          <Link href="/fiches" className="mt-4 inline-block text-[#006633] hover:underline text-sm">Créer ma première fiche →</Link>
+          <Link href="/fiches" className="mt-4 inline-block text-[#16A34A] hover:underline text-sm">Créer ma première fiche →</Link>
         </div>
       ) : (
         <div className="space-y-3">
@@ -37,7 +40,7 @@ export default async function FichesHistoriquePage() {
             <Link key={fiche.id} href={`/fiches/${fiche.id}`} className="card block hover:shadow-md transition-shadow group">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="font-semibold text-gray-900 group-hover:text-[#006633] transition-colors">{fiche.titre}</h2>
+                  <h2 className="font-semibold text-gray-900 group-hover:text-[#16A34A] transition-colors">{fiche.titre}</h2>
                   <div className="flex items-center gap-3 mt-1">
                     <span className="text-xs text-gray-500">{fiche.filiere}</span>
                     <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{typeLabel[fiche.type] ?? fiche.type}</span>
@@ -52,6 +55,6 @@ export default async function FichesHistoriquePage() {
           ))}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

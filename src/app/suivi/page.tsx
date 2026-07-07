@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import GroupeCard from "@/components/suivi/GroupeCard";
 import { GroupeSummary } from "@/types/suivi";
+import PageShell from "@/components/ui/PageShell";
 
 export default function SuiviPage() {
   const [groupes, setGroupes] = useState<GroupeSummary[]>([]);
@@ -24,21 +25,17 @@ export default function SuiviPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Suivi des Compétences</h1>
-          <p className="mt-1 text-sm" style={{ color: "#9CA3AF" }}>Gérez vos groupes et suivez la progression par compétence</p>
-        </div>
-        <Link
-          href="/suivi/nouveau"
-          className="px-4 py-2 text-sm font-semibold rounded-xl transition-colors"
-          style={{ background: "#0A4DA8", color: "#FFFFFF" }}
-        >
-          + Nouveau groupe
-        </Link>
-      </div>
-
+    <PageShell
+      title="Suivi des compétences"
+      subtitle="Gérez vos groupes et suivez la progression de chaque stagiaire par compétence"
+      icon="📊"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Pédagogie" },
+        { label: "Suivi des compétences" },
+      ]}
+      action={{ label: "+ Nouveau groupe", href: "/suivi/nouveau" }}
+    >
       {loading ? (
         <div className="flex justify-center py-20">
           <div className="w-8 h-8 border-4 border-[#0A4DA8] border-t-transparent rounded-full animate-spin" />
@@ -66,6 +63,6 @@ export default function SuiviPage() {
           ))}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

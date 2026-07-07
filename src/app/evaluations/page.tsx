@@ -7,6 +7,7 @@ import EvaluationResult from "@/components/ui/EvaluationResult";
 import type { EvaluationFormData, EvaluationType } from "@/types/seance";
 import { exportToPDF, exportToWord } from "@/lib/export";
 import { consumeReferentielContext } from "@/lib/referentiel-context";
+import PageShell from "@/components/ui/PageShell";
 
 const TYPE_LABELS: Record<EvaluationType, string> = {
   qcm: "QCM",
@@ -70,14 +71,16 @@ export default function EvaluationsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Génération d&apos;évaluations</h1>
-        <p className="mt-1" style={{ color: "#9CA3AF" }}>
-          QCM, exercices pratiques, examens et sessions de rattrapage générés automatiquement
-        </p>
-      </div>
-
+    <PageShell
+      title="Génération d'évaluations"
+      subtitle="QCM, exercices pratiques, examens et sessions de rattrapage générés automatiquement"
+      icon="☑️"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Génération IA" },
+        { label: "Évaluation" },
+      ]}
+    >
       <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
         {!contenu && (
           <div className="lg:col-span-2">
@@ -132,6 +135,6 @@ export default function EvaluationsPage() {
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

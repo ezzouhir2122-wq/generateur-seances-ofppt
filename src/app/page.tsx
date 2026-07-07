@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import DashboardCharts from "@/components/dashboard/DashboardCharts";
+import PageShell from "@/components/ui/PageShell";
 
 /* ── Stat Card ── */
 function StatCard({
@@ -175,41 +176,12 @@ export default async function DashboardPage() {
   void [modulesCount, allStagiaires, topCompetences, tempsEconomiseLabel];
 
   return (
-    <div style={{ background: "#EEF2F7", minHeight: "100%", padding: "28px 28px 60px" }}>
-
-      {/* ── TOP HEADER ── */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "28px" }}>
-        <div>
-          <h1 style={{ fontSize: "20px", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", lineHeight: 1.2 }}>
-            Tableau de bord
-          </h1>
-          <p style={{ fontSize: "13px", color: "#6B7280", marginTop: "3px" }}>
-            {greeting}, <strong style={{ color: "#E8651A" }}>{userName}</strong> — {todayLabel}
-          </p>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Bell */}
-          <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: "white", border: "1px solid #E5E7EB", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-            <svg width="18" height="18" fill="none" stroke="#374151" strokeWidth="1.8" viewBox="0 0 24 24">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
-            </svg>
-            {(seancesThisMonth + fichesThisMonth) > 0 && (
-              <span style={{ position: "absolute", top: "7px", right: "7px", width: "8px", height: "8px", borderRadius: "50%", background: "#EF4444", border: "2px solid white" }} />
-            )}
-          </div>
-          {/* User */}
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "white", border: "1px solid #E5E7EB", borderRadius: "10px", padding: "6px 12px 6px 8px" }}>
-            <div style={{ width: "28px", height: "28px", borderRadius: "8px", background: "#003087", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="15" height="15" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" />
-              </svg>
-            </div>
-            <span style={{ fontSize: "13px", fontWeight: 500, color: "#374151" }}>{userName}</span>
-            <svg width="13" height="13" fill="none" stroke="#9CA3AF" strokeWidth="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9" /></svg>
-          </div>
-        </div>
-      </div>
-
+    <PageShell
+      title="Tableau de bord"
+      subtitle={`${greeting}, ${userName} — ${todayLabel}`}
+      icon="🏠"
+      breadcrumb={[{ label: "Accueil" }]}
+    >
       {/* ── 4 STAT CARDS ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "20px" }}>
         <StatCard
@@ -259,7 +231,7 @@ export default async function DashboardPage() {
           {recentSeances.length === 0 ? (
             <div style={{ textAlign: "center", padding: "32px 0", color: "#9CA3AF", fontSize: "13px" }}>
               Aucune séance générée.<br />
-              <Link href="/seances" style={{ color: "#E8651A", fontWeight: 600, marginTop: "8px", display: "inline-block" }}>
+              <Link href="/seances" style={{ color: "#16A34A", fontWeight: 600, marginTop: "8px", display: "inline-block" }}>
                 Générer ma première séance →
               </Link>
             </div>
@@ -288,7 +260,7 @@ export default async function DashboardPage() {
           {recentFiches.length === 0 ? (
             <div style={{ textAlign: "center", padding: "32px 0", color: "#9CA3AF", fontSize: "13px" }}>
               Aucune fiche générée.<br />
-              <Link href="/fiches" style={{ color: "#E8651A", fontWeight: 600, marginTop: "8px", display: "inline-block" }}>
+              <Link href="/fiches" style={{ color: "#16A34A", fontWeight: 600, marginTop: "8px", display: "inline-block" }}>
                 Créer ma première fiche →
               </Link>
             </div>
@@ -308,7 +280,6 @@ export default async function DashboardPage() {
           )}
         </div>
       </div>
-
-    </div>
+    </PageShell>
   );
 }

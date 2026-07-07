@@ -7,6 +7,7 @@ import SeanceResult from "@/components/ui/SeanceResult";
 import { SeanceFormData } from "@/types/seance";
 import { exportToPDF, exportToWord, exportToPPT } from "@/lib/export";
 import { consumeReferentielContext } from "@/lib/referentiel-context";
+import PageShell from "@/components/ui/PageShell";
 
 export default function SeancesPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -116,12 +117,17 @@ export default function SeancesPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Génération de séance</h1>
-        <p className="mt-1" style={{ color: "#9CA3AF" }}>Remplissez le formulaire pour générer une séance complète en quelques secondes</p>
-      </div>
-
+    <PageShell
+      title="Séance pédagogique"
+      subtitle="Générez un cours complet adapté au référentiel OFPPT en quelques secondes"
+      icon="⚡"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Génération IA" },
+        { label: "Séance pédagogique" },
+      ]}
+      action={{ label: "📂 Historique", href: "/historique" }}
+    >
       <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
         {!contenu && (
           <div className="lg:col-span-2">
@@ -180,6 +186,6 @@ export default function SeancesPage() {
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }

@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import PageShell from "@/components/ui/PageShell";
 
 export default async function HistoriquePage() {
   const session = await auth();
@@ -42,19 +43,17 @@ export default async function HistoriquePage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8 pb-6" style={{ borderBottom: "1px solid #E2E8F0" }}>
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Mes séances</h1>
-          <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>
-            {seances.length} séance{seances.length !== 1 ? "s" : ""} générée{seances.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <Link href="/seances" className="btn-primary text-sm">
-          + Nouvelle séance
-        </Link>
-      </div>
-
+    <PageShell
+      title="Mes séances"
+      subtitle={`${seances.length} séance${seances.length !== 1 ? "s" : ""} générée${seances.length !== 1 ? "s" : ""}`}
+      icon="🕐"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Mes Documents" },
+        { label: "Mes séances" },
+      ]}
+      action={{ label: "+ Nouvelle séance", href: "/seances" }}
+    >
       {seances.length === 0 ? (
         <div className="card flex flex-col items-center justify-center py-20 gap-3" style={{ borderStyle: "dashed", borderColor: "#E2E8F0" }}>
           <div className="text-4xl">📄</div>
@@ -105,6 +104,6 @@ export default async function HistoriquePage() {
           ))}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

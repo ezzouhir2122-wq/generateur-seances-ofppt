@@ -236,7 +236,6 @@ export default function ReferentielClient({ secteurs }: Props) {
           {/* Title */}
           <div className="text-center mb-8">
             <div className="text-5xl mb-3">📚</div>
-            <h2 className="text-xl font-bold mb-1" style={{ color: "#111827" }}>Référentiel pédagogique</h2>
             <p className="text-sm" style={{ color: "#6B7280" }}>Importez votre fichier Excel ou CSV pour commencer</p>
           </div>
 

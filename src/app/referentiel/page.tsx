@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import ReferentielClient from "./ReferentielClient";
+import PageShell from "@/components/ui/PageShell";
 
 export const dynamic = "force-dynamic";
 
@@ -63,5 +64,18 @@ export default async function ReferentielPage() {
     })),
   }));
 
-  return <ReferentielClient secteurs={data} />;
+  return (
+    <PageShell
+      title="Référentiel"
+      subtitle="Consultez vos filières, modules et compétences importés"
+      icon="📑"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Pédagogie" },
+        { label: "Référentiel" },
+      ]}
+    >
+      <ReferentielClient secteurs={data} />
+    </PageShell>
+  );
 }

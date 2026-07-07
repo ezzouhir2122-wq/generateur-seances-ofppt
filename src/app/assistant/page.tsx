@@ -5,6 +5,7 @@ import ChatWindow, { Message } from "@/components/chat/ChatWindow";
 import ChatInput from "@/components/chat/ChatInput";
 import SessionList from "@/components/chat/SessionList";
 import { toast } from "sonner";
+import PageShell from "@/components/ui/PageShell";
 
 const FALLBACK_FILIERES = [
   "Développement Informatique",
@@ -178,6 +179,17 @@ export default function AssistantPage() {
     : FALLBACK_FILIERES;
 
   return (
+    <PageShell
+      title="Assistant IA"
+      subtitle="Assistant pédagogique spécialisé OFPPT — posez vos questions en temps réel"
+      icon="🤖"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Intelligence Artificielle" },
+        { label: "Assistant IA" },
+      ]}
+      noPadding
+    >
     <div className="flex h-full">
       <SessionList
         sessions={sessions}
@@ -263,5 +275,6 @@ export default function AssistantPage() {
         <ChatInput onSend={sendMessage} disabled={isLoading} />
       </div>
     </div>
+    </PageShell>
   );
 }

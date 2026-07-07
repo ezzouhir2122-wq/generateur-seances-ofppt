@@ -7,6 +7,7 @@ import ReactMarkdown from "react-markdown";
 import type { FicheFormData } from "@/types/seance";
 import { toast } from "sonner";
 import { consumeReferentielContext } from "@/lib/referentiel-context";
+import PageShell from "@/components/ui/PageShell";
 
 function FichesContent() {
   const searchParams = useSearchParams();
@@ -72,11 +73,17 @@ function FichesContent() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="mb-6 pb-5" style={{ borderBottom: "1px solid #E2E8F0" }}>
-        <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Fiches pédagogiques</h1>
-        <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>Générez une fiche pédagogique complète au format OFPPT</p>
-      </div>
+    <PageShell
+      title="Fiches pédagogiques"
+      subtitle="Générez une fiche pédagogique complète au format OFPPT"
+      icon="📋"
+      breadcrumb={[
+        { label: "Accueil", href: "/" },
+        { label: "Génération IA" },
+        { label: "Fiche pédagogique" },
+      ]}
+      action={{ label: "📂 Mes fiches", href: "/fiches/historique" }}
+    >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <FicheForm onGenerate={handleGenerate} isLoading={isLoading} defaultValues={defaultValues} />
         <div className="card">
@@ -103,7 +110,7 @@ function FichesContent() {
           )}
         </div>
       </div>
-    </div>
+    </PageShell>
   );
 }
 

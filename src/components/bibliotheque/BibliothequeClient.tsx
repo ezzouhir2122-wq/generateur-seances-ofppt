@@ -59,26 +59,16 @@ export default function BibliothequeClient() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      {/* En-tête */}
-      <div className="flex items-start justify-between gap-4 mb-6 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: "#111827" }}>Bibliothèque Collaborative</h1>
-          <p className="mt-1 text-sm max-w-2xl" style={{ color: "#6B7280" }}>
-            Partagez et découvrez des séances, évaluations et supports pédagogiques créés par les formateurs OFPPT.
-          </p>
-        </div>
+    <div className="max-w-7xl mx-auto">
+      {/* Barre recherche + filtres */}
+      <div className="flex flex-wrap gap-2 mb-6">
         <button
           onClick={() => setShowPublish(true)}
           className="px-4 py-2.5 text-sm font-semibold rounded-xl"
-          style={{ background: "#0A4DA8", color: "#FFFFFF" }}
+          style={{ background: "#16A34A", color: "#FFFFFF" }}
         >
-          + Publier une ressource
+          + Publier
         </button>
-      </div>
-
-      {/* Barre recherche + filtres */}
-      <div className="flex flex-wrap gap-2 mb-6">
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
