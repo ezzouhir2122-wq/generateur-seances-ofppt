@@ -54,31 +54,47 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
   };
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-4">
-      <h2 className="text-base font-bold pb-3" style={{ color: "#0A4DA8", borderBottom: "1px solid #E2E8F0" }}>
-        Paramètres de la fiche
-      </h2>
-
-      <ReferentielCascade
-        onChange={handleReferentielChange}
-        initial={{
-          filiere: defaultValues?.filiere,
-          codeModule: defaultValues?.codeModule,
-          module: defaultValues?.module,
-          mhg: defaultValues?.mhg,
-          competence: defaultValues?.competence,
-          competences: defaultValues?.competences,
-          annee: defaultValues?.annee,
-        }}
-      />
-
-      {/* ── Informations fiche ── */}
-      <div style={{ borderTop: "1px solid #E2E8F0", paddingTop: "12px" }}>
-        <p className="text-[11px] font-semibold uppercase tracking-wider mb-3" style={{ color: "#9CA3AF" }}>
-          Informations fiche
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
+    >
+      {/* ── En-tête ── */}
+      <div style={{
+        padding: "18px 22px 14px",
+        borderBottom: "1px solid #E5E7EB",
+        background: "#F9FAFB",
+        flexShrink: 0,
+      }}>
+        <h2 style={{ fontSize: "14px", fontWeight: 700, color: "#0A4DA8", margin: 0, letterSpacing: "-0.01em" }}>
+          Paramètres de la fiche
+        </h2>
+        <p style={{ fontSize: "11.5px", color: "#9CA3AF", marginTop: "3px", lineHeight: 1.4 }}>
+          Renseignez les informations pour générer la fiche pédagogique OFPPT.
         </p>
+      </div>
 
-        <div className="space-y-3">
+      {/* ── Corps scrollable ── */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "18px 22px", display: "flex", flexDirection: "column", gap: "16px" }}>
+
+        <ReferentielCascade
+          onChange={handleReferentielChange}
+          initial={{
+            filiere: defaultValues?.filiere,
+            codeModule: defaultValues?.codeModule,
+            module: defaultValues?.module,
+            mhg: defaultValues?.mhg,
+            competence: defaultValues?.competence,
+            competences: defaultValues?.competences,
+            annee: defaultValues?.annee,
+          }}
+        />
+
+        {/* ── Informations fiche ── */}
+        <div style={{ borderTop: "1px solid #E5E7EB", paddingTop: "14px", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <p style={{ fontSize: "10.5px", fontWeight: 600, textTransform: "uppercase", letterSpacing: ".05em", color: "#9CA3AF", margin: 0 }}>
+            Informations fiche
+          </p>
+
           <div>
             <label className="label">Intitulé de la séance *</label>
             <input
@@ -154,17 +170,33 @@ export default function FicheForm({ onGenerate, isLoading, defaultValues }: Prop
         </div>
       </div>
 
-      <button type="submit" className="btn-primary w-full" disabled={isLoading}>
-        {isLoading ? (
-          <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
-            Génération en cours…
-          </span>
-        ) : "Générer la fiche pédagogique"}
-      </button>
+      {/* ── Pied de page ── */}
+      <div style={{
+        padding: "14px 22px 18px",
+        borderTop: "1px solid #E5E7EB",
+        background: "#FFFFFF",
+        flexShrink: 0,
+        display: "flex",
+        flexDirection: "column",
+        gap: "8px",
+      }}>
+        <button
+          type="submit"
+          className="btn-primary w-full"
+          disabled={isLoading}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Génération en cours…
+            </>
+          ) : "📋 Générer la fiche pédagogique"}
+        </button>
+      </div>
     </form>
   );
 }
