@@ -38,8 +38,8 @@ export default async function LoginPage({
 
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
             Transformez vos<br />
-            <span style={{ color: "#16A34A" }}>séances en quelques</span><br />
-            secondes.
+            <span style={{ color: "#16A34A" }}>séances pédagogiques</span><br />
+            dans quelques secondes.
           </h1>
           <p className="text-base leading-relaxed max-w-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
             Décrivez votre module. L&apos;IA génère une séance pédagogique complète conforme au format OFPPT, prête à être exportée.
