@@ -80,59 +80,157 @@ export default function EvaluationsPage() {
         { label: "Génération IA" },
         { label: "Évaluation" },
       ]}
+      noPadding
     >
-      <div className={`grid gap-8 ${contenu ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-5"}`}>
-        {!contenu && (
-          <div className="lg:col-span-2">
-            <EvaluationForm onGenerate={handleGenerate} isLoading={isLoading} initial={initial} />
-          </div>
-        )}
+      <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
 
-        <div className={contenu ? "col-span-1" : "lg:col-span-3"}>
-          {isLoading && (
-            <div className="card flex flex-col items-center justify-center py-20 gap-4">
-              <div className="w-10 h-10 border-4 border-[#0A4DA8] border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm" style={{ color: "#9CA3AF" }}>Génération de l&apos;évaluation en cours…</p>
-            </div>
-          )}
+        {/* ── Panneau gauche : formulaire ── */}
+        <div style={{
+          width: "380px",
+          flexShrink: 0,
+          background: "#FFFFFF",
+          borderRight: "1px solid #E5E7EB",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden",
+        }}>
+          <EvaluationForm onGenerate={handleGenerate} isLoading={isLoading} initial={initial} />
+        </div>
 
-          {error && (
-            <div className="card" style={{ borderColor: "#FECACA", background: "#FEF2F2" }}>
-              <p className="text-sm" style={{ color: "#DC2626" }}>{error}</p>
-            </div>
-          )}
+        {/* ── Panneau droit : résultat ── */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#EEF2F7" }}>
 
-          {contenu && (
-            <EvaluationResult
-              contenu={contenu}
-              typeLabel={typeLabel}
-              onExportPDF={() => exportToPDF(contenu, titre, formateur, "Évaluation")}
-              onExportWord={() => exportToWord(contenu, titre)}
-              onReset={() => { setContenu(null); setError(null); }}
-            />
-          )}
-
-          {!isLoading && !contenu && !error && (
-            <div className="space-y-3">
-              {/* Info cards */}
-              {[
-                { icon: "☑", title: "QCM", desc: "Questions à choix multiples avec corrigé automatique. Idéal pour l'évaluation formative rapide." },
-                { icon: "✏", title: "Exercices pratiques", desc: "Exercices d'application sur le module avec correction détaillée et barème." },
-                { icon: "📋", title: "Contrôle continu", desc: "Évaluation intermédiaire : questions de cours + QCM + application. Corrigé et barème /20 inclus." },
-                { icon: "📝", title: "Examen fin de module", desc: "Sujet complet d'examen avec corrigé et grille de notation sur 20." },
-                { icon: "🔄", title: "Session de rattrapage", desc: "Sujet de rattrapage ciblant les compétences essentielles, avec corrigé." },
-              ].map(card => (
-                <div key={card.title} className="flex items-start gap-4 p-4 rounded-xl"
-                  style={{ background: "#F8FAFC", border: "1px solid #E2E8F0" }}>
-                  <span className="text-2xl mt-0.5">{card.icon}</span>
-                  <div>
-                    <p className="font-semibold text-sm" style={{ color: "#374151" }}>{card.title}</p>
-                    <p className="text-xs mt-1" style={{ color: "#4B5563" }}>{card.desc}</p>
-                  </div>
+          {/* Barre d'actions */}
+          <div style={{
+            padding: "10px 24px",
+            borderBottom: "1px solid #E5E7EB",
+            background: "#FFFFFF",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+            flexShrink: 0,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div style={{
+                width: "8px", height: "8px", borderRadius: "50%",
+                background: contenu ? "#16A34A" : isLoading ? "#F59E0B" : "#D1D5DB",
+                transition: "background .3s",
+              }} />
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 600, color: "#111827" }}>
+                  {contenu ? `${typeLabel} généré` : isLoading ? "Génération en cours…" : "Résultat de génération"}
                 </div>
-              ))}
+                <div style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "1px" }}>
+                  {contenu ? "Exportez en PDF ou Word" : isLoading ? "L'IA génère votre évaluation…" : "L'évaluation apparaîtra ici après génération"}
+                </div>
+              </div>
             </div>
-          )}
+            {contenu && (
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <button
+                  onClick={() => exportToPDF(contenu, titre, formateur, "Évaluation")}
+                  style={{
+                    padding: "6px 13px", background: "#E8651A", color: "#FFFFFF",
+                    border: "none", borderRadius: "7px", fontSize: "12px", fontWeight: 600,
+                    cursor: "pointer", fontFamily: "inherit",
+                  }}
+                >PDF</button>
+                <button
+                  onClick={() => exportToWord(contenu, titre)}
+                  style={{
+                    padding: "6px 13px", background: "#0A4DA8", color: "#FFFFFF",
+                    border: "none", borderRadius: "7px", fontSize: "12px", fontWeight: 600,
+                    cursor: "pointer", fontFamily: "inherit",
+                  }}
+                >Word</button>
+                <button
+                  onClick={() => { setContenu(null); setError(null); }}
+                  style={{
+                    padding: "6px 13px", background: "transparent",
+                    border: "1px solid #E5E7EB", borderRadius: "7px",
+                    fontSize: "12px", color: "#6B7280", cursor: "pointer", fontFamily: "inherit",
+                  }}
+                >Réinitialiser</button>
+              </div>
+            )}
+          </div>
+
+          {/* Corps */}
+          <div style={{ flex: 1, overflowY: "auto", padding: "28px 32px" }}>
+
+            {/* Spinner */}
+            {isLoading && !contenu && (
+              <div className="card" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "60px 32px", gap: "16px" }}>
+                <div style={{ width: "40px", height: "40px", border: "4px solid #E5E7EB", borderTopColor: "#0A4DA8", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#374151" }}>Génération en cours…</p>
+                <p style={{ fontSize: "12px", color: "#9CA3AF" }}>L'IA rédige votre évaluation avec corrigé</p>
+                <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+              </div>
+            )}
+
+            {/* Erreur */}
+            {error && !contenu && (
+              <div className="card" style={{ borderColor: "#FECACA", background: "#FEF2F2" }}>
+                <p style={{ fontSize: "13px", color: "#DC2626" }}>{error}</p>
+              </div>
+            )}
+
+            {/* Résultat */}
+            {contenu && (
+              <EvaluationResult
+                contenu={contenu}
+                typeLabel={typeLabel}
+                onExportPDF={() => exportToPDF(contenu, titre, formateur, "Évaluation")}
+                onExportWord={() => exportToWord(contenu, titre)}
+                onReset={() => { setContenu(null); setError(null); }}
+              />
+            )}
+
+            {/* État vide avec cartes types */}
+            {!isLoading && !contenu && !error && (
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0", textAlign: "center" }}>
+                <div style={{
+                  width: "64px", height: "64px", borderRadius: "50%",
+                  background: "#EEF3FB", display: "flex", alignItems: "center",
+                  justifyContent: "center", marginBottom: "16px", color: "#0A4DA8",
+                }}>
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                    <path d="M9 12l2 2 4-4"/>
+                  </svg>
+                </div>
+                <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#111827", marginBottom: "6px" }}>Aucune évaluation générée</h3>
+                <p style={{ fontSize: "13px", color: "#6B7280", maxWidth: "260px", lineHeight: 1.6, marginBottom: "28px" }}>
+                  Choisissez un type à gauche et lancez la génération.
+                </p>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", width: "100%", maxWidth: "480px" }}>
+                  {[
+                    { icon: "☑", title: "QCM", desc: "Questions + Réponses + Corrigé" },
+                    { icon: "✏", title: "Exercices", desc: "Exercices pratiques corrigés" },
+                    { icon: "📋", title: "Contrôle continu", desc: "Cours + QCM + Application /20" },
+                    { icon: "📝", title: "Examen", desc: "Sujet + Corrigé + Barème" },
+                    { icon: "🔄", title: "Rattrapage", desc: "Session ciblée sur les essentiels" },
+                  ].map(card => (
+                    <div key={card.title} style={{
+                      display: "flex", alignItems: "center", gap: "10px",
+                      padding: "10px 14px", background: "#FFFFFF",
+                      border: "1px solid #E5E7EB", borderRadius: "10px",
+                      textAlign: "left", boxShadow: "0 1px 3px rgba(0,0,0,.04)",
+                    }}>
+                      <span style={{ fontSize: "18px", flexShrink: 0 }}>{card.icon}</span>
+                      <div>
+                        <div style={{ fontSize: "12px", fontWeight: 600, color: "#111827" }}>{card.title}</div>
+                        <div style={{ fontSize: "11px", color: "#9CA3AF" }}>{card.desc}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </PageShell>

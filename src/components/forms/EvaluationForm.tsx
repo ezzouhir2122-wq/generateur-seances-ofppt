@@ -76,15 +76,32 @@ export default function EvaluationForm({ onGenerate, isLoading, initial }: Props
   const activeType = TYPES.find(t => t.value === form.type)!;
 
   return (
-    <form onSubmit={handleSubmit} className="card space-y-5">
-      <h2 className="text-base font-bold pb-4" style={{ color: "#0A4DA8", borderBottom: "1px solid #E2E8F0" }}>
-        Paramètres de l&apos;évaluation
-      </h2>
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: "flex", flexDirection: "column", height: "100%", overflow: "hidden" }}
+    >
+      {/* ── En-tête ── */}
+      <div style={{
+        padding: "18px 22px 14px",
+        borderBottom: "1px solid #E5E7EB",
+        background: "#F9FAFB",
+        flexShrink: 0,
+      }}>
+        <h2 style={{ fontSize: "14px", fontWeight: 700, color: "#0A4DA8", margin: 0, letterSpacing: "-0.01em" }}>
+          Paramètres de l&apos;évaluation
+        </h2>
+        <p style={{ fontSize: "11.5px", color: "#9CA3AF", marginTop: "3px", lineHeight: 1.4 }}>
+          Choisissez le type et renseignez le module pour générer votre évaluation.
+        </p>
+      </div>
+
+      {/* ── Corps scrollable ── */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "18px 22px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
       {/* Type selector */}
       <div>
         <label className="label">Type d&apos;évaluation *</label>
-        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2">
           {TYPES.map(t => (
             <label
               key={t.value}
@@ -99,8 +116,8 @@ export default function EvaluationForm({ onGenerate, isLoading, initial }: Props
                 onChange={() => setForm(prev => ({ ...prev, type: t.value }))} />
               <span className="text-lg leading-none mt-0.5">{t.icon}</span>
               <div>
-                <p className="text-sm font-semibold" style={{ color: form.type === t.value ? "#0A4DA8" : "#fff" }}>{t.label}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>{t.desc}</p>
+                <p className="text-sm font-semibold" style={{ color: form.type === t.value ? "#0A4DA8" : "#374151" }}>{t.label}</p>
+                <p className="text-[10px] mt-0.5" style={{ color: "#6B7280" }}>{t.desc}</p>
               </div>
             </label>
           ))}
@@ -240,17 +257,32 @@ export default function EvaluationForm({ onGenerate, isLoading, initial }: Props
         </>
       )}
 
-      <button type="submit" className="btn-primary w-full" disabled={isLoading}>
-        {isLoading ? (
-          <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
-            Génération en cours…
-          </span>
-        ) : `Générer ${activeType.label}`}
-      </button>
+      </div>{/* fin corps scrollable */}
+
+      {/* ── Pied de page ── */}
+      <div style={{
+        padding: "14px 22px 18px",
+        borderTop: "1px solid #E5E7EB",
+        background: "#FFFFFF",
+        flexShrink: 0,
+      }}>
+        <button
+          type="submit"
+          className="btn-primary w-full"
+          disabled={isLoading}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}
+        >
+          {isLoading ? (
+            <>
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Génération en cours…
+            </>
+          ) : `☑ Générer ${activeType.label}`}
+        </button>
+      </div>
     </form>
   );
 }
