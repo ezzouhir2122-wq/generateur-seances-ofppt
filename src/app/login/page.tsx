@@ -13,7 +13,7 @@ export default async function LoginPage({
       {/* Côté gauche — branding */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 px-16 py-16" style={{ background: "#003087" }}>
 
-        {/* Logo + titre en haut */}
+        {/* Logo + titre + badge en haut */}
         <div className="flex items-center gap-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -21,19 +21,20 @@ export default async function LoginPage({
             alt="OFPPT"
             style={{ width: "90px", height: "90px", borderRadius: "50%", objectFit: "cover", display: "block", flexShrink: 0 }}
           />
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "17px" }}>OFPPT</span>
-            <span style={{ color: "rgba(255,255,255,0.40)", fontSize: "15px" }}>·</span>
-            <span style={{ color: "#16A34A", fontWeight: 600, fontSize: "17px" }}>Compétencia</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "17px" }}>OFPPT</span>
+              <span style={{ color: "rgba(255,255,255,0.40)", fontSize: "15px" }}>·</span>
+              <span style={{ color: "#16A34A", fontWeight: 600, fontSize: "17px" }}>Compétencia</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full px-3 py-1" style={{ border: "1px solid rgba(255,255,255,0.20)", background: "rgba(255,255,255,0.08)", alignSelf: "flex-start" }}>
+              <span style={{ color: "#16A34A", fontSize: "12px" }}>✦</span>
+              <span style={{ fontSize: "11px", fontWeight: 500, color: "rgba(255,255,255,0.80)" }}>Génération pédagogique</span>
+            </div>
           </div>
         </div>
 
         <div>
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ border: "1px solid rgba(255,255,255,0.20)", background: "rgba(255,255,255,0.08)" }}>
-            <span style={{ color: "#16A34A", fontSize: "14px" }}>✦</span>
-            <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Génération pédagogique</span>
-          </div>
 
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
             Transformez vos<br />
