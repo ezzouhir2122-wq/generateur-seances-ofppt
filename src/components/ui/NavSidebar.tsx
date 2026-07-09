@@ -307,8 +307,8 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           <span style={{ color: "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
           Modules & Paramètres
         </button>
-        <div className="mt-2 px-1 text-[9px] leading-snug text-center" style={{ color: "#16A34A" }}>
-          Développé par Ezzouiri Elmustapha 9998<br />OFPPT / ISGI Marrakech
+        <div className="mt-2 px-1 text-[9px] leading-snug text-center font-bold" style={{ color: "#16A34A" }}>
+          Développé par Ezzouir Elmustapha<br />9998 · OFPPT / ISGI Marrakech
         </div>
       </div>
     </aside>
