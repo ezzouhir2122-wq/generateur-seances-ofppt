@@ -308,7 +308,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           Modules & Paramètres
         </button>
         <div className="mt-2 px-1 text-[9px] leading-snug text-center font-bold" style={{ color: "#16A34A" }}>
-          Développé par Ezzouir Elmustapha<br />9998 · OFPPT / ISGI Marrakech
+          Développé par Ezzouhir Elmustapha<br />9998 · OFPPT / ISGI Marrakech
         </div>
       </div>
     </aside>
