@@ -21,9 +21,10 @@ export default async function LoginPage({
             alt="OFPPT"
             style={{ width: "90px", height: "90px", borderRadius: "50%", objectFit: "cover", display: "block", flexShrink: 0 }}
           />
-          <div>
-            <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "18px", lineHeight: 1.2 }}>OFPPT</div>
-            <div style={{ color: "#16A34A", fontWeight: 600, fontSize: "14px" }}>Compétencia</div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "17px" }}>OFPPT</span>
+            <span style={{ color: "rgba(255,255,255,0.40)", fontSize: "15px" }}>·</span>
+            <span style={{ color: "#16A34A", fontWeight: 600, fontSize: "17px" }}>Compétencia</span>
           </div>
         </div>
 
