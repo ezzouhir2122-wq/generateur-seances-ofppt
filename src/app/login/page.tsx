@@ -22,12 +22,14 @@ export default async function LoginPage({
 
         <div>
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ border: "1px solid rgba(255,255,255,0.20)", background: "rgba(255,255,255,0.08)" }}>
-            <span className="text-xs" style={{ color: "#E8651A" }}>✦</span>
+            <div className="w-5 h-5 rounded overflow-hidden flex-shrink-0">
+              <Image src="/logo-ofppt.jpg" alt="OFPPT" width={20} height={20} className="object-cover w-full h-full" />
+            </div>
             <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Génération pédagogique · OFPPT</span>
           </div>
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
             Transformez vos<br />
-            <span style={{ color: "#E8651A" }}>séances en quelques</span><br />
+            <span style={{ color: "#16A34A" }}>séances en quelques</span><br />
             secondes.
           </h1>
           <p className="text-base leading-relaxed max-w-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
