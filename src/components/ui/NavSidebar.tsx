@@ -72,23 +72,13 @@ const BiblioIcon = () => (
   </svg>
 );
 const AssistantIcon = () => (
-  <span className="relative inline-flex items-center justify-center w-4 h-4">
-    {/* Anneau ping vert */}
-    <span
-      className="absolute inline-flex w-4 h-4 rounded-full animate-ping"
-      style={{ background: "#22C55E", opacity: 0.4 }}
+  <svg width="16" height="16" viewBox="0 0 24 24" className="animate-pulse" style={{ overflow: "visible" }}>
+    <path
+      d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z"
+      style={{ fill: "#22C55E" }}
+      strokeLinejoin="round"
     />
-    {/* Éclair central */}
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="relative z-10">
-      <path
-        d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z"
-        fill="#22C55E"
-        stroke="#16A34A"
-        strokeWidth="1"
-        strokeLinejoin="round"
-      />
-    </svg>
-  </span>
+  </svg>
 );
 const GuideIcon = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
@@ -151,13 +141,13 @@ const navSections = [
     id: "assistant",
     label: "Intelligence Artificielle",
     items: [
-      { href: "/assistant", label: "Assistant IA", icon: <AssistantIcon />, exact: false },
+      { href: "/assistant", label: "Assistant IA", icon: <AssistantIcon />, exact: false, keepIconColor: true },
     ],
   },
 ];
 
 /* ─── NavItem component ─── */
-function NavItem({ href, label, icon, active }: { href: string; label: string; icon: React.ReactNode; active: boolean }) {
+function NavItem({ href, label, icon, active, keepIconColor }: { href: string; label: string; icon: React.ReactNode; active: boolean; keepIconColor?: boolean }) {
   return (
     <Link
       href={href}
@@ -175,7 +165,7 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
           style={{ background: "#16A34A" }}
         />
       )}
-      <span style={{ color: active ? "#16A34A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
+      <span style={{ color: keepIconColor ? "transparent" : (active ? "#16A34A" : "rgba(255,255,255,0.50)"), flexShrink: 0 }}>
         {icon}
       </span>
       <span className="truncate">{label}</span>
@@ -284,6 +274,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
                   label={item.label}
                   icon={item.icon}
                   active={isActive(item.href, item.exact)}
+                  keepIconColor={"keepIconColor" in item ? (item as { keepIconColor?: boolean }).keepIconColor : false}
                 />
               ))}
             </div>
