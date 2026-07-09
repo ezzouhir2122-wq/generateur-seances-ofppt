@@ -10,6 +10,8 @@ import { consumeReferentielContext } from "@/lib/referentiel-context";
 import PageShell from "@/components/ui/PageShell";
 
 const TYPE_LABELS: Record<EvaluationType, string> = {
+  cc: "Contrôle Continu (CC)",
+  efm: "Examen de Fin de Module (EFM)",
   qcm: "QCM",
   exercices: "Exercices pratiques",
   controle: "Contrôle continu",

@@ -100,6 +100,154 @@ export function buildEvaluationPrompt(data: import("@/types/seance").EvaluationF
   const themeStr = data.theme ? `\nThème / Chapitre : ${data.theme}` : "";
   const themesStr = data.themesCouverts ? `\nThèmes couverts : ${data.themesCouverts}` : "";
 
+  // ── Canevas officiel CC ──────────────────────────────────────────────────
+  if (data.type === "cc") {
+    const bareme = data.baremeTotal ?? 20;
+    const ptsTh = data.partieTheoriePts ?? Math.round(bareme * 0.4);
+    const ptsPr = data.partiePratiquePts ?? Math.round(bareme * 0.6);
+    const etablissement = data.etablissement || "ISGI Marrakech";
+    const groupe = data.groupe || "___________";
+    const anneePromo = data.anneePromo ?? "2A";
+    const duree = data.dureeExamen || "1h30";
+    const dateEx = data.dateExamen || "___________";
+
+    return `Tu es un expert en évaluation pédagogique OFPPT. Génère un Contrôle Continu (CC) COMPLET respectant EXACTEMENT le canevas officiel OFPPT.
+
+Paramètres :
+- Filière : ${data.filiere}
+- Module : ${moduleLabel}
+- Niveau : ${niveauFull}
+- Établissement : ${etablissement}
+- Groupe : ${groupe} | Année : ${anneePromo}
+- Durée : ${duree} | Date : ${dateEx}
+- Barème : /${bareme} (Théorie : /${ptsTh} | Pratique : /${ptsPr})${themesStr}
+
+**FORMAT DE SORTIE STRICT (Markdown) — respecter exactement cette structure :**
+
+# CONTRÔLE CONTINU — ${moduleLabel}
+
+## 📋 En-tête
+
+| | |
+|---|---|
+| **Établissement :** ${etablissement} | **Durée :** ${duree} |
+| **Filière :** ${data.filiere} | **Année :** ${anneePromo} |
+| **Groupe :** ${groupe} | **Date :** ${dateEx} |
+| **Module :** ${moduleLabel} | |
+| **Épreuve/Barème :** /${bareme} | |
+
+---
+
+## Partie Théorie *(/${ptsTh} pts)*
+
+*(Génère ici 3 à 5 questions de cours progressives couvrant les notions théoriques essentielles du module. Inclure questions directes, définitions, et questions de compréhension. Chaque question précise ses points.)*
+
+---
+
+## Partie Pratique *(/${ptsPr} pts)*
+
+*(Génère ici 1 à 2 exercices d'application pratique réalistes, contextualisés au secteur ${data.filiere}. Chaque exercice a un contexte, des données chiffrées et des questions numérotées. Préciser les points par question.)*
+
+---
+
+## ✅ CORRIGÉ ET BARÈME
+
+### Corrigé Partie Théorie
+*(Réponses détaillées à chaque question théorique avec justifications)*
+
+### Corrigé Partie Pratique
+*(Solution complète avec calculs détaillés et résultats)*
+
+### Tableau récapitulatif du barème
+| Partie | Questions | Points |
+|--------|-----------|--------|
+| Théorie | ... | /${ptsTh} |
+| Pratique | ... | /${ptsPr} |
+| **TOTAL** | | **/${bareme}** |
+
+---
+
+| **Concepteur** | **CVEL** | **Validation de l'EFP** |
+|----------------|----------|------------------------|
+| | | |
+
+Génère un CC complet, rigoureux et adapté au niveau ${niveauFull} de la filière ${data.filiere}. Le contenu doit être concret, précis et directement utilisable par le formateur.`;
+  }
+
+  // ── Canevas officiel EFM ──────────────────────────────────────────────────
+  if (data.type === "efm") {
+    const bareme = data.baremeTotal ?? 40;
+    const ptsTh = data.partieTheoriePts ?? Math.round(bareme * 0.4);
+    const ptsPr = data.partiePratiquePts ?? Math.round(bareme * 0.6);
+    const etablissement = data.etablissement || "ISGI Marrakech";
+    const groupe = data.groupe || "___________";
+    const anneePromo = data.anneePromo ?? "2A";
+    const duree = data.dureeExamen || "2h";
+    const dateEx = data.dateExamen || "___________";
+
+    return `Tu es un expert en évaluation pédagogique OFPPT. Génère un Examen de Fin de Module (EFM) COMPLET respectant EXACTEMENT le canevas officiel OFPPT Direction Régionale Marrakech-Safi.
+
+Paramètres :
+- Filière : ${data.filiere}
+- Module : ${moduleLabel}
+- Niveau : ${niveauFull}
+- Établissement : ${etablissement}
+- Groupe : ${groupe} | Année : ${anneePromo}
+- Durée : ${duree} | Date : ${dateEx}
+- Barème total : /${bareme} (Théorie : /${ptsTh} | Pratique : /${ptsPr})${themesStr}
+
+**FORMAT DE SORTIE STRICT (Markdown) — respecter exactement cette structure :**
+
+# EXAMEN DE FIN DE MODULE — ${moduleLabel}
+
+## 📋 En-tête officiel
+
+| | |
+|---|---|
+| **Établissement :** ${etablissement} | **Durée :** ${duree} |
+| **Filière :** ${data.filiere} | **Année :** ${anneePromo} |
+| **Groupe :** ${groupe} | **Date :** ${dateEx} |
+| **Module :** ${moduleLabel} | |
+| **Épreuve/Barème :** /${bareme} | |
+
+---
+
+## Partie Théorie *(/${ptsTh} pts)*
+
+*(Génère ici des questions théoriques complètes couvrant l'ensemble du programme du module. Inclure : questions de cours, QCM, définitions, et questions d'analyse. Chaque question précise clairement ses points. Progressivité du niveau de difficulté : facile → moyen → difficile.)*
+
+---
+
+## Partie Pratique *(/${ptsPr} pts)*
+
+*(Génère ici 2 à 3 exercices d'application pratique complets, avec des cas réels du secteur ${data.filiere}. Chaque exercice inclut : contexte détaillé, données chiffrées/documents, travail demandé numéroté. Répartition des points clairement indiquée.)*
+
+---
+
+## ✅ CORRIGÉ DÉTAILLÉ ET BARÈME
+
+### Corrigé Partie Théorie
+*(Réponses complètes et justifiées pour chaque question théorique)*
+
+### Corrigé Partie Pratique
+*(Solutions détaillées avec toutes les étapes de calcul, formules utilisées et résultats)*
+
+### Barème de notation
+| Partie | Détail | Points |
+|--------|--------|--------|
+| **Théorie** | | **/${ptsTh}** |
+| **Pratique** | | **/${ptsPr}** |
+| **TOTAL EFM** | | **/${bareme}** |
+
+---
+
+| **Concepteur** | **CVEL** | **Validation de l'EFP** |
+|----------------|----------|------------------------|
+| | | |
+
+Génère un EFM complet, de niveau professionnel, couvrant l'ensemble des compétences du module ${moduleLabel}. Le sujet doit être directement imprimable et utilisable lors d'un examen officiel OFPPT.`;
+  }
+
   if (data.type === "qcm") {
     return `Tu es un expert en évaluation pédagogique OFPPT. Génère un QCM de ${data.nbQuestions ?? 10} questions pour :
 - Filière : ${data.filiere}

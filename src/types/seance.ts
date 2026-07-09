@@ -22,7 +22,7 @@ export interface SeanceGeneree {
   createdAt?: Date;
 }
 
-export type EvaluationType = "qcm" | "exercices" | "controle" | "examen" | "rattrapage";
+export type EvaluationType = "cc" | "efm" | "qcm" | "exercices" | "controle" | "examen" | "rattrapage";
 
 export interface EvaluationFormData {
   type: EvaluationType;
@@ -36,6 +36,14 @@ export interface EvaluationFormData {
   nbExercices?: number;
   dureeExamen?: string;
   themesCouverts?: string;
+  // Champs canevas officiel OFPPT
+  etablissement?: string;
+  groupe?: string;
+  anneePromo?: "1A" | "2A";
+  baremeTotal?: number;
+  partieTheoriePts?: number;
+  partiePratiquePts?: number;
+  dateExamen?: string;
 }
 
 export const FILIERES_OFPPT = [
