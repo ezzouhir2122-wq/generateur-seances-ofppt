@@ -185,28 +185,62 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       className="w-[240px] flex-shrink-0 flex flex-col h-screen sticky top-0"
       style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.08)" }}
     >
-      {/* ─ Branding ─ */}
-      <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/logo-ofppt.jpg"
-          alt="OFPPT"
-          style={{
-            width: "44px",
-            height: "44px",
-            borderRadius: "50%",
-            objectFit: "cover",
-            flexShrink: 0,
-            border: "2px solid rgba(255,255,255,0.40)",
-          }}
-        />
-        <div>
-          <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "13px", letterSpacing: "0.01em", lineHeight: "1.2" }}>
-            OFPPT · Compétencia
+      {/* ─ Header : Branding + Utilisateur ─ */}
+      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
+        {/* Branding */}
+        <div className="flex items-center gap-3 px-4 pt-3 pb-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-ofppt.jpg"
+            alt="OFPPT"
+            style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              objectFit: "cover",
+              flexShrink: 0,
+              border: "2px solid rgba(255,255,255,0.40)",
+            }}
+          />
+          <div>
+            <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "13px", letterSpacing: "0.01em", lineHeight: "1.2" }}>
+              OFPPT · Compétencia
+            </div>
+            <div style={{ color: "#16A34A", fontSize: "10px", fontWeight: 500, marginTop: "2px" }}>
+              Génération pédagogique
+            </div>
           </div>
-          <div style={{ color: "#16A34A", fontSize: "10px", fontWeight: 500, marginTop: "2px" }}>
-            Génération pédagogique
+        </div>
+
+        {/* Utilisateur compact */}
+        <div
+          className="mx-3 mb-2.5 flex items-center gap-2 px-2.5 py-2 rounded-lg"
+          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
+        >
+          <div
+            className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0 select-none"
+            style={{ background: "#16A34A" }}
+          >
+            {initials}
           </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[11px] font-semibold truncate leading-tight" style={{ color: "#FFFFFF" }}>
+              {user.name ?? "Formateur"}
+            </div>
+            <div className="text-[9px] truncate leading-tight" style={{ color: "rgba(255,255,255,0.45)" }}>
+              {user.email}
+            </div>
+          </div>
+          <button
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            title="Déconnexion"
+            className="flex-shrink-0 p-1 rounded transition-all duration-150"
+            style={{ color: "rgba(255,255,255,0.40)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.15)"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.40)"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
+          >
+            <LogoutIcon />
+          </button>
         </div>
       </div>
 
@@ -243,8 +277,8 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         ))}
       </nav>
 
-      {/* ─ Guide + Paramètres ─ */}
-      <div className="px-3 pt-1.5 pb-1" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+      {/* ─ Footer : Guide + Paramètres ─ */}
+      <div className="px-3 py-2" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
         <Link
           href="/guide"
           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
@@ -268,39 +302,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           <span style={{ color: "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
           Modules & Paramètres
         </button>
-      </div>
-
-      {/* ─ User card ─ */}
-      <div className="px-3 pb-3 pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
-        <div
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl mb-1.5"
-          style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }}
-        >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 select-none"
-            style={{ background: "#16A34A" }}
-          >
-            {initials}
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-xs font-semibold truncate leading-tight" style={{ color: "#FFFFFF" }}>{user.name ?? "Formateur"}</div>
-            <div className="text-[10px] truncate leading-tight mt-0.5" style={{ color: "rgba(255,255,255,0.50)" }}>{user.email}</div>
-          </div>
-        </div>
-
-        {/* Disconnect */}
-        <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center justify-center gap-2 text-xs rounded-lg py-1.5 transition-all duration-150 font-medium"
-          style={{ color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.15)" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(239,68,68,0.40)"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
-        >
-          <LogoutIcon />
-          Déconnexion
-        </button>
-
-        <div className="mt-2 px-1 text-[9px] leading-tight" style={{ color: "rgba(255,255,255,0.30)" }}>
+        <div className="mt-2 px-1 text-[9px] leading-tight" style={{ color: "rgba(255,255,255,0.25)" }}>
           Développé par EZZOUIR ELMUSTAPHA 9998 · OFPPT ISGI Marrakech
         </div>
       </div>
