@@ -186,18 +186,26 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.08)" }}
     >
       {/* ─ Branding ─ */}
-      <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
-        <div className="flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo-ofppt.jpg"
-            alt="OFPPT"
-            style={{ width: "60px", height: "60px", borderRadius: "50%", flexShrink: 0, objectFit: "cover", border: "2px solid rgba(255,255,255,0.40)" }}
-          />
-          <div className="min-w-0">
-            <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#FFFFFF" }}>OFPPT · Compétencia</div>
-            <div className="text-[11px] font-medium leading-tight" style={{ color: "#16A34A" }}>Génération pédagogique</div>
-          </div>
+      <div className="flex flex-col items-center pt-6 pb-4 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/logo-ofppt.jpg"
+          alt="OFPPT"
+          style={{
+            width: "80px",
+            height: "80px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            display: "block",
+            border: "3px solid rgba(255,255,255,0.50)",
+            marginBottom: "10px",
+          }}
+        />
+        <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "13px", letterSpacing: "0.02em", textAlign: "center" }}>
+          OFPPT · Compétencia
+        </div>
+        <div style={{ color: "#16A34A", fontSize: "11px", fontWeight: 500, marginTop: "2px", textAlign: "center" }}>
+          Génération pédagogique
         </div>
       </div>
 
