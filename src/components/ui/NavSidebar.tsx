@@ -158,10 +158,10 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
       {active && (
         <span
           className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
-          style={{ background: "#E8651A" }}
+          style={{ background: "#16A34A" }}
         />
       )}
-      <span style={{ color: active ? "#E8651A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
+      <span style={{ color: active ? "#16A34A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}>
         {icon}
       </span>
       <span className="truncate">{label}</span>
@@ -196,7 +196,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           </div>
           <div className="min-w-0">
             <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#FFFFFF" }}>OFPPT</div>
-            <div className="text-[11px] font-medium leading-tight" style={{ color: "#E8651A" }}>Compétencia IA</div>
+            <div className="text-[11px] font-medium leading-tight" style={{ color: "#16A34A" }}>Compétencia IA</div>
           </div>
         </div>
       </div>
@@ -250,7 +250,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           onMouseEnter={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.90)"; } }}
           onMouseLeave={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.60)"; } }}
         >
-          <span style={{ color: isActive("/guide", false) ? "#E8651A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}><GuideIcon /></span>
+          <span style={{ color: isActive("/guide", false) ? "#16A34A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}><GuideIcon /></span>
           Guide application
         </Link>
         <button
@@ -273,7 +273,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         >
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 select-none"
-            style={{ background: "#E8651A" }}
+            style={{ background: "#16A34A" }}
           >
             {initials}
           </div>
