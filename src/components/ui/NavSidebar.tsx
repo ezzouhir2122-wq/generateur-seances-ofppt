@@ -72,8 +72,47 @@ const BiblioIcon = () => (
   </svg>
 );
 const AssistantIcon = () => (
-  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+    <style>{`
+      @keyframes ai-pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.85); }
+      }
+      @keyframes ai-ring1 {
+        0% { r: 3; opacity: 1; }
+        100% { r: 10; opacity: 0; }
+      }
+      @keyframes ai-ring2 {
+        0% { r: 3; opacity: 1; }
+        100% { r: 10; opacity: 0; }
+      }
+      @keyframes ai-spark {
+        0%, 100% { opacity: 0; transform: scale(0); }
+        50% { opacity: 1; transform: scale(1); }
+      }
+      .ai-core { animation: ai-pulse 2s ease-in-out infinite; transform-origin: 12px 12px; }
+      .ai-r1 { animation: ai-ring1 2s ease-out infinite; }
+      .ai-r2 { animation: ai-ring2 2s ease-out infinite 1s; }
+      .ai-dot1 { animation: ai-spark 2s ease-in-out infinite 0.3s; transform-origin: 12px 5px; }
+      .ai-dot2 { animation: ai-spark 2s ease-in-out infinite 0.9s; transform-origin: 19px 12px; }
+      .ai-dot3 { animation: ai-spark 2s ease-in-out infinite 1.5s; transform-origin: 12px 19px; }
+    `}</style>
+    {/* Pulse rings */}
+    <circle className="ai-r1" cx="12" cy="12" r="3" fill="none" stroke="#16A34A" strokeWidth="1.2" opacity="0"/>
+    <circle className="ai-r2" cx="12" cy="12" r="3" fill="none" stroke="#0A4DA8" strokeWidth="1" opacity="0"/>
+    {/* Core brain/AI circle */}
+    <circle className="ai-core" cx="12" cy="12" r="4" fill="url(#ai-grad)" />
+    {/* Orbiting dots */}
+    <circle className="ai-dot1" cx="12" cy="5" r="1.2" fill="#16A34A"/>
+    <circle className="ai-dot2" cx="19" cy="12" r="1.2" fill="#0A4DA8"/>
+    <circle className="ai-dot3" cx="12" cy="19" r="1.2" fill="#16A34A"/>
+    {/* Gradient */}
+    <defs>
+      <radialGradient id="ai-grad" cx="40%" cy="35%" r="60%">
+        <stop offset="0%" stopColor="#22C55E"/>
+        <stop offset="100%" stopColor="#0A4DA8"/>
+      </radialGradient>
+    </defs>
   </svg>
 );
 const GuideIcon = () => (
