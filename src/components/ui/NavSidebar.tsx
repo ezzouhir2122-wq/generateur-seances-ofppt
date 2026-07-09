@@ -211,20 +211,20 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       </div>
 
       {/* ─ Navigation ─ */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
-        {navSections.map((section, sIdx) => (
+      <nav className="flex-1 overflow-y-auto px-3 py-1.5 space-y-1">
+        {navSections.map((section) => (
           <div key={section.id}>
             {/* Section label */}
-            <div className="flex items-center gap-2 px-2 mb-1.5">
+            <div className="flex items-center gap-2 px-2 mb-0.5 mt-1">
               <span
-                className="text-[9px] font-bold tracking-[0.12em] uppercase select-none"
-                style={{ color: "rgba(255,255,255,0.40)" }}
+                className="text-[9px] font-bold tracking-[0.12em] uppercase select-none whitespace-nowrap"
+                style={{ color: "rgba(255,255,255,0.35)" }}
               >
                 {section.label}
               </span>
               <span
                 className="flex-1 h-px"
-                style={{ background: "rgba(255,255,255,0.10)" }}
+                style={{ background: "rgba(255,255,255,0.08)" }}
               />
             </div>
             {/* Items */}
@@ -239,10 +239,6 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
                 />
               ))}
             </div>
-            {/* Section divider (except after last) */}
-            {sIdx < navSections.length - 1 && (
-              <div className="mt-2 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
-            )}
           </div>
         ))}
       </nav>
