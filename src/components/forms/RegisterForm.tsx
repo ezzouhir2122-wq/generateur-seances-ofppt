@@ -18,28 +18,33 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
     const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
-    const res = await fetch("/api/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-    const data = await res.json() as { ok?: boolean; error?: string };
+      const data = await res.json() as { ok?: boolean; error?: string };
 
-    if (!res.ok || !data.ok) {
-      setError(data.error ?? "Erreur lors de la création du compte");
+      if (!res.ok || !data.ok) {
+        setError(data.error ?? "Erreur lors de la création du compte");
+        setIsLoading(false);
+        return;
+      }
+
+      // Auto-login after registration
+      const result = await signIn("credentials", { email, password, redirect: false });
+      if (result?.error) {
+        setError("Compte créé. Connectez-vous maintenant.");
+        setIsLoading(false);
+        onSwitchToLogin();
+      } else {
+        window.location.href = "/";
+      }
+    } catch {
+      setError("Erreur réseau. Veuillez réessayer.");
       setIsLoading(false);
-      return;
-    }
-
-    // Auto-login after registration
-    const result = await signIn("credentials", { email, password, redirect: false });
-    if (result?.error) {
-      setError("Compte créé. Connectez-vous maintenant.");
-      setIsLoading(false);
-      onSwitchToLogin();
-    } else {
-      window.location.href = "/";
     }
   }
 

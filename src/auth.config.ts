@@ -13,7 +13,8 @@ export const authConfig = {
       const isApiAuth = nextUrl.pathname.startsWith("/api/auth");
 
       const isDebug = nextUrl.pathname.startsWith("/api/debug-login");
-      if (isApiAuth || isDebug) return true;
+      const isRegister = nextUrl.pathname.startsWith("/api/register");
+      if (isApiAuth || isDebug || isRegister) return true;
       if (isLoginPage) {
         if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
         return true;
