@@ -68,10 +68,8 @@ export default async function HistoriquePage() {
             <Link
               key={s.id}
               href={`/historique/${s.id}`}
-              className="card flex items-center justify-between group transition-all duration-200"
+              className="card flex items-center justify-between group transition-all duration-200 hover:border-[#0A4DA840]"
               style={{ borderColor: "#E2E8F0" }}
-              onMouseEnter={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#0A4DA840")}
-              onMouseLeave={e => ((e.currentTarget as HTMLAnchorElement).style.borderColor = "#E2E8F0")}
             >
               <div className="flex items-start gap-4">
                 <div
