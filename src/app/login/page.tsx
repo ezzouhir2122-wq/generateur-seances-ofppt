@@ -32,7 +32,7 @@ export default async function LoginPage({
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ border: "1px solid rgba(255,255,255,0.20)", background: "rgba(255,255,255,0.08)" }}>
             <span style={{ color: "#16A34A", fontSize: "14px" }}>✦</span>
-            <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Génération pédagogique · OFPPT</span>
+            <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Génération pédagogique</span>
           </div>
 
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
