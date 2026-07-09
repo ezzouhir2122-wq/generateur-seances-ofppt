@@ -14,3 +14,4 @@ prisma/dev.db
 .superpowers/
 
 .vercel
+.env*
