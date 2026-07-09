@@ -74,45 +74,23 @@ const BiblioIcon = () => (
 const AssistantIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
     <style>{`
-      @keyframes ai-pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.85); }
-      }
-      @keyframes ai-ring1 {
-        0% { r: 3; opacity: 1; }
-        100% { r: 10; opacity: 0; }
-      }
-      @keyframes ai-ring2 {
-        0% { r: 3; opacity: 1; }
-        100% { r: 10; opacity: 0; }
-      }
-      @keyframes ai-spark {
-        0%, 100% { opacity: 0; transform: scale(0); }
-        50% { opacity: 1; transform: scale(1); }
-      }
-      .ai-core { animation: ai-pulse 2s ease-in-out infinite; transform-origin: 12px 12px; }
-      .ai-r1 { animation: ai-ring1 2s ease-out infinite; }
-      .ai-r2 { animation: ai-ring2 2s ease-out infinite 1s; }
-      .ai-dot1 { animation: ai-spark 2s ease-in-out infinite 0.3s; transform-origin: 12px 5px; }
-      .ai-dot2 { animation: ai-spark 2s ease-in-out infinite 0.9s; transform-origin: 19px 12px; }
-      .ai-dot3 { animation: ai-spark 2s ease-in-out infinite 1.5s; transform-origin: 12px 19px; }
+      @keyframes sp1 { 0%,100%{opacity:1;filter:drop-shadow(0 0 3px #22c55e)} 33%{opacity:0.2;filter:none} }
+      @keyframes sp2 { 0%,100%{opacity:0.2;filter:none} 33%{opacity:1;filter:drop-shadow(0 0 3px #22c55e)} 66%{opacity:0.2} }
+      @keyframes sp3 { 0%,66%{opacity:0.2;filter:none} 100%{opacity:0.2} 83%{opacity:1;filter:drop-shadow(0 0 3px #22c55e)} }
+      @keyframes glow { 0%,100%{opacity:0.6} 50%{opacity:1} }
+      .sp1{animation:sp1 1.2s ease-in-out infinite}
+      .sp2{animation:sp2 1.2s ease-in-out infinite}
+      .sp3{animation:sp3 1.2s ease-in-out infinite}
+      .spg{animation:glow 1.2s ease-in-out infinite}
     `}</style>
-    {/* Pulse rings */}
-    <circle className="ai-r1" cx="12" cy="12" r="3" fill="none" stroke="#16A34A" strokeWidth="1.2" opacity="0"/>
-    <circle className="ai-r2" cx="12" cy="12" r="3" fill="none" stroke="#0A4DA8" strokeWidth="1" opacity="0"/>
-    {/* Core brain/AI circle */}
-    <circle className="ai-core" cx="12" cy="12" r="4" fill="url(#ai-grad)" />
-    {/* Orbiting dots */}
-    <circle className="ai-dot1" cx="12" cy="5" r="1.2" fill="#16A34A"/>
-    <circle className="ai-dot2" cx="19" cy="12" r="1.2" fill="#0A4DA8"/>
-    <circle className="ai-dot3" cx="12" cy="19" r="1.2" fill="#16A34A"/>
-    {/* Gradient */}
-    <defs>
-      <radialGradient id="ai-grad" cx="40%" cy="35%" r="60%">
-        <stop offset="0%" stopColor="#22C55E"/>
-        <stop offset="100%" stopColor="#0A4DA8"/>
-      </radialGradient>
-    </defs>
+    {/* Éclair gauche */}
+    <path className="sp1" d="M7 2L4 10h4l-2 7 7-9H9l2-6z" fill="#22C55E"/>
+    {/* Éclair centre */}
+    <path className="sp2" d="M13 3l-2.5 6h3l-1.5 6 6-8h-3.5l1.5-4z" fill="#16C784"/>
+    {/* Éclair droit petit */}
+    <path className="sp3" d="M19 5l-1.5 4h2l-1 4.5 4-5.5h-2.5l1-3z" fill="#22C55E"/>
+    {/* Ligne de base lumineuse */}
+    <line className="spg" x1="2" y1="22" x2="22" y2="22" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
   </svg>
 );
 const GuideIcon = () => (
