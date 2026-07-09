@@ -122,10 +122,10 @@ const navSections = [
   },
   {
     id: "documents",
-    label: "Mes Documents",
+    label: "Historique",
     items: [
-      { href: "/historique", label: "Mes séances", icon: <HistoriqueIcon />, exact: false },
-      { href: "/fiches/historique", label: "Mes fiches", icon: <FolderIcon />, exact: false },
+      { href: "/historique", label: "Historique séances", icon: <HistoriqueIcon />, exact: false },
+      { href: "/fiches/historique", label: "Historique fiches", icon: <FolderIcon />, exact: false },
     ],
   },
   {
