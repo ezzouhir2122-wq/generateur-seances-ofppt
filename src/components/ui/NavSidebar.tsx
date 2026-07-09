@@ -72,26 +72,23 @@ const BiblioIcon = () => (
   </svg>
 );
 const AssistantIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-    <style>{`
-      @keyframes sp1 { 0%,100%{opacity:1;filter:drop-shadow(0 0 3px #22c55e)} 33%{opacity:0.2;filter:none} }
-      @keyframes sp2 { 0%,100%{opacity:0.2;filter:none} 33%{opacity:1;filter:drop-shadow(0 0 3px #22c55e)} 66%{opacity:0.2} }
-      @keyframes sp3 { 0%,66%{opacity:0.2;filter:none} 100%{opacity:0.2} 83%{opacity:1;filter:drop-shadow(0 0 3px #22c55e)} }
-      @keyframes glow { 0%,100%{opacity:0.6} 50%{opacity:1} }
-      .sp1{animation:sp1 1.2s ease-in-out infinite}
-      .sp2{animation:sp2 1.2s ease-in-out infinite}
-      .sp3{animation:sp3 1.2s ease-in-out infinite}
-      .spg{animation:glow 1.2s ease-in-out infinite}
-    `}</style>
-    {/* Éclair gauche */}
-    <path className="sp1" d="M7 2L4 10h4l-2 7 7-9H9l2-6z" fill="#22C55E"/>
-    {/* Éclair centre */}
-    <path className="sp2" d="M13 3l-2.5 6h3l-1.5 6 6-8h-3.5l1.5-4z" fill="#16C784"/>
-    {/* Éclair droit petit */}
-    <path className="sp3" d="M19 5l-1.5 4h2l-1 4.5 4-5.5h-2.5l1-3z" fill="#22C55E"/>
-    {/* Ligne de base lumineuse */}
-    <line className="spg" x1="2" y1="22" x2="22" y2="22" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
-  </svg>
+  <span className="relative inline-flex items-center justify-center w-4 h-4">
+    {/* Anneau ping vert */}
+    <span
+      className="absolute inline-flex w-4 h-4 rounded-full animate-ping"
+      style={{ background: "#22C55E", opacity: 0.4 }}
+    />
+    {/* Éclair central */}
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" className="relative z-10">
+      <path
+        d="M13 2L4.5 13.5H11L10 22L20.5 10H14L13 2Z"
+        fill="#22C55E"
+        stroke="#16A34A"
+        strokeWidth="1"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </span>
 );
 const GuideIcon = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
