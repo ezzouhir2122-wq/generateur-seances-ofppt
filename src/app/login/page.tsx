@@ -14,16 +14,18 @@ export default async function LoginPage({
       {/* Côté gauche — branding */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 px-16 py-16" style={{ background: "#003087" }}>
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.20)" }}>
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-cover w-full h-full" />
+          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
+            style={{ background: "#FFFFFF", border: "2px solid rgba(255,255,255,0.30)", padding: "2px" }}>
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-contain w-full h-full" />
           </div>
-          <span className="text-white font-bold text-sm">Compétencia IA</span>
+          <span className="text-white font-bold text-sm">Compétencia</span>
         </div>
 
         <div>
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ border: "1px solid rgba(255,255,255,0.20)", background: "rgba(255,255,255,0.08)" }}>
-            <div className="w-5 h-5 rounded overflow-hidden flex-shrink-0">
-              <Image src="/logo-ofppt.jpg" alt="OFPPT" width={20} height={20} className="object-cover w-full h-full" />
+            <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
+              style={{ background: "#FFFFFF", padding: "1px" }}>
+              <Image src="/logo-ofppt.jpg" alt="OFPPT" width={20} height={20} className="object-contain w-full h-full" />
             </div>
             <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Génération pédagogique · OFPPT</span>
           </div>

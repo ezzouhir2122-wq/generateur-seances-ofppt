@@ -189,10 +189,10 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
         <div className="flex items-center gap-3">
           <div
-            className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0"
-            style={{ border: "2px solid rgba(255,255,255,0.25)" }}
+            className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
+            style={{ background: "#FFFFFF", border: "2px solid rgba(255,255,255,0.35)", padding: "2px" }}
           >
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-cover w-full h-full" />
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={44} height={44} className="object-contain w-full h-full" />
           </div>
           <div className="min-w-0">
             <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#FFFFFF" }}>Compétencia</div>
