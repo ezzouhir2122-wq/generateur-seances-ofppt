@@ -189,13 +189,13 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       <div className="px-5 pt-5 pb-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
         <div className="flex items-center gap-3">
           <div
-            className="w-11 h-11 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
-            style={{ background: "#FFFFFF", border: "2px solid rgba(255,255,255,0.35)", padding: "2px" }}
+            className="rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
+            style={{ width: "52px", height: "52px", background: "#FFFFFF", border: "2px solid rgba(255,255,255,0.40)", padding: "3px" }}
           >
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={44} height={44} className="object-contain w-full h-full" />
+            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={52} height={52} className="object-contain w-full h-full" />
           </div>
           <div className="min-w-0">
-            <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#FFFFFF" }}>Compétencia</div>
+            <div className="font-bold text-sm leading-tight tracking-wide" style={{ color: "#FFFFFF" }}>OFPPT · Compétencia</div>
             <div className="text-[11px] font-medium leading-tight" style={{ color: "#16A34A" }}>Génération pédagogique</div>
           </div>
         </div>
