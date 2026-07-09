@@ -1,5 +1,4 @@
 import LoginTabs from "@/components/forms/LoginTabs";
-import Image from "next/image";
 
 export default async function LoginPage({
   searchParams,
@@ -13,22 +12,28 @@ export default async function LoginPage({
 
       {/* Côté gauche — branding */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 px-16 py-16" style={{ background: "#003087" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
-            style={{ background: "#FFFFFF", border: "2px solid rgba(255,255,255,0.30)", padding: "2px" }}>
-            <Image src="/logo-ofppt.jpg" alt="OFPPT" width={40} height={40} className="object-contain w-full h-full" />
+
+        {/* Logo + titre en haut */}
+        <div className="flex items-center gap-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/logo-ofppt.jpg"
+            alt="OFPPT"
+            style={{ width: "64px", height: "64px", borderRadius: "50%", objectFit: "cover", border: "3px solid rgba(255,255,255,0.50)", flexShrink: 0 }}
+          />
+          <div>
+            <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "16px", lineHeight: 1.2 }}>OFPPT</div>
+            <div style={{ color: "#16A34A", fontWeight: 600, fontSize: "13px" }}>Compétencia</div>
           </div>
-          <span className="text-white font-bold text-sm">Compétencia</span>
         </div>
 
         <div>
+          {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-6" style={{ border: "1px solid rgba(255,255,255,0.20)", background: "rgba(255,255,255,0.08)" }}>
-            <div className="w-5 h-5 rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center"
-              style={{ background: "#FFFFFF", padding: "1px" }}>
-              <Image src="/logo-ofppt.jpg" alt="OFPPT" width={20} height={20} className="object-contain w-full h-full" />
-            </div>
+            <span style={{ color: "#16A34A", fontSize: "14px" }}>✦</span>
             <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.80)" }}>Génération pédagogique · OFPPT</span>
           </div>
+
           <h1 className="text-5xl font-bold text-white leading-tight mb-4">
             Transformez vos<br />
             <span style={{ color: "#16A34A" }}>séances en quelques</span><br />
@@ -63,12 +68,15 @@ export default async function LoginPage({
       <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
         <div className="w-full max-w-sm">
 
-          {/* Header mobile (caché sur grand écran) */}
+          {/* Header mobile */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-9 h-9 rounded-xl overflow-hidden">
-              <Image src="/logo-ofppt.jpg" alt="OFPPT" width={36} height={36} className="object-cover w-full h-full" />
-            </div>
-            <span className="font-bold" style={{ color: "#111827" }}>Compétencia IA</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-ofppt.jpg"
+              alt="OFPPT"
+              style={{ width: "40px", height: "40px", borderRadius: "50%", objectFit: "cover", border: "2px solid #E5E7EB" }}
+            />
+            <span className="font-bold" style={{ color: "#111827" }}>OFPPT · Compétencia</span>
           </div>
 
           <LoginTabs error={params.error} />
