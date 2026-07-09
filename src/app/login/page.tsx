@@ -15,15 +15,17 @@ export default async function LoginPage({
 
         {/* Logo + titre en haut */}
         <div className="flex items-center gap-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo-ofppt.jpg"
-            alt="OFPPT"
-            style={{ width: "64px", height: "64px", borderRadius: "50%", objectFit: "cover", border: "3px solid rgba(255,255,255,0.50)", flexShrink: 0 }}
-          />
+          <div style={{ width: "90px", height: "90px", borderRadius: "50%", background: "#FFFFFF", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", border: "3px solid rgba(255,255,255,0.60)", overflow: "hidden" }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/logo-ofppt.jpg"
+              alt="OFPPT"
+              style={{ width: "86px", height: "86px", objectFit: "contain", display: "block" }}
+            />
+          </div>
           <div>
-            <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "16px", lineHeight: 1.2 }}>OFPPT</div>
-            <div style={{ color: "#16A34A", fontWeight: 600, fontSize: "13px" }}>Compétencia</div>
+            <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "18px", lineHeight: 1.2 }}>OFPPT</div>
+            <div style={{ color: "#16A34A", fontWeight: 600, fontSize: "14px" }}>Compétencia</div>
           </div>
         </div>
 
