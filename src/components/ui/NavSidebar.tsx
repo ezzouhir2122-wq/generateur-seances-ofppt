@@ -147,7 +147,7 @@ function NavItem({ href, label, icon, active }: { href: string; label: string; i
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
+      className="group flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
       style={active
         ? { background: "rgba(255,255,255,0.15)", color: "#FFFFFF" }
         : { color: "rgba(255,255,255,0.60)" }
@@ -186,31 +186,32 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.08)" }}
     >
       {/* ─ Branding ─ */}
-      <div className="flex flex-col items-center pt-6 pb-4 px-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
+      <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/logo-ofppt.jpg"
           alt="OFPPT"
           style={{
-            width: "80px",
-            height: "80px",
+            width: "44px",
+            height: "44px",
             borderRadius: "50%",
             objectFit: "cover",
-            display: "block",
-            border: "3px solid rgba(255,255,255,0.50)",
-            marginBottom: "10px",
+            flexShrink: 0,
+            border: "2px solid rgba(255,255,255,0.40)",
           }}
         />
-        <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "13px", letterSpacing: "0.02em", textAlign: "center" }}>
-          OFPPT · Compétencia
-        </div>
-        <div style={{ color: "#16A34A", fontSize: "11px", fontWeight: 500, marginTop: "2px", textAlign: "center" }}>
-          Génération pédagogique
+        <div>
+          <div style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "13px", letterSpacing: "0.01em", lineHeight: "1.2" }}>
+            OFPPT · Compétencia
+          </div>
+          <div style={{ color: "#16A34A", fontSize: "10px", fontWeight: 500, marginTop: "2px" }}>
+            Génération pédagogique
+          </div>
         </div>
       </div>
 
       {/* ─ Navigation ─ */}
-      <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
         {navSections.map((section, sIdx) => (
           <div key={section.id}>
             {/* Section label */}
@@ -247,10 +248,10 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       </nav>
 
       {/* ─ Guide + Paramètres ─ */}
-      <div className="px-3 pt-2 pb-1" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+      <div className="px-3 pt-1.5 pb-1" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
         <Link
           href="/guide"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
+          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
           style={{
             color: isActive("/guide", false) ? "#FFFFFF" : "rgba(255,255,255,0.60)",
             background: isActive("/guide", false) ? "rgba(255,255,255,0.15)" : undefined,
@@ -263,7 +264,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         </Link>
         <button
           onClick={onSettingsClick}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-150"
+          className="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
           style={{ color: "rgba(255,255,255,0.60)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.90)"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.60)"; }}
@@ -274,9 +275,9 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
       </div>
 
       {/* ─ User card ─ */}
-      <div className="px-3 pb-4 pt-3" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+      <div className="px-3 pb-3 pt-2" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
         <div
-          className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl mb-2"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl mb-1.5"
           style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }}
         >
           <div
@@ -294,7 +295,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
         {/* Disconnect */}
         <button
           onClick={() => signOut({ callbackUrl: "/login" })}
-          className="w-full flex items-center justify-center gap-2 text-xs rounded-lg py-2 transition-all duration-150 font-medium"
+          className="w-full flex items-center justify-center gap-2 text-xs rounded-lg py-1.5 transition-all duration-150 font-medium"
           style={{ color: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.15)" }}
           onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(239,68,68,0.40)"; (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.55)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.15)"; (e.currentTarget as HTMLButtonElement).style.background = ""; }}
@@ -303,7 +304,7 @@ export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
           Déconnexion
         </button>
 
-        <div className="mt-3 px-1 text-[9px] leading-relaxed" style={{ color: "rgba(255,255,255,0.30)" }}>
+        <div className="mt-2 px-1 text-[9px] leading-tight" style={{ color: "rgba(255,255,255,0.30)" }}>
           Développé par EZZOUIR ELMUSTAPHA 9998 · OFPPT ISGI Marrakech
         </div>
       </div>
