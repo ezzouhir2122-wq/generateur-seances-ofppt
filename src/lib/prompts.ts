@@ -30,7 +30,6 @@ ${themeStr}
 ${multi ? "\nIMPORTANT : Ce document couvre TOUTES les compétences listées dans un seul document cohérent. Traite chaque compétence dans sa propre section numérotée.\n" : ""}
 Format la réponse en markdown avec les sections suivantes :
 # ${title}
-## En-tête (Filière | Module | Durée | Niveau | Type)
 ## Introduction
 ${develSection}
 ## Synthèse — points clés à retenir`;
@@ -72,9 +71,6 @@ Prérequis des stagiaires : ${data.prerequis || "À déterminer selon le module"
 **IMPORTANT — Objectifs pédagogiques :** Tu dois FORMULER TOI-MÊME des objectifs pédagogiques pertinents et réalistes, déduits de la filière, du module, de l'intitulé de la séance, du type, du niveau${comps.length > 0 ? " et des compétences visées" : ""}. Rédige-les selon la taxonomie OFPPT (verbes d'action mesurables, commençant par « À la fin de la séance, le stagiaire sera capable de… ») répartis en trois catégories : Savoir (connaissances), Savoir-faire (compétences pratiques) et Savoir-être (attitudes professionnelles).
 ${multi ? "\nIMPORTANT : Cette fiche couvre TOUTES les compétences listées. Les objectifs, le déroulement et les activités doivent intégrer chacune des compétences de manière cohérente dans un seul document pédagogique.\n" : ""}
 Génère une fiche pédagogique structurée en markdown avec exactement ces sections :
-## En-tête
-(Tableau récapitulatif : Établissement OFPPT | Filière | Module | Formateur | Durée | Date | Niveau | Type)
-
 ## Objectifs pédagogiques
 (Tableau à 3 colonnes : Savoir | Savoir-faire | Savoir-être — objectifs que TU as formulés${multi ? ", couvrant toutes les compétences" : ""})
 
@@ -125,8 +121,6 @@ Paramètres :
 **FORMAT DE SORTIE STRICT (Markdown) — respecter exactement cette structure :**
 
 # CONTRÔLE CONTINU — ${moduleLabel}
-
-## 📋 En-tête
 
 | | |
 |---|---|
@@ -199,8 +193,6 @@ Paramètres :
 **FORMAT DE SORTIE STRICT (Markdown) — respecter exactement cette structure :**
 
 # EXAMEN DE FIN DE MODULE — ${moduleLabel}
-
-## 📋 En-tête officiel
 
 | | |
 |---|---|
@@ -332,7 +324,6 @@ Génère des exercices progressifs avec un contexte réaliste adapté au secteur
 
 # Contrôle Continu — ${moduleLabel}
 
-## En-tête
 | Établissement | Filière | Module | Niveau | Durée | Note |
 |---------------|---------|--------|--------|-------|------|
 | OFPPT | ${data.filiere} | ${moduleLabel} | ${niveauFull} | ${duree} | /20 |
@@ -387,7 +378,6 @@ Génère un contrôle continu équilibré, adapté à une évaluation intermédi
 
 # Examen de Fin de Module — ${moduleLabel}
 
-## En-tête
 | Établissement | Filière | Module | Niveau | Durée | Note |
 |---------------|---------|--------|--------|-------|------|
 | OFPPT | ${data.filiere} | ${moduleLabel} | ${niveauFull} | ${duree} | /20 |
@@ -437,7 +427,6 @@ Génère un examen équilibré, réaliste et complet avec sujet + corrigé + bar
 
 # Examen de Rattrapage — ${moduleLabel}
 
-## En-tête
 | Établissement | Filière | Module | Niveau | Durée | Note |
 |---------------|---------|--------|--------|-------|------|
 | OFPPT | ${data.filiere} | ${moduleLabel} | ${niveauFull} | ${duree} | /20 |
