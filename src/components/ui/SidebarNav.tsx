@@ -179,7 +179,7 @@ function NavItem({ href, label, icon, active, keepIconColor }: { href: string; l
   );
 }
 
-export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
+export default function SidebarNav({ user, onSettingsClick }: NavSidebarProps) {
   const pathname = usePathname();
 
   const isActive = useCallback((href: string, exact: boolean) => {
