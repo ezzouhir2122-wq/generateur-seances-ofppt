@@ -118,7 +118,7 @@ const NAV_SECTIONS: NavSectionData[] = [
   },
   {
     id: "generation",
-    label: "Génération IA",
+    label: "Génération IA ★",
     items: [
       { href: "/seances", label: "Séance pédagogique", icon: <SeanceIcon />, exact: false },
       { href: "/fiches", label: "Fiche pédagogique", icon: <FicheIcon />, exact: true },
