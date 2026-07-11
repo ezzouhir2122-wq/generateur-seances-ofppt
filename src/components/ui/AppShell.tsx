@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/ui/Sidebar";
-import NavSidebar from "@/components/ui/NavSidebar";
+import NavSidebar from "@/components/ui/SidebarNav";
 import { Toaster } from "sonner";
 
 interface AppShellProps {
