@@ -105,7 +105,10 @@ const LogoutIcon = () => (
 );
 
 /* ─── Navigation data ─── */
-const NAV_SECTIONS = [
+type NavItemData = { href: string; label: string; icon: React.ReactNode; exact: boolean; keepIconColor?: boolean };
+type NavSectionData = { id: string; label: string; items: NavItemData[] };
+
+const NAV_SECTIONS: NavSectionData[] = [
   {
     id: "principal",
     label: "Accueil",
