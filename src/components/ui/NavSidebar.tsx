@@ -149,6 +149,7 @@ const navSections = [
     label: "Simulation IA",
     items: [
       { href: "/simulator", label: "Competencia Simulator", icon: <SimulatorIcon />, exact: false },
+      { href: "/simulator/new", label: "Nouvelle simulation", icon: <SimulatorIcon />, exact: true },
     ],
   },
   {
