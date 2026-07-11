@@ -31,6 +31,7 @@ model User {
   sharedResources  SharedResource[]
   resourceLikes    ResourceLike[]
   resourceComments ResourceComment[]
+  simulations   Simulation[]
 }
 
 model UserModule {
@@ -278,4 +279,112 @@ model ResourceComment {
   createdAt  DateTime       @default(now())
 
   @@index([resourceId])
+}
+
+// ─── Competencia Simulator ────────────────────────────────────────────────────
+
+model Simulation {
+  id                 String          @id @default(cuid())
+  titre              String
+  filiere            String
+  module             String
+  niveau             String
+  duree              String
+  nbStagiaires       Int
+  difficulte         String          // DEBUTANT | INTERMEDIAIRE | AVANCE
+  competencesCiblees String[]
+  userId             String
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company            VirtualCompany?
+  runs               SimulationRun[]
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([userId])
+}
+
+model VirtualCompany {
+  id                 String     @id @default(cuid())
+  simulationId       String     @unique
+  simulation         Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  nom                String
+  secteur            String
+  description        String     @db.Text
+  contexteEconomique String     @db.Text
+  organigramme       Json
+  personnages        Json
+  clients            Json
+  fournisseurs       Json
+  documents          Json
+  problemesCles      String[]
+  arcNarratif        Json
+  createdAt          DateTime   @default(now())
+}
+
+model SimulationRun {
+  id                 String           @id @default(cuid())
+  simulationId       String
+  simulation         Simulation       @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  status             String           @default("EN_COURS")
+  score              Int              @default(100)
+  satisfactionClient Int              @default(75)
+  santeFinanciere    Int              @default(75)
+  moralEquipe        Int              @default(75)
+  evenementCourant   Int              @default(0)
+  tempsTotal         Int              @default(0)
+  startedAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  events             RunEvent[]
+  report             SimulationReport?
+
+  @@index([simulationId])
+}
+
+model RunEvent {
+  id                 String        @id @default(cuid())
+  runId              String
+  run                SimulationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  ordre              Int
+  templateType       String
+  titre              String
+  description        String        @db.Text
+  contexte           String        @db.Text
+  personnageImplique String
+  documentAttache    String?       @db.Text
+  choixA             Json
+  choixB             Json
+  choixC             Json
+  decision           RunDecision?
+  createdAt          DateTime      @default(now())
+
+  @@index([runId])
+}
+
+model RunDecision {
+  id                 String   @id @default(cuid())
+  eventId            String   @unique
+  event              RunEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  choixSelectionne   String
+  consequences       String   @db.Text
+  impactScore        Int
+  impactSatisfaction Int
+  impactFinancier    Int
+  impactMoral        Int
+  tempsReponse       Int
+  createdAt          DateTime @default(now())
+}
+
+model SimulationReport {
+  id                     String        @id @default(cuid())
+  runId                  String        @unique
+  run                    SimulationRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  pointsForts            String[]
+  erreurs                String[]
+  competencesMaitrisees  String[]
+  competencesADevelopper String[]
+  conseils               String        @db.Text
+  planAmelioration       String        @db.Text
+  note                   Int
+  justification          String        @db.Text
+  createdAt              DateTime      @default(now())
 }
