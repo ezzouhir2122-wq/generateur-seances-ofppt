@@ -123,6 +123,7 @@ const NAV_SECTIONS: NavSectionData[] = [
       { href: "/seances", label: "Séance pédagogique", icon: <SeanceIcon />, exact: false },
       { href: "/fiches", label: "Fiche pédagogique", icon: <FicheIcon />, exact: true },
       { href: "/evaluations", label: "Évaluation", icon: <EvalIcon />, exact: false },
+      { href: "/simulator", label: "Competencia Simulator", icon: <SimulatorIcon />, exact: false },
       { href: "/corrections", label: "Correction IA", icon: <CorrectionIcon />, exact: false },
     ],
   },
@@ -141,14 +142,6 @@ const NAV_SECTIONS: NavSectionData[] = [
       { href: "/referentiel", label: "Référentiel", icon: <RefIcon />, exact: false },
       { href: "/suivi", label: "Suivi des compétences", icon: <SuiviIcon />, exact: false },
       { href: "/bibliotheque", label: "Bibliothèque", icon: <BiblioIcon />, exact: false },
-    ],
-  },
-  {
-    id: "simulator",
-    label: "Simulation IA",
-    items: [
-      { href: "/simulator", label: "Competencia Simulator", icon: <SimulatorIcon />, exact: false, keepIconColor: false },
-      { href: "/simulator/new", label: "Nouvelle simulation", icon: <SimulatorIcon />, exact: true, keepIconColor: false },
     ],
   },
   {
