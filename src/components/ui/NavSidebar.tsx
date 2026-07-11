@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -182,10 +182,10 @@ function NavItem({ href, label, icon, active, keepIconColor }: { href: string; l
 export default function NavSidebar({ user, onSettingsClick }: NavSidebarProps) {
   const pathname = usePathname();
 
-  function isActive(href: string, exact: boolean) {
+  const isActive = useCallback((href: string, exact: boolean) => {
     if (exact) return pathname === href;
     return pathname === href || pathname.startsWith(href + "/");
-  }
+  }, [pathname]);
 
   const initials = (user.name ?? user.email ?? "F").charAt(0).toUpperCase();
 
