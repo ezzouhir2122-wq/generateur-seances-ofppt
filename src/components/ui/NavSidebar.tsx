@@ -87,6 +87,13 @@ const GuideIcon = () => (
     <line x1="12" y1="17" x2="12.01" y2="17"/>
   </svg>
 );
+const SimulatorIcon = () => (
+  <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+    <rect x="2" y="6" width="20" height="12" rx="2"/>
+    <path d="M12 12h.01M8 12a1 1 0 100-2 1 1 0 000 2zm8 0a1 1 0 100-2 1 1 0 000 2z"/>
+    <path d="M10 10v4m-2-2h4"/>
+  </svg>
+);
 const GearIcon = () => (
   <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
     <circle cx="12" cy="12" r="3"/>
@@ -135,6 +142,13 @@ const navSections = [
       { href: "/referentiel", label: "Référentiel", icon: <RefIcon />, exact: false },
       { href: "/suivi", label: "Suivi des compétences", icon: <SuiviIcon />, exact: false },
       { href: "/bibliotheque", label: "Bibliothèque", icon: <BiblioIcon />, exact: false },
+    ],
+  },
+  {
+    id: "simulator",
+    label: "Simulation IA",
+    items: [
+      { href: "/simulator", label: "Competencia Simulator", icon: <SimulatorIcon />, exact: false },
     ],
   },
   {
