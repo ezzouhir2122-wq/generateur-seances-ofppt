@@ -214,7 +214,7 @@ export default function SidebarNav({ user, onSettingsClick }: NavSidebarProps) {
               OFPPT · Compétencia
             </div>
             <div style={{ color: "#16A34A", fontSize: "10px", fontWeight: 500, marginTop: "2px" }}>
-              Génération pédagogique
+              Génération pédagogique ★
             </div>
           </div>
         </div>
