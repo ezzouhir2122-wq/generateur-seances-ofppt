@@ -41,7 +41,17 @@ export default function NewSimulationPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetch('/api/referentiel/structure').then(r => r.json()).then(setFilieres).catch(() => {});
+    fetch('/api/referentiel/structure')
+      .then(r => r.json())
+      .then((data) => {
+        // L'API renvoie { secteurs: [{ filieres: [{ id, nom, filiere, modules }] }] }
+        // On aplatit en liste plate de filières pour le dropdown.
+        const flat: Filiere[] = Array.isArray(data)
+          ? data
+          : (data?.secteurs ?? []).flatMap((s: { filieres?: Filiere[] }) => s.filieres ?? []);
+        setFilieres(flat);
+      })
+      .catch(() => setFilieres([]));
   }, []);
 
   const selectedFiliere = filieres.find(f => f.id === form.filiereId);
