@@ -30,15 +30,17 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { titre, filiere, module, niveau, duree, nbStagiaires, difficulte, competencesCiblees } = body;
 
-  if (!titre || !filiere || !module) {
-    return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 });
+  // Le module est optionnel : le dropdown n'apparaît qu'après le choix d'une filière
+  // et le formulaire n'exige que titre + filière. On l'accepte donc vide.
+  if (!titre || !filiere) {
+    return NextResponse.json({ error: 'Titre et filière requis' }, { status: 400 });
   }
 
   const simulation = await prisma.simulation.create({
     data: {
       titre,
       filiere,
-      module,
+      module: module ?? '',
       niveau: niveau ?? '',
       duree: duree ?? '2h',
       nbStagiaires: nbStagiaires ?? 20,

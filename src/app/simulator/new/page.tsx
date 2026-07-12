@@ -77,6 +77,11 @@ export default function NewSimulationPage() {
       }),
     });
     const sim = await createRes.json();
+    if (!createRes.ok || !sim?.id) {
+      setError(sim?.error ?? 'Impossible de créer la simulation.');
+      setStep('form');
+      return;
+    }
     setSimulationId(sim.id);
 
     const response = await fetch('/api/simulator/generate', {
