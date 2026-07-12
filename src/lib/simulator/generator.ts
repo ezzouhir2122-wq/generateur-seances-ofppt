@@ -46,8 +46,8 @@ Réponds UNIQUEMENT avec un objet JSON valide (pas de markdown, pas de texte ava
       "ordre": 1,
       "templateType": "TYPE_EXACT_DU_TEMPLATE",
       "titre": "Titre événement",
-      "description": "Description narrative immersive 2-3 paragraphes",
-      "contexte": "Contexte additionnel",
+      "description": "Description narrative immersive, 1 paragraphe concis (3-4 phrases)",
+      "contexte": "Contexte additionnel bref (1-2 phrases)",
       "personnageImplique": "Nom du personnage",
       "documentAttache": "Contenu document si applicable (sinon omettre)",
       "choixA": {"label": "A — Courte étiquette", "description": "Description choix A", "consequences": "Conséquences si A choisi", "impactScore": 15, "impactSatisfaction": 10, "impactFinancier": 8, "impactMoral": 10},
@@ -64,7 +64,8 @@ Règles :
 - Impacts : ±5 à ±20 selon gravité
 - Noms marocains réalistes (entreprises, personnes, villes)
 - Filière et module intégrés dans le contexte
-- Langue française`;
+- Langue française
+- Sois concis : descriptions courtes et efficaces, pas de remplissage. Le JSON DOIT être complet et se terminer correctement.`;
 }
 
 function parseJson(raw: string): EntrepriseVirtuelle {
@@ -81,7 +82,7 @@ export async function generateEntreprise(
   let fullText = '';
   const stream = await client.messages.create({
     model,
-    max_tokens: 8000,
+    max_tokens: 16000,
     messages: [{ role: 'user', content: buildPrompt(config) }],
     stream: true,
   });
@@ -101,7 +102,7 @@ export async function* streamGenerate(
   const client = new Anthropic({ apiKey });
   const stream = await client.messages.create({
     model,
-    max_tokens: 8000,
+    max_tokens: 16000,
     messages: [{ role: 'user', content: buildPrompt(config) }],
     stream: true,
   });
