@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
 import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
-import AppShell from "@/components/ui/AppShell";
+import AppShell from "@/components/ui/AppShellV2";
 import "./globals.css";
 
 const font = Plus_Jakarta_Sans({
