@@ -27,7 +27,10 @@ export async function POST(req: NextRequest) {
   const apiKey = userKeys?.claudeApiKey || process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return NextResponse.json({ error: 'Clé Claude manquante' }, { status: 400 });
 
-  const model = userKeys?.preferredModel?.startsWith('claude') ? userKeys.preferredModel : 'claude-sonnet-4-6';
+  // Génération d'un gros JSON de fond (entreprise + scénarios) : on force Haiku,
+  // bien plus rapide, pour rester sous la limite maxDuration de Vercel (120s).
+  // Sonnet dépassait le timeout et coupait le stream avant la sauvegarde en DB.
+  const model = 'claude-haiku-4-5-20251001';
 
   const encoder = new TextEncoder();
   const readable = new ReadableStream({

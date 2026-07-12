@@ -15,8 +15,11 @@ export function selectTemplates(config: SimulatorConfig): ScenarioTemplate[] {
     selected.push(pool[Math.floor(Math.random() * pool.length)]);
   }
 
-  // Fill up to target count
-  const target = config.difficulte === 'AVANCE' ? 10 : config.difficulte === 'INTERMEDIAIRE' ? 9 : 8;
+  // Fill up to target count.
+  // Volontairement modéré (6/5/4) : chaque événement génère une description de 2-3
+  // paragraphes + 3 choix détaillés. Au-delà, le JSON dépasse max_tokens (8000) et se
+  // fait tronquer (parse invalide), et la génération risque le timeout Vercel.
+  const target = config.difficulte === 'AVANCE' ? 6 : config.difficulte === 'INTERMEDIAIRE' ? 5 : 4;
   const remaining = eligible.filter(t => !selected.includes(t));
 
   while (selected.length < target && remaining.length > 0) {

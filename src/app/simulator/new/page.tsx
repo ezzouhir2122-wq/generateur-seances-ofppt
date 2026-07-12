@@ -94,9 +94,16 @@ export default function NewSimulationPage() {
       }),
     });
 
-    const reader = response.body!.getReader();
+    if (!response.ok || !response.body) {
+      setError('Le service de génération est indisponible. Réessayez.');
+      setStep('form');
+      return;
+    }
+
+    const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let accum = '';
+    let finished = false;
 
     while (true) {
       const { done, value } = await reader.read();
@@ -105,15 +112,24 @@ export default function NewSimulationPage() {
       accum += chunk;
       if (accum.includes('[[DONE]]')) {
         setStep('done');
+        finished = true;
         break;
       }
       if (accum.includes('[[ERROR]]')) {
         setError(accum.split('[[ERROR]]')[1] ?? 'Erreur génération');
         setStep('form');
+        finished = true;
         break;
       }
       setStreamText(accum);
       if (streamRef.current) streamRef.current.scrollTop = streamRef.current.scrollHeight;
+    }
+
+    // Le stream s'est terminé sans marqueur [[DONE]]/[[ERROR]] : génération
+    // interrompue (timeout serveur). On sort de l'état bloqué "generating".
+    if (!finished) {
+      setError('La génération a été interrompue (délai dépassé). Réessayez avec une difficulté plus simple.');
+      setStep('form');
     }
   }
 
