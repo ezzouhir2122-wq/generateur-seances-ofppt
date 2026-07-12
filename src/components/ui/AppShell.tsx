@@ -193,7 +193,7 @@ function AppSidebar({ user, onSettingsClick }: { user: NonNullable<AppShellProps
   return (
     <aside
       className="w-[240px] flex-shrink-0 flex flex-col h-screen sticky top-0"
-      style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.08)" }}
+      style={{ background: "#1a0050", borderRight: "1px solid rgba(255,255,255,0.08)" }}
     >
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
         <div className="flex items-center gap-3 px-4 pt-3 pb-2">
