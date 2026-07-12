@@ -155,6 +155,14 @@ const techFlow = [
   { num: 5, color: "#7C3AED", bg: "#FAF5FF", border: "#DDD6FE", title: "Export PDF ou Word", desc: "export.ts → jsPDF pour PDF avec mise en page OFPPT + bibliothèque docx pour Word structuré. Téléchargement direct navigateur.", code: "src/lib/export.ts · jsPDF · docx" },
 ];
 
+const simulatorSteps = [
+  { num: 1, color: "#0A4DA8", bg: "#EFF6FF", border: "#BFDBFE", title: "Ouvrir le simulateur", desc: "Sidebar → « Competencia Simulator » (section Génération IA), puis « + Nouvelle simulation ». Au premier usage, la page affiche « Aucune simulation » : c'est normal." },
+  { num: 2, color: "#E8651A", bg: "#FFF7ED", border: "#FED7AA", title: "Renseigner le contexte pédagogique", desc: "Remplissez le formulaire de gauche. Seuls le titre et la filière sont obligatoires. Le champ Module n'apparaît qu'après le choix d'une filière et se remplit depuis votre référentiel." },
+  { num: 3, color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", title: "Générer l'entreprise virtuelle", desc: "Cliquez sur « 🏢 Générer l'entreprise virtuelle ». L'IA construit en direct (≈ 1 à 1,5 min) une entreprise marocaine complète et ses scénarios. Ne quittez pas la page pendant la génération." },
+  { num: 4, color: "#7C3AED", bg: "#FAF5FF", border: "#DDD6FE", title: "Lancer la simulation", desc: "Le message « ✅ Entreprise générée avec succès ! » confirme que tout est prêt. Cliquez sur « ▶ Lancer la simulation », ou « Voir les détails » pour inspecter l'entreprise d'abord. Elle est enregistrée et relançable plus tard." },
+  { num: 5, color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", title: "Jouer et décider", desc: "Chaque événement présente une situation et trois choix (A/B/C). Votre décision met à jour les jauges — satisfaction client, santé financière, moral d'équipe et score — puis fait avancer au scénario suivant. Un rapport d'évaluation clôt la simulation." },
+];
+
 export default async function GuidePage() {
   const session = await auth();
   if (!session) redirect("/login");
@@ -361,6 +369,49 @@ export default async function GuidePage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── 8. COMPETENCIA SIMULATOR ── */}
+      <SectionLabel label="Module 5 — Competencia Simulator (Entreprise Virtuelle)" />
+
+      <div style={{
+        background: "linear-gradient(135deg, #003087, #0A4DA8)",
+        borderRadius: "16px", padding: "26px 24px", marginBottom: "20px",
+        boxShadow: "0 1px 4px rgba(0,0,0,0.06)", color: "#fff", position: "relative", overflow: "hidden",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "10px" }}>
+          <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.22)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px" }}>🎮</div>
+          <div>
+            <div style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.02em" }}>Simulations d&apos;entreprises virtuelles</div>
+            <div style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase", color: "#F8B78E" }}>Situations professionnelles interactives générées par IA</div>
+          </div>
+        </div>
+        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.82)", maxWidth: "620px", lineHeight: 1.6, margin: "0 0 16px" }}>
+          Placez vos stagiaires dans une entreprise fictive complète — personnages, clients, fournisseurs et scénarios — où chaque décision fait évoluer la satisfaction client, la santé financière et le moral de l&apos;équipe. 4 à 6 événements par simulation, contexte marocain réaliste.
+        </p>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>⏱ ≈ 2 min de génération</span>
+          <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>🎯 4 à 6 décisions</span>
+          <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>📊 Rapport d&apos;évaluation final</span>
+        </div>
+      </div>
+
+      <div style={{ background: "#FFFFFF", border: "1px solid #E2E8F0", borderRadius: "16px", padding: "8px 0", marginBottom: "16px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        {simulatorSteps.map((step, i) => (
+          <div key={step.num} style={{ display: "flex", gap: "20px", alignItems: "flex-start", padding: "18px 24px", borderBottom: i < simulatorSteps.length - 1 ? "1px solid #F3F4F6" : undefined }}>
+            <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: step.bg, border: `1px solid ${step.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 800, color: step.color, flexShrink: 0 }}>{step.num}</div>
+            <div>
+              <div style={{ fontSize: "13px", fontWeight: 700, color: "#111827", marginBottom: "4px" }}>{step.title}</div>
+              <div style={{ fontSize: "11.5px", color: "#6B7280", lineHeight: 1.55 }}>{step.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "40px" }}>
+        <a href="/simulator" style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontSize: "12px", fontWeight: 700, color: "#fff", background: "#0A4DA8", padding: "10px 18px", borderRadius: "10px", textDecoration: "none" }}>
+          Ouvrir le simulateur <span style={{ fontSize: "14px" }}>→</span>
+        </a>
       </div>
 
       {/* ── FOOTER ── */}
