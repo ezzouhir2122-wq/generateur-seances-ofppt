@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
 import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
-import AppShell from "@/components/ui/AppShellV2";
+import AppShell from "@/components/shell";
 import "./globals.css";
-// CACHE_BUST_2026_07_12_SIMULATOR_V3
 
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
