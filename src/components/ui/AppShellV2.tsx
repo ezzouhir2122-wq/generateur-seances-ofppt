@@ -1,3 +1,4 @@
+// CACHE_BUST_2026_07_12_SIMULATOR_V3 — force recompilation Turbopack
 "use client";
 
 import { useState, useCallback } from "react";

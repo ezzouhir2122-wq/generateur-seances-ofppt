@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
 import AppShell from "@/components/ui/AppShellV2";
 import "./globals.css";
+// CACHE_BUST_2026_07_12_SIMULATOR_V3
 
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
