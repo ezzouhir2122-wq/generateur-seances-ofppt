@@ -113,6 +113,7 @@ const LogoutIcon = () => (
   </svg>
 );
 
+// v2026-07-12
 const NAV_SECTIONS = [
   {
     id: "principal",
