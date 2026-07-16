@@ -160,7 +160,8 @@ const simulatorSteps = [
   { num: 2, color: "#E8651A", bg: "#FFF7ED", border: "#FED7AA", title: "Renseigner le contexte pédagogique", desc: "Remplissez le formulaire de gauche. Seuls le titre et la filière sont obligatoires. Le champ Module n'apparaît qu'après le choix d'une filière et se remplit depuis votre référentiel." },
   { num: 3, color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", title: "Générer l'entreprise virtuelle", desc: "Cliquez sur « 🏢 Générer l'entreprise virtuelle ». L'IA construit en direct (≈ 1 à 1,5 min) une entreprise marocaine complète et ses scénarios. Ne quittez pas la page pendant la génération." },
   { num: 4, color: "#7C3AED", bg: "#FAF5FF", border: "#DDD6FE", title: "Lancer la simulation", desc: "Le message « ✅ Entreprise générée avec succès ! » confirme que tout est prêt. Cliquez sur « ▶ Lancer la simulation », ou « Voir les détails » pour inspecter l'entreprise d'abord. Elle est enregistrée et relançable plus tard." },
-  { num: 5, color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", title: "Jouer et décider", desc: "Chaque événement présente une situation et trois choix (A/B/C). Votre décision met à jour les jauges — satisfaction client, santé financière, moral d'équipe et score — puis fait avancer au scénario suivant. Un rapport d'évaluation clôt la simulation." },
+  { num: 5, color: "#D97706", bg: "#FFFBEB", border: "#FDE68A", title: "Jouer et décider", desc: "Chaque événement présente une situation et trois choix (A/B/C). Votre décision met à jour les jauges — satisfaction client, santé financière, moral d'équipe et score global — puis fait avancer au scénario suivant jusqu'au dernier événement." },
+  { num: 6, color: "#16A34A", bg: "#F0FDF4", border: "#BBF7D0", title: "Rapport d'évaluation IA", desc: "À la fin de la simulation, cliquez sur « Générer le rapport IA ». L'IA analyse toutes vos décisions et produit en quelques secondes : une note /20, un score pédagogique, les compétences mobilisées, les points forts, les erreurs de management et des conseils personnalisés." },
 ];
 
 export default async function GuidePage() {
@@ -372,7 +373,7 @@ export default async function GuidePage() {
       </div>
 
       {/* ── 8. COMPETENCIA SIMULATOR ── */}
-      <SectionLabel label="Module 5 — Competencia Simulator (Entreprise Virtuelle)" />
+      <SectionLabel label="Module 5 — Competencia Simulator — Entreprise Virtuelle (6 étapes)" />
 
       <div style={{
         background: "linear-gradient(135deg, #003087, #0A4DA8)",
@@ -392,7 +393,7 @@ export default async function GuidePage() {
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
           <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>⏱ ≈ 2 min de génération</span>
           <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>🎯 4 à 6 décisions</span>
-          <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>📊 Rapport d&apos;évaluation final</span>
+          <span style={{ fontSize: "11px", fontWeight: 600, background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.20)", padding: "6px 11px", borderRadius: "8px" }}>📊 Note /20 + rapport IA</span>
         </div>
       </div>
 
