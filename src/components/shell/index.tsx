@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import Sidebar from "@/components/ui/Sidebar";
 import { Toaster } from "sonner";
 
 interface AppShellProps {
@@ -182,7 +181,7 @@ function NavItem({ href, label, icon, active, keepIconColor }: { href: string; l
   );
 }
 
-function AppSidebar({ user, onSettingsClick }: { user: NonNullable<AppShellProps["user"]>; onSettingsClick: () => void }) {
+function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
   const pathname = usePathname();
   const isActive = useCallback((href: string, exact: boolean) => {
     if (exact) return pathname === href;
@@ -266,16 +265,16 @@ function AppSidebar({ user, onSettingsClick }: { user: NonNullable<AppShellProps
           <span style={{ color: isActive("/guide", false) ? "#16A34A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}><GuideIcon /></span>
           Guide application
         </Link>
-        <button
-          onClick={onSettingsClick}
-          className="w-full flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
-          style={{ color: "rgba(255,255,255,0.60)" }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.90)"; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = ""; (e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.60)"; }}
+        <Link
+          href="/parametres"
+          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
+          style={{ color: isActive("/parametres", false) ? "#FFFFFF" : "rgba(255,255,255,0.60)", background: isActive("/parametres", false) ? "rgba(255,255,255,0.15)" : undefined }}
+          onMouseEnter={e => { if (!isActive("/parametres", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.90)"; } }}
+          onMouseLeave={e => { if (!isActive("/parametres", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.60)"; } }}
         >
-          <span style={{ color: "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
-          Modules & Paramètres
-        </button>
+          <span style={{ color: isActive("/parametres", false) ? "#16A34A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
+          Paramètres
+        </Link>
         <div className="mt-2 px-1 text-[9px] leading-snug text-center font-bold" style={{ color: "#16A34A" }}>
           Développé par Ezzouhir Elmustapha<br />9998 · OFPPT / ISGI Marrakech
         </div>
@@ -314,14 +313,13 @@ function AssistantFAB() {
   );
 }
 
-export default function AppShell({ children, user, claudeKey, openaiKey }: AppShellProps) {
-  const [dashOpen, setDashOpen] = useState(false);
+export default function AppShell({ children, user }: AppShellProps) {
   if (!user) return <>{children}</>;
   return (
     <>
       <Toaster position="top-right" richColors />
       <div className="flex h-screen overflow-hidden">
-        <AppSidebar user={user} onSettingsClick={() => setDashOpen(true)} />
+        <AppSidebar user={user} />
         <div className="flex-1 flex flex-col overflow-hidden relative">
           <main className="flex-1 overflow-y-auto" style={{ background: "transparent" }}>
             {children}
@@ -329,7 +327,6 @@ export default function AppShell({ children, user, claudeKey, openaiKey }: AppSh
         </div>
       </div>
       <AssistantFAB />
-      <Sidebar open={dashOpen} onClose={() => setDashOpen(false)} user={user} claudeKey={claudeKey} openaiKey={openaiKey} />
     </>
   );
 }
