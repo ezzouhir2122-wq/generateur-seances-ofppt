@@ -9,19 +9,29 @@ export default async function ParametresPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { name: true, email: true, matricule: true, etablissement: true },
-  });
+  let userData = {
+    name: session.user.name ?? "",
+    email: session.user.email ?? "",
+    matricule: null as string | null,
+    etablissement: null as string | null,
+  };
 
-  return (
-    <ParametresClient
-      initialUser={{
-        name: user?.name ?? "",
-        email: user?.email ?? "",
-        matricule: user?.matricule ?? null,
-        etablissement: user?.etablissement ?? null,
-      }}
-    />
-  );
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true, email: true, matricule: true, etablissement: true },
+    });
+    if (user) {
+      userData = {
+        name: user.name ?? session.user.name ?? "",
+        email: user.email ?? session.user.email ?? "",
+        matricule: (user as { matricule?: string | null }).matricule ?? null,
+        etablissement: (user as { etablissement?: string | null }).etablissement ?? null,
+      };
+    }
+  } catch {
+    // Champs optionnels absents en DB — on utilise les données de session
+  }
+
+  return <ParametresClient initialUser={userData} />;
 }
