@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -59,7 +60,7 @@ export default function FicheDetailClient({ fiche }: { fiche: Fiche }) {
         </div>
       </div>
       <div className="card prose prose-sm max-w-none">
-        <ReactMarkdown>{fiche.contenu}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{fiche.contenu}</ReactMarkdown>
       </div>
     </div>
   );

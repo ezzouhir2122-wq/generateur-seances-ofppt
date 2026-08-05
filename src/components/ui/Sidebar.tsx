@@ -586,13 +586,16 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                   const isExpanded = expandedSecteur === secteur.id;
                   return (
                     <div key={secteur.id} className="rounded-lg overflow-hidden" style={{ border: "1px solid #E2E8F0" }}>
-                      {/* Secteur header */}
-                      <button
+                      {/* Secteur header — div instead of button to avoid nested-button HTML violation */}
+                      <div
+                        role="button"
+                        tabIndex={0}
                         onClick={() => setExpandedSecteur(isExpanded ? null : secteur.id)}
-                        className="w-full flex items-center justify-between px-3 py-2.5 text-left transition-colors"
+                        onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpandedSecteur(isExpanded ? null : secteur.id); } }}
+                        className="w-full flex items-center justify-between px-3 py-2.5 text-left transition-colors cursor-pointer"
                         style={{ background: "#F3F4F6" }}
-                        onMouseEnter={e => (e.currentTarget as HTMLButtonElement).style.background = "#E2E8F0"}
-                        onMouseLeave={e => (e.currentTarget as HTMLButtonElement).style.background = "#F3F4F6"}
+                        onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.background = "#E2E8F0"}
+                        onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.background = "#F3F4F6"}
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           <span className="text-[10px] transition-transform duration-200" style={{ transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)", display: "inline-block", color: "#4B5563" }}>▶</span>
@@ -625,7 +628,7 @@ export default function Sidebar({ open, onClose, user }: SidebarProps) {
                             Supprimer
                           </button>
                         </div>
-                      </button>
+                      </div>
 
                       {/* Filières list */}
                       {isExpanded && (

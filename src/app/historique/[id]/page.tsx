@@ -4,14 +4,16 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import SeanceDetailClient from "@/components/ui/SeanceDetailClient";
 
-export default async function SeanceDetailPage({ params }: { params: { id: string } }) {
+export default async function SeanceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
+
+  const { id } = await params;
 
   let seance;
   try {
     seance = await prisma.seance.findUnique({
-      where: { id: params.id, userId: session.user.id },
+      where: { id, userId: session.user.id },
     });
   } catch {
     return (

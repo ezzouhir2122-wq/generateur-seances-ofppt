@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { exportToPDF, exportToWord, exportToPPT } from "@/lib/export";
@@ -85,7 +86,7 @@ export default function SeanceDetailClient({ seance }: { seance: Seance }) {
 
       {/* Contenu */}
       <div className="prose prose-sm max-w-none prose-headings:text-ofppt-green prose-table:text-sm">
-        <ReactMarkdown>{seance.contenu}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{seance.contenu}</ReactMarkdown>
       </div>
     </div>
   );

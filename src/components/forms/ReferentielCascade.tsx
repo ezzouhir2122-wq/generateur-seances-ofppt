@@ -68,7 +68,8 @@ export default function ReferentielCascade({ onChange, initial }: Props) {
   const [refCompetences, setRefCompetences] = useState<RefCompetence[]>([]);
   const [selectedCompetences, setSelectedCompetences] = useState<string[]>([]);
 
-  const [sel, setSel] = useState<ReferentielSelection>({ ...EMPTY, ...initial });
+  const cleanInitial = Object.fromEntries(Object.entries(initial ?? {}).filter(([, v]) => v !== undefined));
+  const [sel, setSel] = useState<ReferentielSelection>({ ...EMPTY, ...cleanInitial });
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 

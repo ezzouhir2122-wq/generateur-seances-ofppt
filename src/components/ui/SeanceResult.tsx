@@ -1,6 +1,7 @@
 "use client";
 
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Props {
   contenu: string;
@@ -73,7 +74,7 @@ export default function SeanceResult({ contenu, isStreaming, onExportPDF, onExpo
         id="seance-content"
         className="prose prose-sm max-w-none prose-invert prose-headings:text-[#0A4DA8] prose-table:text-sm"
       >
-        <ReactMarkdown>{contenu}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{contenu}</ReactMarkdown>
       </div>
     </div>
   );
