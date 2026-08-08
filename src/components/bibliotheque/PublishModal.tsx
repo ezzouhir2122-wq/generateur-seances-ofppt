@@ -10,6 +10,8 @@ interface MyResource { id: string; titre: string; filiere: string | null; module
 interface Props {
   onClose: () => void;
   onPublished: () => void;
+  defaultSourceId?: string;
+  defaultType?: ResourceType;
 }
 
 const inputStyle: React.CSSProperties = {
@@ -23,10 +25,10 @@ const inputStyle: React.CSSProperties = {
   outline: "none",
 };
 
-export default function PublishModal({ onClose, onPublished }: Props) {
-  const [type, setType] = useState<ResourceType>("SEANCE");
+export default function PublishModal({ onClose, onPublished, defaultSourceId, defaultType }: Props) {
+  const [type, setType] = useState<ResourceType>(defaultType ?? "SEANCE");
   const [mes, setMes] = useState<{ seances: MyResource[]; fiches: MyResource[] }>({ seances: [], fiches: [] });
-  const [sourceId, setSourceId] = useState("");
+  const [sourceId, setSourceId] = useState(defaultSourceId ?? "");
 
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
