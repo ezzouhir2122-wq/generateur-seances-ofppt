@@ -133,7 +133,13 @@ export default function ResourceDetailModal({ id, onClose, onChanged }: Props) {
                   💬 {r.commentCount} commentaire{r.commentCount > 1 ? "s" : ""}
                 </span>
                 {r.isMine && (
-                  <button onClick={remove} className="ml-auto text-xs" style={{ color: "#EF4444" }}>
+                  <button
+                    onClick={remove}
+                    className="ml-auto text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors"
+                    style={{ background: "#FEF2F2", color: "#EF4444", border: "1px solid #FECACA" }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#EF4444"; (e.currentTarget as HTMLButtonElement).style.color = "#FFFFFF"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "#FEF2F2"; (e.currentTarget as HTMLButtonElement).style.color = "#EF4444"; }}
+                  >
                     🗑 Supprimer
                   </button>
                 )}
