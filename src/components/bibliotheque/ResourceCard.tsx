@@ -56,9 +56,16 @@ export default function ResourceCard({ resource: r, onOpen, onLike }: Props) {
 
       {/* Pied : auteur + likes + commentaires */}
       <div className="flex items-center justify-between mt-auto pt-2" style={{ borderTop: "1px solid #F3F4F6" }}>
-        <span className="text-[11px] truncate max-w-[120px]" style={{ color: "#9CA3AF" }}>
-          {r.authorName}
-        </span>
+        <div className="flex flex-col min-w-0">
+          <span className="text-[11px] truncate max-w-[140px]" style={{ color: "#9CA3AF" }}>
+            {r.authorName}
+          </span>
+          {r.etablissement && (
+            <span className="text-[10px] truncate max-w-[140px]" style={{ color: "#C4C9D4" }}>
+              {r.etablissement}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-3">
           <button
             onClick={(e) => { e.stopPropagation(); onLike(); }}
