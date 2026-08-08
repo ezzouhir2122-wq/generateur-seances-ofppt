@@ -19,7 +19,12 @@ export function buildSeancePrompt(data: SeanceFormData): string {
     ? comps.map((c, i) => `## ${i + 1}. ${c}\n### Définitions et concepts clés\n### Développement\n### Exemples pratiques`).join("\n\n")
     : `## 1. Définitions et concepts clés\n## 2. Développement (sous-parties 2.1, 2.2, 2.3 — explications approfondies)\n## 3. Exemples expliqués (Énoncé + Explication détaillée étape par étape)`;
 
-  return `Tu es un expert formateur OFPPT. Rédige un COURS DÉTAILLÉ complet (SANS section "Objectifs pédagogiques").
+  return `Tu es un expert formateur OFPPT. Rédige un COURS ACADÉMIQUE DÉTAILLÉ complet (SANS section "Objectifs pédagogiques").
+
+RÈGLES ABSOLUES DE RÉDACTION :
+- L'introduction est ACADÉMIQUE : contextualise le sujet dans la filière, annonce le plan, pose l'enjeu professionnel. INTERDIT : "Chers stagiaires", "Bienvenue", toute formule d'accueil ou adresse aux apprenants.
+- Le style est celui d'un cours universitaire ou professionnel, pas d'un discours oral.
+- Commence directement par le contenu pédagogique sans préambule de bienvenue.
 
 Filière : ${data.filiere}
 Module : ${data.module}
@@ -31,6 +36,7 @@ ${multi ? "\nIMPORTANT : Ce document couvre TOUTES les compétences listées dan
 Format la réponse en markdown avec les sections suivantes :
 # ${title}
 ## Introduction
+(Contextualisation du sujet dans la filière ${data.filiere}, enjeux professionnels, annonce du plan — style académique strict, aucune formule d'accueil)
 ${develSection}
 ## Synthèse — points clés à retenir`;
 }
