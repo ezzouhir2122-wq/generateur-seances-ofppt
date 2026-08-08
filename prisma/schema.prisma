@@ -246,8 +246,9 @@ model SharedResource {
   fileSize    Int?
   authorId    String
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorName  String
-  createdAt   DateTime @default(now())
+  authorName    String
+  etablissement String?
+  createdAt     DateTime @default(now())
   likes       ResourceLike[]
   comments    ResourceComment[]
 
