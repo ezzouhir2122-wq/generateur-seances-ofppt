@@ -18,11 +18,13 @@ export async function GET(req: NextRequest) {
   const moduleQ = sp.get("module");
   const q = sp.get("q")?.trim();
   const sort = sp.get("sort") === "popular" ? "popular" : "recent";
+  const etablissementQ = sp.get("etablissement");
 
   const where: Prisma.SharedResourceWhereInput = {};
   if (type && TYPES.includes(type as ResourceType)) where.type = type;
   if (filiere) where.filiere = filiere;
   if (moduleQ) where.module = moduleQ;
+  if (etablissementQ) where.etablissement = etablissementQ;
   if (q) {
     where.OR = [
       { titre: { contains: q, mode: "insensitive" } },
@@ -50,6 +52,7 @@ export async function GET(req: NextRequest) {
       fileName: true,
       fileType: true,
       authorName: true,
+      etablissement: true,
       authorId: true,
       createdAt: true,
       _count: { select: { likes: true, comments: true } },
@@ -58,9 +61,10 @@ export async function GET(req: NextRequest) {
   });
 
   // Options de filtre (valeurs distinctes présentes)
-  const all = await prisma.sharedResource.findMany({ select: { filiere: true, module: true } });
+  const all = await prisma.sharedResource.findMany({ select: { filiere: true, module: true, etablissement: true } });
   const filieres = [...new Set(all.map((r) => r.filiere).filter(Boolean))].sort();
   const modules = [...new Set(all.map((r) => r.module).filter(Boolean))].sort();
+  const etablissements = [...new Set(all.map((r) => r.etablissement).filter(Boolean))].sort() as string[];
 
   return NextResponse.json({
     resources: resources.map((r) => ({
@@ -74,13 +78,14 @@ export async function GET(req: NextRequest) {
       fileName: r.fileName,
       fileType: r.fileType,
       authorName: r.authorName,
+      etablissement: r.etablissement,
       isMine: r.authorId === userId,
       createdAt: r.createdAt,
       likeCount: r._count.likes,
       commentCount: r._count.comments,
       likedByMe: r.likes.length > 0,
     })),
-    filters: { filieres, modules },
+    filters: { filieres, modules, etablissements },
   });
 }
 
@@ -90,6 +95,7 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
   const userId = session.user.id;
   const authorName = session.user.name ?? "Formateur";
+  const etablissement = session.user.etablissement ?? null;
 
   const body = await req.json();
   const type = body.type as string;
@@ -104,6 +110,7 @@ export async function POST(req: NextRequest) {
     module: body.module?.trim() || null,
     niveau: body.niveau?.trim() || null,
     authorName,
+    etablissement,
     author: { connect: { id: userId } },
   };
 
