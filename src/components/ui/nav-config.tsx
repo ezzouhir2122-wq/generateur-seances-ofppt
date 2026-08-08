@@ -122,7 +122,6 @@ export const navSections: NavSection[] = [
     label: "Pédagogie",
     items: [
       { href: "/referentiel", label: "Référentiel", icon: <RefIcon />, exact: false },
-      { href: "/suivi", label: "Suivi des compétences", icon: <SuiviIcon />, exact: false },
       { href: "/bibliotheque", label: "Bibliothèque", icon: <BiblioIcon />, exact: false },
     ],
   },
