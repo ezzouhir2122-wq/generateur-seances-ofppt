@@ -237,6 +237,7 @@ export default function SeancesPage() {
                 onExportWord={() => exportToWord(contenu, titre)}
                 onExportPPT={() => exportToPPT(contenu, titre)}
                 onReset={() => { setContenu(null); setError(null); }}
+                onEdit={(newContenu) => setContenu(newContenu)}
               />
             )}
 
