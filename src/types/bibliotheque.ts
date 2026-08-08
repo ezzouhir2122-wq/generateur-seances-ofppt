@@ -11,6 +11,7 @@ export interface ResourceListItem {
   fileName: string | null;
   fileType: string | null;
   authorName: string;
+  etablissement?: string | null;
   isMine: boolean;
   createdAt: string;
   likeCount: number;
@@ -39,3 +40,18 @@ export const TYPE_META: Record<ResourceType, { label: string; icon: string; colo
   EVALUATION: { label: "Évaluation", icon: "✓", color: "#0B6B72", bg: "#0B6B7214" },
   FICHIER: { label: "Fichier", icon: "📎", color: "#E8651A", bg: "#E8651A14" },
 };
+
+export interface MyOwnResource {
+  id: string;
+  titre: string;
+  filiere: string | null;
+  module: string | null;
+  niveau: string | null;
+  createdAt: string;
+  isPublished: boolean;
+}
+
+export interface MyOwnResources {
+  seances: MyOwnResource[];
+  fiches: MyOwnResource[];
+}
