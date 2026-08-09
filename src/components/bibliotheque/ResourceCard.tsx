@@ -6,9 +6,10 @@ interface Props {
   resource: ResourceListItem;
   onOpen: () => void;
   onLike: () => void;
+  onRemove?: () => void;
 }
 
-export default function ResourceCard({ resource: r, onOpen, onLike }: Props) {
+export default function ResourceCard({ resource: r, onOpen, onLike, onRemove }: Props) {
   const meta = TYPE_META[r.type];
 
   return (
@@ -78,6 +79,16 @@ export default function ResourceCard({ resource: r, onOpen, onLike }: Props) {
           <span className="inline-flex items-center gap-1 text-xs" style={{ color: "#9CA3AF" }}>
             💬 {r.commentCount}
           </span>
+          {r.isMine && onRemove && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onRemove(); }}
+              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-lg transition-colors"
+              style={{ background: "#FEF2F2", color: "#EF4444", border: "1px solid #FECACA" }}
+              aria-label="Retirer"
+            >
+              🗑 Retirer
+            </button>
+          )}
         </div>
       </div>
     </div>
