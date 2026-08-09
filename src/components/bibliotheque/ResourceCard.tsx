@@ -27,9 +27,20 @@ export default function ResourceCard({ resource: r, onOpen, onLike, onRemove }: 
           <span>{meta.icon}</span> {meta.label}
         </span>
         {r.isMine && (
-          <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "#F3F4F6", color: "#6B7280" }}>
-            Moi
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ background: "#F3F4F6", color: "#6B7280" }}>
+              Moi
+            </span>
+            {onRemove && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onRemove(); }}
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                style={{ background: "#FEF2F2", color: "#EF4444", border: "1px solid #FECACA" }}
+              >
+                🗑 Retirer
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -79,16 +90,6 @@ export default function ResourceCard({ resource: r, onOpen, onLike, onRemove }: 
           <span className="inline-flex items-center gap-1 text-xs" style={{ color: "#9CA3AF" }}>
             💬 {r.commentCount}
           </span>
-          {r.isMine && onRemove && (
-            <button
-              onClick={(e) => { e.stopPropagation(); onRemove(); }}
-              className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-lg transition-colors"
-              style={{ background: "#FEF2F2", color: "#EF4444", border: "1px solid #FECACA" }}
-              aria-label="Retirer"
-            >
-              🗑 Retirer
-            </button>
-          )}
         </div>
       </div>
     </div>
