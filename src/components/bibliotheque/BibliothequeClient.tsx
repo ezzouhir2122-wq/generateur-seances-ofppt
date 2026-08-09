@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
 import { ResourceListItem, ResourceType, TYPE_META, MyOwnResources } from "@/types/bibliotheque";
 import ResourceCard from "./ResourceCard";
 import PublishModal from "./PublishModal";
@@ -20,7 +21,7 @@ export default function BibliothequeClient() {
   const [showPublish, setShowPublish] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"communaute" | "mes-ressources">("communaute");
+  const [activeTab, setActiveTab] = useState<"communaute" | "mes-ressources">("mes-ressources");
   const [etablissement, setEtablissement] = useState("");
   const [myResources, setMyResources] = useState<MyOwnResources>({ seances: [], fiches: [] });
   const [myLoading, setMyLoading] = useState(false);
@@ -53,15 +54,18 @@ export default function BibliothequeClient() {
     return () => clearTimeout(t);
   }, [fetchData, q]);
 
-  useEffect(() => {
-    if (activeTab !== "mes-ressources") return;
+  const fetchMyResources = useCallback(() => {
     setMyLoading(true);
     fetch("/api/bibliotheque/mes-ressources")
       .then((r) => r.json())
       .then((d) => setMyResources(d))
       .catch(() => {})
       .finally(() => setMyLoading(false));
-  }, [activeTab]);
+  }, []);
+
+  useEffect(() => {
+    fetchMyResources();
+  }, [fetchMyResources]);
 
   const likeFromCard = async (id: string) => {
     setResources((prev) =>
@@ -160,6 +164,20 @@ export default function BibliothequeClient() {
 
       {activeTab === "mes-ressources" && (
         <div>
+          {/* Barre d'actions */}
+          <div className="flex items-center justify-between mb-5">
+            <p className="text-sm" style={{ color: "#6B7280" }}>
+              {myLoading ? "Chargement…" : `${myResources.seances.length + myResources.fiches.length} ressource${myResources.seances.length + myResources.fiches.length !== 1 ? "s" : ""}`}
+            </p>
+            <button
+              onClick={() => setShowPublish(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-opacity hover:opacity-90"
+              style={{ background: "#16A34A", color: "#FFFFFF" }}
+            >
+              <span>⚡</span> Partage rapide
+            </button>
+          </div>
+
           {myLoading ? (
             <p className="text-sm text-center py-16" style={{ color: "#9CA3AF" }}>Chargement…</p>
           ) : (
@@ -261,9 +279,18 @@ export default function BibliothequeClient() {
               )}
 
               {myResources.seances.length === 0 && myResources.fiches.length === 0 && (
-                <div className="flex flex-col items-center py-16 rounded-2xl" style={{ border: "1px dashed #E2E8F0" }}>
-                  <p className="text-sm" style={{ color: "#374151" }}>Aucune séance ou fiche générée</p>
-                  <p className="text-xs mt-1" style={{ color: "#6B7280" }}>Génère des séances et fiches pédagogiques pour les partager ici.</p>
+                <div className="flex flex-col items-center py-16 rounded-2xl gap-3" style={{ border: "1px dashed #E2E8F0" }}>
+                  <div className="text-4xl">📚</div>
+                  <p className="text-sm font-medium" style={{ color: "#374151" }}>Aucune séance ou fiche générée</p>
+                  <p className="text-xs" style={{ color: "#6B7280" }}>Génère des séances et fiches pédagogiques pour les partager ici.</p>
+                  <div className="flex gap-2 mt-2">
+                    <Link href="/seances" className="px-4 py-2 text-xs font-semibold rounded-xl" style={{ background: "#0A4DA8", color: "#FFFFFF" }}>
+                      ⚡ Générer une séance
+                    </Link>
+                    <Link href="/fiches" className="px-4 py-2 text-xs font-semibold rounded-xl" style={{ background: "#003087", color: "#FFFFFF" }}>
+                      📋 Générer une fiche
+                    </Link>
+                  </div>
                 </div>
               )}
             </>
@@ -278,10 +305,7 @@ export default function BibliothequeClient() {
             setShowPublish(false);
             setPublishDefaults({});
             fetchData();
-            if (activeTab === "mes-ressources") {
-              setActiveTab("communaute");
-              setTimeout(() => setActiveTab("mes-ressources"), 0);
-            }
+            fetchMyResources();
           }}
           defaultSourceId={publishDefaults.sourceId}
           defaultType={publishDefaults.type}
