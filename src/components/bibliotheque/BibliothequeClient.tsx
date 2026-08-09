@@ -70,6 +70,15 @@ export default function BibliothequeClient() {
     fetchMyResources();
   }, [fetchMyResources]);
 
+  const removeShared = async (sharedId: string) => {
+    if (!confirm("Retirer cette ressource de la communauté ?")) return;
+    const res = await fetch(`/api/bibliotheque/${sharedId}`, { method: "DELETE" });
+    if (res.ok) {
+      fetchMyResources();
+      fetchData();
+    }
+  };
+
   const likeFromCard = async (id: string) => {
     setResources((prev) =>
       prev.map((r) => (r.id === id ? { ...r, likedByMe: !r.likedByMe, likeCount: r.likeCount + (r.likedByMe ? -1 : 1) } : r))
@@ -217,7 +226,15 @@ export default function BibliothequeClient() {
                           <span className="text-[10px]" style={{ color: "#C4C9D4" }}>
                             {new Date(s.createdAt).toLocaleDateString("fr-FR")}
                           </span>
-                          {!s.isPublished && (
+                          {s.isPublished && s.sharedResourceId ? (
+                            <button
+                              onClick={() => removeShared(s.sharedResourceId!)}
+                              className="text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors"
+                              style={{ background: "#FEF2F2", color: "#EF4444", border: "1px solid #FECACA" }}
+                            >
+                              Retirer
+                            </button>
+                          ) : !s.isPublished ? (
                             <button
                               onClick={() => { setPublishDefaults({ sourceId: s.id, type: "SEANCE" }); setShowPublish(true); }}
                               className="text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors"
@@ -225,7 +242,7 @@ export default function BibliothequeClient() {
                             >
                               Partager
                             </button>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     ))}
@@ -265,7 +282,15 @@ export default function BibliothequeClient() {
                           <span className="text-[10px]" style={{ color: "#C4C9D4" }}>
                             {new Date(f.createdAt).toLocaleDateString("fr-FR")}
                           </span>
-                          {!f.isPublished && (
+                          {f.isPublished && f.sharedResourceId ? (
+                            <button
+                              onClick={() => removeShared(f.sharedResourceId!)}
+                              className="text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors"
+                              style={{ background: "#FEF2F2", color: "#EF4444", border: "1px solid #FECACA" }}
+                            >
+                              Retirer
+                            </button>
+                          ) : !f.isPublished ? (
                             <button
                               onClick={() => { setPublishDefaults({ sourceId: f.id, type: "FICHE" }); setShowPublish(true); }}
                               className="text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors"
@@ -273,7 +298,7 @@ export default function BibliothequeClient() {
                             >
                               Partager
                             </button>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     ))}

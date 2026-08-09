@@ -20,15 +20,16 @@ export async function GET() {
     }),
     prisma.sharedResource.findMany({
       where: { authorId: userId, type: { in: ["SEANCE", "FICHE"] } },
-      select: { titre: true, type: true },
+      select: { id: true, titre: true, type: true },
     }),
   ]);
 
-  const publishedSeanceTitres = new Set(
-    published.filter((p) => p.type === "SEANCE").map((p) => p.titre)
+  // Map titre → sharedResource.id for quick lookup
+  const publishedSeances = new Map(
+    published.filter((p) => p.type === "SEANCE").map((p) => [p.titre, p.id])
   );
-  const publishedFicheTitres = new Set(
-    published.filter((p) => p.type === "FICHE").map((p) => p.titre)
+  const publishedFiches = new Map(
+    published.filter((p) => p.type === "FICHE").map((p) => [p.titre, p.id])
   );
 
   return NextResponse.json({
@@ -39,7 +40,8 @@ export async function GET() {
       module: s.module,
       niveau: s.niveau,
       createdAt: s.createdAt,
-      isPublished: publishedSeanceTitres.has(s.title),
+      isPublished: publishedSeances.has(s.title),
+      sharedResourceId: publishedSeances.get(s.title) ?? null,
     })),
     fiches: fiches.map((f) => ({
       id: f.id,
@@ -48,7 +50,8 @@ export async function GET() {
       module: f.module,
       niveau: f.niveau,
       createdAt: f.createdAt,
-      isPublished: publishedFicheTitres.has(f.titre),
+      isPublished: publishedFiches.has(f.titre),
+      sharedResourceId: publishedFiches.get(f.titre) ?? null,
     })),
   });
 }

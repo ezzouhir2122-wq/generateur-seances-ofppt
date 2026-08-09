@@ -49,6 +49,7 @@ export interface MyOwnResource {
   niveau: string | null;
   createdAt: string;
   isPublished: boolean;
+  sharedResourceId: string | null;
 }
 
 export interface MyOwnResources {
