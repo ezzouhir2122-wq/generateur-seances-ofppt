@@ -57,8 +57,11 @@ export default function BibliothequeClient() {
   const fetchMyResources = useCallback(() => {
     setMyLoading(true);
     fetch("/api/bibliotheque/mes-ressources")
-      .then((r) => r.json())
-      .then((d) => setMyResources(d))
+      .then(async (r) => {
+        if (!r.ok) return;
+        const d = await r.json();
+        if (d.seances && d.fiches) setMyResources(d);
+      })
       .catch(() => {})
       .finally(() => setMyLoading(false));
   }, []);
