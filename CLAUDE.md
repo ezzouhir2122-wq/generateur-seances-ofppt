@@ -53,7 +53,14 @@ npx prisma migrate dev --name [nom] # Nouvelle migration
 Voir `.env.example` — ne jamais commiter `.env`
 
 ## Règles
-- **RÈGLE D'OR** : Après chaque implémentation de modification, toujours faire un `git add` + `git commit` + `git push` pour permettre le déploiement Vercel.
+- **RÈGLE D'OR DÉPLOIEMENT** : Après CHAQUE modification de code, obligatoirement exécuter dans l'ordre :
+  1. `git add <fichiers modifiés>`
+  2. `git commit -m "type(scope): description"`
+  3. `git push` → déclenche automatiquement le build Vercel
+  4. Attendre 3-5 min puis vérifier sur **www.competencia.one** que la modification est visible
+  5. Si la page n'est pas à jour : vérifier le dashboard Vercel → onglet Deployments → corriger l'erreur de build
+- **VÉRIFICATION OBLIGATOIRE** : Après chaque push, utiliser Playwright pour naviguer sur `www.competencia.one` et confirmer visuellement que le changement est en production.
+- **NE JAMAIS** ajouter des options expérimentales invalides dans `next.config.ts` — elles font échouer le build Vercel silencieusement.
 - Toujours sauvegarder les décisions dans `decisions/ledger.md`
 - Ne jamais stocker les clés API dans le code
 - Tous les exports dans `src/lib/export.ts`
