@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
         method: "POST",
         headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: model || "mistral-small-latest",
+          model: "mistral-small-latest",
           max_tokens: 1,
           messages: [{ role: "user", content: "hi" }],
         }),
