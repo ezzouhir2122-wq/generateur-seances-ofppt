@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import type { CorrectionFormData } from "@/types/correction";
+import { useState, useRef } from "react";
+import type { CorrectionFormData, CorrectionInputMode } from "@/types/correction";
 import ReferentielCascade, { ReferentielSelection } from "./ReferentielCascade";
 
 interface Props {
@@ -14,6 +14,30 @@ const TYPES: { value: CorrectionFormData["type"]; label: string; sublabel: strin
   { value: "devoir", label: "Devoir / TP",    sublabel: "Exercice, Projet",     icon: "✏️" },
 ];
 
+const INPUT_MODES: { value: CorrectionInputMode; label: string; icon: string }[] = [
+  { value: "texte", label: "Texte", icon: "✏️" },
+  { value: "pdf",   label: "PDF",   icon: "📄" },
+  { value: "image", label: "Image", icon: "🖼️" },
+];
+
+const ACCEPTED: Record<CorrectionInputMode, string> = {
+  texte: "",
+  pdf:   "application/pdf",
+  image: "image/jpeg,image/png,image/webp,image/gif",
+};
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1]);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function CorrectionForm({ onGenerate, isLoading }: Props) {
   const [form, setForm] = useState<CorrectionFormData>({
     type: "copie",
@@ -23,7 +47,12 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
     corrigeType: "",
     copieEtudiant: "",
     nomStagiaire: "",
+    inputMode: "texte",
   });
+
+  const [dragOver, setDragOver] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleReferentielChange = (sel: ReferentielSelection) => {
     setForm(prev => ({ ...prev, filiere: sel.filiere, module: sel.module }));
@@ -33,12 +62,56 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm(prev => ({ ...prev, [field]: e.target.value }));
 
+  const handleModeChange = (mode: CorrectionInputMode) => {
+    setForm(prev => ({
+      ...prev,
+      inputMode: mode,
+      copieEtudiant: "",
+      fichierBase64: undefined,
+      fichierMimeType: undefined,
+      fichierNom: undefined,
+    }));
+    setPreviewUrl(null);
+  };
+
+  const handleFile = async (file: File) => {
+    const base64 = await fileToBase64(file);
+    setForm(prev => ({
+      ...prev,
+      fichierBase64: base64,
+      fichierMimeType: file.type,
+      fichierNom: file.name,
+    }));
+    if (file.type.startsWith("image/")) {
+      setPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleFile(file);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleFile(file);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onGenerate(form);
   };
 
-  const canSubmit = form.filiere && form.module && form.copieEtudiant.trim().length > 20;
+  const hasFile = !!form.fichierBase64;
+  const canSubmit = form.filiere && form.module && (
+    form.inputMode === "texte"
+      ? form.copieEtudiant.trim().length > 20
+      : hasFile
+  );
 
   return (
     <form
@@ -124,24 +197,131 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
           />
         </div>
 
-        {/* Copie étudiant */}
+        {/* Copie du stagiaire — mode selector */}
         <div>
-          <label className="label" style={{ color: "#0A4DA8" }}>
-            Copie du stagiaire *
-          </label>
-          <textarea
-            className="input-field resize-none"
-            rows={8}
-            required
-            placeholder="Collez ici le texte de la copie à corriger…"
-            value={form.copieEtudiant}
-            onChange={set("copieEtudiant")}
-            style={{ borderColor: form.copieEtudiant.trim().length > 0 ? "#0A4DA840" : undefined }}
-          />
-          {form.copieEtudiant.trim().length > 0 && form.copieEtudiant.trim().length < 20 && (
-            <p style={{ fontSize: "11px", color: "#E8651A", marginTop: "4px" }}>
-              La copie semble trop courte pour être corrigée.
-            </p>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+            <label className="label" style={{ color: "#0A4DA8", margin: 0 }}>
+              Copie du stagiaire *
+            </label>
+            {/* Mode tabs */}
+            <div style={{
+              display: "flex", gap: "2px",
+              background: "#F3F4F6", borderRadius: "8px", padding: "2px",
+            }}>
+              {INPUT_MODES.map(m => (
+                <button
+                  key={m.value}
+                  type="button"
+                  onClick={() => handleModeChange(m.value)}
+                  style={{
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    border: "none",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    transition: "all 0.15s",
+                    background: form.inputMode === m.value ? "#FFFFFF" : "transparent",
+                    color: form.inputMode === m.value ? "#0A4DA8" : "#6B7280",
+                    boxShadow: form.inputMode === m.value ? "0 1px 3px rgba(0,0,0,.1)" : "none",
+                  }}
+                >
+                  {m.icon} {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mode texte */}
+          {form.inputMode === "texte" && (
+            <>
+              <textarea
+                className="input-field resize-none"
+                rows={8}
+                required
+                placeholder="Collez ici le texte de la copie à corriger…"
+                value={form.copieEtudiant}
+                onChange={set("copieEtudiant")}
+                style={{ borderColor: form.copieEtudiant.trim().length > 0 ? "#0A4DA840" : undefined }}
+              />
+              {form.copieEtudiant.trim().length > 0 && form.copieEtudiant.trim().length < 20 && (
+                <p style={{ fontSize: "11px", color: "#E8651A", marginTop: "4px" }}>
+                  La copie semble trop courte pour être corrigée.
+                </p>
+              )}
+            </>
+          )}
+
+          {/* Mode PDF ou Image */}
+          {(form.inputMode === "pdf" || form.inputMode === "image") && (
+            <div
+              onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+              onDragLeave={() => setDragOver(false)}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              style={{
+                border: `2px dashed ${dragOver ? "#0A4DA8" : hasFile ? "#16A34A" : "#D1D5DB"}`,
+                borderRadius: "12px",
+                background: dragOver ? "#EEF3FB" : hasFile ? "#F0FDF4" : "#F9FAFB",
+                padding: "24px 16px",
+                cursor: "pointer",
+                transition: "all 0.2s",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "10px",
+                textAlign: "center",
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ACCEPTED[form.inputMode]}
+                style={{ display: "none" }}
+                onChange={handleFileInput}
+              />
+
+              {/* Aperçu image */}
+              {previewUrl && form.inputMode === "image" && (
+                <img
+                  src={previewUrl}
+                  alt="Aperçu"
+                  style={{ maxHeight: "160px", maxWidth: "100%", borderRadius: "8px", objectFit: "contain", border: "1px solid #E5E7EB" }}
+                />
+              )}
+
+              {/* Icône + texte */}
+              {!previewUrl && (
+                <div style={{ fontSize: "32px" }}>
+                  {form.inputMode === "pdf" ? "📄" : "🖼️"}
+                </div>
+              )}
+
+              {hasFile ? (
+                <div>
+                  <p style={{ fontSize: "12px", fontWeight: 600, color: "#16A34A", margin: 0 }}>
+                    ✓ {form.fichierNom}
+                  </p>
+                  <p style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "2px" }}>
+                    Cliquez pour changer de fichier
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p style={{ fontSize: "12px", fontWeight: 600, color: "#374151", margin: 0 }}>
+                    {form.inputMode === "pdf"
+                      ? "Déposez le PDF ou cliquez pour choisir"
+                      : "Déposez l'image ou cliquez pour choisir"}
+                  </p>
+                  <p style={{ fontSize: "11px", color: "#9CA3AF", marginTop: "2px" }}>
+                    {form.inputMode === "pdf"
+                      ? "Fichier PDF uniquement"
+                      : "JPG, PNG, WEBP — L'IA lit l'écriture manuscrite"}
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
