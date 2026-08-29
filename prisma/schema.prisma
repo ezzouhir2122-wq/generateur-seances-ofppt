@@ -22,6 +22,7 @@ model User {
   googleApiKey      String?
   grokApiKey        String?
   glmApiKey         String?
+  mistralApiKey     String?
   preferredModel    String?  @default("claude-sonnet-4-6")
   seances       Seance[]
   modules       UserModule[]

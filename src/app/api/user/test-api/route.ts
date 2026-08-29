@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
         openrouterApiKey: true,
         grokApiKey: true,
         glmApiKey: true,
+        mistralApiKey: true,
       },
     });
     if (provider === "anthropic")  key = user?.claudeApiKey ?? null;
@@ -31,6 +32,7 @@ export async function POST(req: NextRequest) {
     if (provider === "openrouter") key = user?.openrouterApiKey ?? null;
     if (provider === "xai")        key = user?.grokApiKey ?? null;
     if (provider === "zhipu")      key = user?.glmApiKey ?? null;
+    if (provider === "mistral")    key = user?.mistralApiKey ?? null;
   }
 
   if (!key) {
@@ -145,6 +147,23 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: e?.error?.message ?? "Clé Zhipu AI (GLM) invalide" }, { status: 400 });
       }
       return NextResponse.json({ message: "✓ Connexion Zhipu AI (GLM) réussie" });
+    }
+
+    if (provider === "mistral") {
+      const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: model || "mistral-small-latest",
+          max_tokens: 1,
+          messages: [{ role: "user", content: "hi" }],
+        }),
+      });
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({})) as { message?: string };
+        return NextResponse.json({ message: e?.message ?? "Clé Mistral AI invalide" }, { status: 400 });
+      }
+      return NextResponse.json({ message: "✓ Connexion Mistral AI réussie" });
     }
 
     return NextResponse.json({ message: "Fournisseur inconnu" }, { status: 400 });

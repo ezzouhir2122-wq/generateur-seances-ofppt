@@ -8,7 +8,7 @@ export async function GET() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { claudeApiKey: true, openaiApiKey: true, openrouterApiKey: true, googleApiKey: true, grokApiKey: true, glmApiKey: true, preferredModel: true },
+    select: { claudeApiKey: true, openaiApiKey: true, openrouterApiKey: true, googleApiKey: true, grokApiKey: true, glmApiKey: true, mistralApiKey: true, preferredModel: true },
   });
 
   return NextResponse.json({
@@ -18,6 +18,7 @@ export async function GET() {
     googleApiKey: user?.googleApiKey ? maskKey(user.googleApiKey) : "",
     grokApiKey: user?.grokApiKey ? maskKey(user.grokApiKey) : "",
     glmApiKey: user?.glmApiKey ? maskKey(user.glmApiKey) : "",
+    mistralApiKey: user?.mistralApiKey ? maskKey(user.mistralApiKey) : "",
     preferredModel: user?.preferredModel ?? "claude-sonnet-4-6",
     hasClaudeKey: !!user?.claudeApiKey,
     hasOpenaiKey: !!user?.openaiApiKey,
@@ -25,6 +26,7 @@ export async function GET() {
     hasGoogleKey: !!user?.googleApiKey,
     hasGrokKey: !!user?.grokApiKey,
     hasGlmKey: !!user?.glmApiKey,
+    hasMistralKey: !!user?.mistralApiKey,
   });
 }
 
@@ -33,13 +35,14 @@ export async function PATCH(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const body = await req.json();
-  const { claudeApiKey, openaiApiKey, openrouterApiKey, googleApiKey, grokApiKey, glmApiKey, preferredModel } = body as {
+  const { claudeApiKey, openaiApiKey, openrouterApiKey, googleApiKey, grokApiKey, glmApiKey, mistralApiKey, preferredModel } = body as {
     claudeApiKey?: string;
     openaiApiKey?: string;
     openrouterApiKey?: string;
     googleApiKey?: string;
     grokApiKey?: string;
     glmApiKey?: string;
+    mistralApiKey?: string;
     preferredModel?: string;
   };
 
@@ -64,6 +67,9 @@ export async function PATCH(req: NextRequest) {
   if (glmApiKey !== undefined && glmApiKey !== "" && !glmApiKey.includes("•")) {
     data.glmApiKey = glmApiKey.trim();
   }
+  if (mistralApiKey !== undefined && mistralApiKey !== "" && !mistralApiKey.includes("•")) {
+    data.mistralApiKey = mistralApiKey.trim();
+  }
 
   // Allow explicit clear
   if (claudeApiKey === "") data.claudeApiKey = null;
@@ -72,6 +78,7 @@ export async function PATCH(req: NextRequest) {
   if (googleApiKey === "") data.googleApiKey = null;
   if (grokApiKey === "") data.grokApiKey = null;
   if (glmApiKey === "") data.glmApiKey = null;
+  if (mistralApiKey === "") data.mistralApiKey = null;
 
   await prisma.user.update({ where: { id: session.user.id }, data });
 

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 const PROVIDERS = [
   { id: "anthropic",  label: "Anthropic (Claude)" },
   { id: "openai",     label: "OpenAI (GPT)"       },
+  { id: "mistral",    label: "Mistral AI"          },
   { id: "google",     label: "Google (Gemini)"    },
   { id: "openrouter", label: "OpenRouter"          },
   { id: "xai",        label: "xAI (Grok)"         },
@@ -25,6 +26,12 @@ const MODELS_BY_PROVIDER: Record<ProviderId, { id: string; label: string }[]> = 
     { id: "gpt-4o-mini", label: "GPT-4o Mini — Rapide"     },
     { id: "o4-mini",     label: "o4-mini — Raisonnement"   },
     { id: "o3",          label: "o3 — Raisonnement avancé" },
+  ],
+  mistral: [
+    { id: "mistral-large-latest",  label: "Mistral Large — Meilleur"    },
+    { id: "mistral-medium-latest", label: "Mistral Medium — Équilibré"  },
+    { id: "mistral-small-latest",  label: "Mistral Small — Rapide"      },
+    { id: "codestral-latest",      label: "Codestral — Code"            },
   ],
   google: [
     { id: "gemini-2.5-pro",   label: "Gemini 2.5 Pro — Meilleur" },
@@ -53,6 +60,7 @@ const MODELS_BY_PROVIDER: Record<ProviderId, { id: string; label: string }[]> = 
 const PROVIDER_COLORS: Record<ProviderId, string> = {
   anthropic:  "#E8651A",
   openai:     "#10A37F",
+  mistral:    "#FF7000",
   google:     "#4285F4",
   openrouter: "#6366F1",
   xai:        "#111827",
@@ -62,6 +70,7 @@ const PROVIDER_COLORS: Record<ProviderId, string> = {
 const KEY_PLACEHOLDERS: Record<ProviderId, string> = {
   anthropic:  "sk-ant-api03-...",
   openai:     "sk-proj-...",
+  mistral:    "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   google:     "AIzaSy...",
   openrouter: "sk-or-v1-...",
   xai:        "xai-...",
@@ -71,8 +80,8 @@ const KEY_PLACEHOLDERS: Record<ProviderId, string> = {
 type HasKeys = Record<ProviderId, boolean>;
 type Keys    = Record<ProviderId, string>;
 
-const DEFAULT_HAS: HasKeys = { anthropic: false, openai: false, google: false, openrouter: false, xai: false, zhipu: false };
-const DEFAULT_KEYS: Keys   = { anthropic: "", openai: "", google: "", openrouter: "", xai: "", zhipu: "" };
+const DEFAULT_HAS: HasKeys = { anthropic: false, openai: false, mistral: false, google: false, openrouter: false, xai: false, zhipu: false };
+const DEFAULT_KEYS: Keys   = { anthropic: "", openai: "", mistral: "", google: "", openrouter: "", xai: "", zhipu: "" };
 
 export default function ApiTab() {
   const [loading, setLoading]               = useState(true);
@@ -94,6 +103,7 @@ export default function ApiTab() {
       setHasKeys({
         anthropic:  !!data.hasClaudeKey,
         openai:     !!data.hasOpenaiKey,
+        mistral:    !!data.hasMistralKey,
         google:     !!data.hasGoogleKey,
         openrouter: !!data.hasOpenrouterKey,
         xai:        !!data.hasGrokKey,
@@ -102,6 +112,7 @@ export default function ApiTab() {
       setKeys({
         anthropic:  data.claudeApiKey     ?? "",
         openai:     data.openaiApiKey     ?? "",
+        mistral:    data.mistralApiKey    ?? "",
         google:     data.googleApiKey     ?? "",
         openrouter: data.openrouterApiKey ?? "",
         xai:        data.grokApiKey       ?? "",
@@ -109,6 +120,7 @@ export default function ApiTab() {
       });
       const m = data.preferredModel ?? "";
       if      (m.startsWith("gpt") || m.startsWith("o1") || m.startsWith("o3") || m.startsWith("o4")) setActiveProvider("openai");
+      else if (m.startsWith("mistral") || m.startsWith("codestral")) setActiveProvider("mistral");
       else if (m.startsWith("gemini"))    setActiveProvider("google");
       else if (m.startsWith("grok-"))     setActiveProvider("xai");
       else if (m.startsWith("glm"))       setActiveProvider("zhipu");
@@ -137,6 +149,7 @@ export default function ApiTab() {
         body: JSON.stringify({
           claudeApiKey:     keys.anthropic,
           openaiApiKey:     keys.openai,
+          mistralApiKey:    keys.mistral,
           googleApiKey:     keys.google,
           openrouterApiKey: keys.openrouter,
           grokApiKey:       keys.xai,
