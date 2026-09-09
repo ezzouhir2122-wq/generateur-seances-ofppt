@@ -23,7 +23,8 @@ export default function CorrectionIAPage() {
     setIsLoading(true);
     setError(null);
     setContenu(null);
-    setTitre(`Correction IA — ${data.module}${data.nomStagiaire ? ` — ${data.nomStagiaire}` : ""}`);
+    const matiereLabel = data.matiere?.trim() || "Correction";
+    setTitre(`${matiereLabel}${data.nomStagiaire ? ` — ${data.nomStagiaire}` : ""}`);
 
     try {
       const res = await fetch("/api/corrections/generate", {

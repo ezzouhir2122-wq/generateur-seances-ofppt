@@ -6,26 +6,28 @@ import type { CorrectionFormData } from "@/types/correction";
 
 function buildTextPrompt(data: CorrectionFormData): string {
   const typeLabel = data.type === "copie" ? "copie d'examen" : "devoir/TP";
-  const corrigeSection = data.corrigeType?.trim()
-    ? `\n**Corrigé type de référence :**\n${data.corrigeType}\n`
-    : "";
-  const baremeSection = data.bareme?.trim()
-    ? `\n**Barème :**\n${data.bareme}\n`
-    : "";
+  const noteSur = data.noteSur ?? 20;
   const stagiaire = data.nomStagiaire?.trim() ? data.nomStagiaire : "le stagiaire";
+  const matiereLabel = data.matiere?.trim() || "l'évaluation";
+  const contexte = [
+    data.matiere?.trim() ? `- Matière : ${data.matiere}` : "",
+    `- Type : ${typeLabel}`,
+    `- Note sur : ${noteSur}`,
+  ].filter(Boolean).join("\n");
+  const sujetSection = data.sujet?.trim() ? `\n**Sujet / Énoncé :**\n${data.sujet}\n` : "";
+  const baremeSection = data.bareme?.trim() ? `\n**Barème :**\n${data.bareme}\n` : "";
+  const corrigeSection = data.corrigeType?.trim() ? `\n**Corrigé type de référence :**\n${data.corrigeType}\n` : "";
 
-  return `Tu es un formateur expert OFPPT spécialisé en correction pédagogique. Corrige la ${typeLabel} suivante avec précision et bienveillance.
+  return `Tu es un formateur expert spécialisé en correction pédagogique. Corrige la ${typeLabel} suivante avec précision et bienveillance.
 
 **Contexte :**
-- Filière : ${data.filiere}
-- Module : ${data.module}
-- Type : ${typeLabel}
-${baremeSection}${corrigeSection}
+${contexte}
+${sujetSection}${baremeSection}${corrigeSection}
 **Copie à corriger :**
 ${data.copieEtudiant}
 
 **Instructions :**
-- Attribue une note précise sur 20
+- Attribue une note précise sur ${noteSur}
 - Analyse chaque question ou partie de la copie
 - Identifie les erreurs, les points forts et les lacunes
 - Rédige un feedback personnalisé et encourageant adressé à ${stagiaire}
@@ -33,10 +35,10 @@ ${data.copieEtudiant}
 
 **Format de sortie attendu (Markdown) :**
 
-# Rapport de correction — ${data.module}
+# Rapport de correction — ${matiereLabel}
 
 ## Note obtenue
-**XX / 20**
+**XX / ${noteSur}**
 (Justification en 1-2 phrases)
 
 ## Analyse détaillée
@@ -64,24 +66,26 @@ Génère un rapport complet, précis et directement utilisable par le formateur.
 
 function buildFilePrompt(data: CorrectionFormData): string {
   const typeLabel = data.type === "copie" ? "copie d'examen" : "devoir/TP";
-  const corrigeSection = data.corrigeType?.trim()
-    ? `\n**Corrigé type de référence :**\n${data.corrigeType}\n`
-    : "";
-  const baremeSection = data.bareme?.trim()
-    ? `\n**Barème :**\n${data.bareme}\n`
-    : "";
+  const noteSur = data.noteSur ?? 20;
   const stagiaire = data.nomStagiaire?.trim() ? data.nomStagiaire : "le stagiaire";
+  const matiereLabel = data.matiere?.trim() || "l'évaluation";
+  const contexte = [
+    data.matiere?.trim() ? `- Matière : ${data.matiere}` : "",
+    `- Type : ${typeLabel}`,
+    `- Note sur : ${noteSur}`,
+  ].filter(Boolean).join("\n");
+  const sujetSection = data.sujet?.trim() ? `\n**Sujet / Énoncé :**\n${data.sujet}\n` : "";
+  const baremeSection = data.bareme?.trim() ? `\n**Barème :**\n${data.bareme}\n` : "";
+  const corrigeSection = data.corrigeType?.trim() ? `\n**Corrigé type de référence :**\n${data.corrigeType}\n` : "";
 
-  return `Tu es un formateur expert OFPPT spécialisé en correction pédagogique. Corrige la ${typeLabel} ci-jointe avec précision et bienveillance.
+  return `Tu es un formateur expert spécialisé en correction pédagogique. Corrige la ${typeLabel} ci-jointe avec précision et bienveillance.
 
 **Contexte :**
-- Filière : ${data.filiere}
-- Module : ${data.module}
-- Type : ${typeLabel}
-${baremeSection}${corrigeSection}
+${contexte}
+${sujetSection}${baremeSection}${corrigeSection}
 **Instructions :**
 - Lis attentivement le contenu de la copie (image ou PDF joint)
-- Attribue une note précise sur 20
+- Attribue une note précise sur ${noteSur}
 - Analyse chaque question ou partie de la copie
 - Identifie les erreurs, les points forts et les lacunes
 - Rédige un feedback personnalisé et encourageant adressé à ${stagiaire}
@@ -89,10 +93,10 @@ ${baremeSection}${corrigeSection}
 
 **Format de sortie attendu (Markdown) :**
 
-# Rapport de correction — ${data.module}
+# Rapport de correction — ${matiereLabel}
 
 ## Note obtenue
-**XX / 20**
+**XX / ${noteSur}**
 (Justification en 1-2 phrases)
 
 ## Analyse détaillée
@@ -134,20 +138,13 @@ function buildAnthropicContent(data: CorrectionFormData): AnthropicContent[] {
 
   if (data.inputMode === "image") {
     return [
-      {
-        type: "image",
-        source: { type: "base64", media_type: data.fichierMimeType, data: data.fichierBase64 },
-      },
+      { type: "image", source: { type: "base64", media_type: data.fichierMimeType, data: data.fichierBase64 } },
       { type: "text", text: promptText },
     ];
   }
 
-  // PDF
   return [
-    {
-      type: "document",
-      source: { type: "base64", media_type: "application/pdf", data: data.fichierBase64 },
-    },
+    { type: "document", source: { type: "base64", media_type: "application/pdf", data: data.fichierBase64 } },
     { type: "text", text: promptText },
   ];
 }
@@ -164,9 +161,9 @@ export async function POST(req: Request) {
   const hasFile = isFileMode && !!data.fichierBase64;
   const hasText = !isFileMode && data.copieEtudiant?.trim();
 
-  if (!data.filiere || !data.module || (!hasFile && !hasText)) {
+  if (!hasFile && !hasText) {
     return NextResponse.json(
-      { error: "Paramètres manquants (filière, module, copie)" },
+      { error: "La copie du stagiaire est requise" },
       { status: 400 }
     );
   }
@@ -185,7 +182,6 @@ export async function POST(req: Request) {
     const block = msg.content[0];
     contenu = block.type === "text" ? block.text : "";
   } catch {
-    // Fallback OpenAI : texte uniquement (OpenAI ne reçoit pas le fichier)
     try {
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
       const textPrompt = isFileMode

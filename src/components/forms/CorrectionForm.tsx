@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react";
 import type { CorrectionFormData, CorrectionInputMode } from "@/types/correction";
-import ReferentielCascade, { ReferentielSelection } from "./ReferentielCascade";
 
 interface Props {
   onGenerate: (data: CorrectionFormData) => void;
@@ -29,20 +28,41 @@ const ACCEPTED: Record<CorrectionInputMode, string> = {
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      resolve(result.split(",")[1]);
-    };
+    reader.onload = () => resolve((reader.result as string).split(",")[1]);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 }
 
+const LABEL_STYLE: React.CSSProperties = {
+  display: "block",
+  fontSize: "11px",
+  fontWeight: 700,
+  color: "#374151",
+  textTransform: "uppercase",
+  letterSpacing: "0.05em",
+  marginBottom: "6px",
+};
+
+const OPTIONAL_BADGE: React.CSSProperties = {
+  fontSize: "9px",
+  fontWeight: 600,
+  color: "#9CA3AF",
+  background: "#F3F4F6",
+  padding: "1px 5px",
+  borderRadius: "4px",
+  marginLeft: "6px",
+  textTransform: "none",
+  letterSpacing: 0,
+  verticalAlign: "middle",
+};
+
 export default function CorrectionForm({ onGenerate, isLoading }: Props) {
   const [form, setForm] = useState<CorrectionFormData>({
     type: "copie",
-    filiere: "",
-    module: "",
+    matiere: "",
+    noteSur: 20,
+    sujet: "",
     bareme: "",
     corrigeType: "",
     copieEtudiant: "",
@@ -53,10 +73,6 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
   const [dragOver, setDragOver] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleReferentielChange = (sel: ReferentielSelection) => {
-    setForm(prev => ({ ...prev, filiere: sel.filiere, module: sel.module }));
-  };
 
   const set = (field: keyof CorrectionFormData) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
@@ -82,11 +98,7 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
       fichierMimeType: file.type,
       fichierNom: file.name,
     }));
-    if (file.type.startsWith("image/")) {
-      setPreviewUrl(URL.createObjectURL(file));
-    } else {
-      setPreviewUrl(null);
-    }
+    setPreviewUrl(file.type.startsWith("image/") ? URL.createObjectURL(file) : null);
   };
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,11 +119,9 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
   };
 
   const hasFile = !!form.fichierBase64;
-  const canSubmit = form.filiere && form.module && (
-    form.inputMode === "texte"
-      ? form.copieEtudiant.trim().length > 20
-      : hasFile
-  );
+  const canSubmit = form.inputMode === "texte"
+    ? form.copieEtudiant.trim().length > 20
+    : hasFile;
 
   return (
     <form
@@ -131,11 +141,9 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
       {/* Body */}
       <div style={{ flex: 1, overflowY: "auto", padding: "18px 22px", display: "flex", flexDirection: "column", gap: "16px" }}>
 
-        {/* Type */}
+        {/* 1 — Type */}
         <div>
-          <label className="label" style={{ marginBottom: "6px", display: "block", fontSize: "11px", fontWeight: 700, color: "#374151", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Type de travail *
-          </label>
+          <label style={LABEL_STYLE}>Type de travail *</label>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
             {TYPES.map(t => (
               <label
@@ -159,48 +167,95 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
           </div>
         </div>
 
-        {/* Référentiel cascade */}
-        <ReferentielCascade onChange={handleReferentielChange} />
-
-        {/* Nom stagiaire */}
-        <div>
-          <label className="label">Nom du stagiaire (optionnel)</label>
-          <input
-            className="input-field"
-            placeholder="Ex : Mohammed Alami"
-            value={form.nomStagiaire ?? ""}
-            onChange={set("nomStagiaire")}
-          />
+        {/* 2 — Matière + Nom stagiaire */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+          <div>
+            <label style={LABEL_STYLE}>
+              Matière
+              <span style={OPTIONAL_BADGE}>optionnel</span>
+            </label>
+            <input
+              className="input-field"
+              placeholder="Ex : Comptabilité"
+              value={form.matiere ?? ""}
+              onChange={set("matiere")}
+            />
+          </div>
+          <div>
+            <label style={LABEL_STYLE}>
+              Stagiaire
+              <span style={OPTIONAL_BADGE}>optionnel</span>
+            </label>
+            <input
+              className="input-field"
+              placeholder="Ex : M. Alami"
+              value={form.nomStagiaire ?? ""}
+              onChange={set("nomStagiaire")}
+            />
+          </div>
         </div>
 
-        {/* Barème */}
-        <div>
-          <label className="label">Barème (optionnel)</label>
-          <textarea
-            className="input-field resize-none"
-            rows={2}
-            placeholder={"Ex : Q1 : /4, Q2 : /6, Q3 : /10"}
-            value={form.bareme}
-            onChange={set("bareme")}
-          />
+        {/* 3 — Note sur + Barème */}
+        <div style={{ display: "grid", gridTemplateColumns: "90px 1fr", gap: "10px" }}>
+          <div>
+            <label style={LABEL_STYLE}>Note sur</label>
+            <input
+              className="input-field"
+              type="number"
+              min={1}
+              max={200}
+              value={form.noteSur ?? 20}
+              onChange={e => setForm(prev => ({ ...prev, noteSur: Number(e.target.value) }))}
+            />
+          </div>
+          <div>
+            <label style={LABEL_STYLE}>
+              Barème
+              <span style={OPTIONAL_BADGE}>optionnel</span>
+            </label>
+            <input
+              className="input-field"
+              placeholder="Ex : Q1 /4, Q2 /6, Q3 /10"
+              value={form.bareme ?? ""}
+              onChange={set("bareme")}
+            />
+          </div>
         </div>
 
-        {/* Corrigé type */}
+        {/* 4 — Sujet / Énoncé */}
         <div>
-          <label className="label">Corrigé type (optionnel)</label>
+          <label style={LABEL_STYLE}>
+            Sujet / Énoncé
+            <span style={OPTIONAL_BADGE}>optionnel</span>
+          </label>
           <textarea
             className="input-field resize-none"
             rows={3}
-            placeholder="Collez ici le corrigé officiel ou la réponse attendue…"
-            value={form.corrigeType}
+            placeholder="Collez ici les questions posées aux stagiaires…"
+            value={form.sujet ?? ""}
+            onChange={set("sujet")}
+          />
+        </div>
+
+        {/* 5 — Corrigé type */}
+        <div>
+          <label style={LABEL_STYLE}>
+            Corrigé type / Réponses attendues
+            <span style={OPTIONAL_BADGE}>optionnel</span>
+          </label>
+          <textarea
+            className="input-field resize-none"
+            rows={3}
+            placeholder="Collez ici le corrigé officiel — améliore la précision de la note…"
+            value={form.corrigeType ?? ""}
             onChange={set("corrigeType")}
           />
         </div>
 
-        {/* Copie du stagiaire — mode selector */}
+        {/* 6 — Copie du stagiaire */}
         <div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-            <label className="label" style={{ color: "#0A4DA8", margin: 0 }}>
+            <label style={{ ...LABEL_STYLE, marginBottom: 0, color: "#0A4DA8" }}>
               Copie du stagiaire *
             </label>
             {/* Mode tabs */}
@@ -233,12 +288,12 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
             </div>
           </div>
 
-          {/* Mode texte */}
+          {/* Texte */}
           {form.inputMode === "texte" && (
             <>
               <textarea
                 className="input-field resize-none"
-                rows={8}
+                rows={9}
                 required
                 placeholder="Collez ici le texte de la copie à corriger…"
                 value={form.copieEtudiant}
@@ -253,7 +308,7 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
             </>
           )}
 
-          {/* Mode PDF ou Image */}
+          {/* PDF / Image */}
           {(form.inputMode === "pdf" || form.inputMode === "image") && (
             <div
               onDragOver={e => { e.preventDefault(); setDragOver(true); }}
@@ -281,8 +336,6 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
                 style={{ display: "none" }}
                 onChange={handleFileInput}
               />
-
-              {/* Aperçu image */}
               {previewUrl && form.inputMode === "image" && (
                 <img
                   src={previewUrl}
@@ -290,14 +343,11 @@ export default function CorrectionForm({ onGenerate, isLoading }: Props) {
                   style={{ maxHeight: "160px", maxWidth: "100%", borderRadius: "8px", objectFit: "contain", border: "1px solid #E5E7EB" }}
                 />
               )}
-
-              {/* Icône + texte */}
               {!previewUrl && (
                 <div style={{ fontSize: "32px" }}>
                   {form.inputMode === "pdf" ? "📄" : "🖼️"}
                 </div>
               )}
-
               {hasFile ? (
                 <div>
                   <p style={{ fontSize: "12px", fontWeight: 600, color: "#16A34A", margin: 0 }}>
