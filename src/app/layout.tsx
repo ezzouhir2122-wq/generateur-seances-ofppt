@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
 import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
 import AppShell from "@/components/shell";
+import InstallBanner from "@/components/pwa/InstallBanner";
 import "./globals.css";
 
 const font = Plus_Jakarta_Sans({
@@ -20,9 +21,25 @@ const fontSerif = DM_Serif_Display({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#003087",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "Competencia IA",
   description: "Générez des séances pédagogiques OFPPT en quelques secondes avec l'IA",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Competencia IA",
+  },
+  icons: {
+    apple: "/logo-ofppt.jpg",
+    icon: "/icon.svg",
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -37,6 +54,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <AppShell user={session?.user ?? null} claudeKey={claudeKey} openaiKey={openaiKey}>
             {children}
           </AppShell>
+          <InstallBanner />
         </Providers>
       </body>
     </html>

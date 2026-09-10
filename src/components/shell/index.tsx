@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Toaster } from "sonner";
+import { usePWA } from "@/components/pwa/PWAContext";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -174,6 +175,52 @@ function NavItem({ href, label, icon, active, keepIconColor }: { href: string; l
   );
 }
 
+function SidebarInstallButton() {
+  const { canInstall, isInstalled, install } = usePWA();
+  const [installing, setInstalling] = useState(false);
+  if (!canInstall || isInstalled) return null;
+
+  const handleInstall = async () => {
+    setInstalling(true);
+    await install();
+    setInstalling(false);
+  };
+
+  return (
+    <button
+      onClick={handleInstall}
+      disabled={installing}
+      style={{
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        padding: "10px 12px",
+        borderRadius: "10px",
+        border: "1px solid rgba(22,163,74,0.4)",
+        background: "rgba(22,163,74,0.12)",
+        cursor: installing ? "default" : "pointer",
+        marginBottom: "6px",
+        transition: "background 0.15s, border-color 0.15s",
+      }}
+      onMouseEnter={e => { if (!installing) { (e.currentTarget as HTMLButtonElement).style.background = "rgba(22,163,74,0.22)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(22,163,74,0.7)"; } }}
+      onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(22,163,74,0.12)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(22,163,74,0.4)"; }}
+    >
+      <span style={{ width: "28px", height: "28px", borderRadius: "8px", background: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth="2.5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+      </span>
+      <div style={{ flex: 1, textAlign: "left" }}>
+        <div style={{ color: "#FFFFFF", fontSize: "12px", fontWeight: 700, lineHeight: "1.2" }}>
+          {installing ? "Installation..." : "Installer l'application"}
+        </div>
+        <div style={{ color: "#16A34A", fontSize: "9px", marginTop: "1px" }}>Accès rapide sur mobile</div>
+      </div>
+    </button>
+  );
+}
+
 function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
   const pathname = usePathname();
   const isActive = useCallback((href: string, exact: boolean) => {
@@ -248,6 +295,7 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
       </nav>
 
       <div className="px-3 py-2" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
+        <SidebarInstallButton />
         <Link
           href="/guide"
           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
