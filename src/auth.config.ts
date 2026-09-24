@@ -28,7 +28,8 @@ export const authConfig = {
         nextUrl.pathname.startsWith("/mot-de-passe-oublie") ||
         nextUrl.pathname.startsWith("/reinitialiser-mot-de-passe") ||
         nextUrl.pathname.startsWith("/api/auth/forgot-password") ||
-        nextUrl.pathname.startsWith("/api/auth/reset-password");
+        nextUrl.pathname.startsWith("/api/auth/reset-password") ||
+        nextUrl.pathname.startsWith("/api/auth/login-status");
       if (isPublicAuthFlow) return true;
 
       if (isLoginPage) {

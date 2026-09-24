@@ -32,6 +32,28 @@ export default function LoginForm({ error }: { error?: string }) {
     const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
+    // Pré-check serveur : permet un message distinct selon le statut du compte
+    try {
+      const res = await fetch("/api/auth/login-status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const { result } = (await res.json()) as { result: string };
+      if (result === "INVALID") {
+        setLocalError("Email ou mot de passe incorrect");
+        setIsLoading(false);
+        return;
+      }
+      if (result !== "APPROVED") {
+        setLocalError(ERROR_MESSAGES[result === "REJECTED" ? "AccountRejected" : "AccountPending"]);
+        setIsLoading(false);
+        return;
+      }
+    } catch {
+      /* si le pré-check échoue, on tente quand même signIn ci-dessous */
+    }
+
     const result = await signIn("credentials", {
       email,
       password,
