@@ -1,48 +1,125 @@
 import { Resend } from "resend";
 
-export async function sendWelcomeEmail({
+const FROM = process.env.EMAIL_FROM || "Competencia IA <onboarding@resend.dev>";
+export const APP_URL = process.env.APP_URL || "https://www.competencia.one";
+
+async function send(to: string, subject: string, html: string) {
+  if (!process.env.RESEND_API_KEY) {
+    console.log("[email] RESEND_API_KEY absent, envoi ignoré:", subject, "→", to);
+    return;
+  }
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  await resend.emails.send({ from: FROM, to, subject, html });
+}
+
+/* ─── Emails ─── */
+
+export async function sendApprovalEmail({
   to,
   name,
-  password,
+  loginUrl,
 }: {
   to: string;
   name: string;
-  password: string;
+  loginUrl: string;
 }) {
-  if (!process.env.RESEND_API_KEY) return;
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
-  await resend.emails.send({
-    from: "Competencia IA <onboarding@resend.dev>",
+  await send(
     to,
-    subject: "Bienvenue sur Competencia IA — vos accès",
-    html: buildEmailHtml({ name, email: to, password }),
-  });
+    "Votre compte Compétencia IA est activé",
+    layout(`
+      <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#111827;">Bienvenue, ${name} 👋</h1>
+      <p style="margin:0 0 24px;color:#6B7280;font-size:15px;line-height:1.6;">
+        Votre compte formateur a été <strong>approuvé</strong>. Vous pouvez dès maintenant
+        accéder à votre espace Compétencia IA et générer vos séances pédagogiques.
+      </p>
+      ${button(loginUrl, "Accéder à mon espace →")}
+      <p style="margin:28px 0 0;color:#9CA3AF;font-size:12px;line-height:1.6;text-align:center;">
+        Connectez-vous avec l'email et le mot de passe choisis lors de votre inscription.
+      </p>
+    `)
+  );
 }
 
-function buildEmailHtml({
-  name,
-  email,
-  password,
+export async function sendAdminNewRequestEmail({
+  adminEmail,
+  formateurName,
+  formateurEmail,
+  adminUrl,
 }: {
-  name: string;
-  email: string;
-  password: string;
+  adminEmail: string;
+  formateurName: string;
+  formateurEmail: string;
+  adminUrl: string;
 }) {
+  await send(
+    adminEmail,
+    "Nouvelle demande d'inscription formateur",
+    layout(`
+      <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#111827;">Nouvelle demande d'accès</h1>
+      <p style="margin:0 0 24px;color:#6B7280;font-size:15px;line-height:1.6;">
+        <strong>${formateurName}</strong> (${formateurEmail}) demande l'accès à Compétencia IA.
+        Approuvez ou rejetez la demande depuis l'espace d'administration.
+      </p>
+      ${button(adminUrl, "Voir les demandes →")}
+    `)
+  );
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  name,
+  resetUrl,
+}: {
+  to: string;
+  name: string;
+  resetUrl: string;
+}) {
+  await send(
+    to,
+    "Réinitialisation de votre mot de passe",
+    layout(`
+      <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#111827;">Réinitialisation du mot de passe</h1>
+      <p style="margin:0 0 24px;color:#6B7280;font-size:15px;line-height:1.6;">
+        Bonjour ${name}, cliquez sur le bouton ci-dessous pour définir un nouveau mot de passe.
+        Ce lien expire dans <strong>1 heure</strong>.
+      </p>
+      ${button(resetUrl, "Réinitialiser mon mot de passe →")}
+      <p style="margin:28px 0 0;color:#9CA3AF;font-size:12px;line-height:1.6;text-align:center;">
+        Si vous n'êtes pas à l'origine de cette demande, ignorez cet email : votre mot de passe reste inchangé.
+      </p>
+    `)
+  );
+}
+
+/* ─── Gabarit HTML (charte Compétencia) ─── */
+
+function button(href: string, label: string) {
+  return `
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center">
+          <a href="${href}"
+             style="display:inline-block;background:#0A4DA8;color:#ffffff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.3px;">
+            ${label}
+          </a>
+        </td>
+      </tr>
+    </table>`;
+}
+
+function layout(inner: string) {
   return `<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bienvenue sur Competencia IA</title>
+  <title>Compétencia IA</title>
 </head>
 <body style="margin:0;padding:0;background:#F5F7FA;font-family:'Segoe UI',Arial,sans-serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#F5F7FA;padding:40px 0;">
     <tr>
       <td align="center">
         <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-
-          <!-- Header -->
           <tr>
             <td style="background:#0D0D14;padding:36px 40px;text-align:center;">
               <div style="display:inline-flex;align-items:center;gap:12px;">
@@ -54,58 +131,11 @@ function buildEmailHtml({
               <p style="color:#6B7280;font-size:12px;margin:10px 0 0;letter-spacing:1px;text-transform:uppercase;">Génération pédagogique · OFPPT</p>
             </td>
           </tr>
-
-          <!-- Body -->
           <tr>
             <td style="padding:40px 40px 32px;">
-              <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#111827;">Bienvenue, ${name} 👋</h1>
-              <p style="margin:0 0 28px;color:#6B7280;font-size:15px;line-height:1.6;">
-                Votre compte formateur a été créé avec succès sur <strong>Compétencia IA</strong>.
-                Voici vos informations de connexion :
-              </p>
-
-              <!-- Credentials box -->
-              <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;margin-bottom:28px;">
-                <tr>
-                  <td style="padding:24px 28px;">
-                    <table width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="padding-bottom:16px;">
-                          <p style="margin:0 0 4px;font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;">Email</p>
-                          <p style="margin:0;font-size:15px;font-weight:600;color:#111827;">${email}</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td style="border-top:1px solid #E2E8F0;padding-top:16px;">
-                          <p style="margin:0 0 4px;font-size:11px;font-weight:600;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.8px;">Mot de passe</p>
-                          <p style="margin:0;font-size:18px;font-weight:700;color:#0A4DA8;letter-spacing:2px;font-family:monospace;">${password}</p>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- CTA Button -->
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center">
-                    <a href="https://generateur-seances-ofppt.vercel.app/login"
-                       style="display:inline-block;background:#0A4DA8;color:#ffffff;font-size:14px;font-weight:700;padding:14px 36px;border-radius:10px;text-decoration:none;letter-spacing:0.3px;">
-                      Accéder à l'application →
-                    </a>
-                  </td>
-                </tr>
-              </table>
-
-              <p style="margin:28px 0 0;color:#9CA3AF;font-size:12px;line-height:1.6;text-align:center;">
-                Pour des raisons de sécurité, nous vous recommandons de changer votre mot de passe après votre première connexion.<br/>
-                Si vous n'êtes pas à l'origine de cette inscription, ignorez cet email.
-              </p>
+              ${inner}
             </td>
           </tr>
-
-          <!-- Footer -->
           <tr>
             <td style="background:#F9FAFB;border-top:1px solid #E2E8F0;padding:20px 40px;text-align:center;">
               <p style="margin:0;color:#9CA3AF;font-size:12px;">
@@ -113,7 +143,6 @@ function buildEmailHtml({
               </p>
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
