@@ -14,6 +14,7 @@ interface AppShellProps {
     email?: string | null;
     matricule?: string | null;
     etablissement?: string | null;
+    role?: string | null;
   } | null;
   claudeKey: boolean;
   openaiKey: boolean;
@@ -296,6 +297,18 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
 
       <div className="px-3 py-2" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
         <SidebarInstallButton />
+        {user.role === "ADMIN" && (
+          <Link
+            href="/admin"
+            className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all duration-150 mb-0.5"
+            style={{ color: isActive("/admin", false) ? "#FFFFFF" : "#16A34A", background: isActive("/admin", false) ? "rgba(22,163,74,0.25)" : "rgba(22,163,74,0.12)" }}
+          >
+            <span style={{ flexShrink: 0 }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+            </span>
+            Administration
+          </Link>
+        )}
         <Link
           href="/guide"
           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
