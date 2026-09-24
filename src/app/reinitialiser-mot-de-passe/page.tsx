@@ -17,7 +17,7 @@ function ResetForm() {
     const form = e.currentTarget;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
     const confirm = (form.elements.namedItem("confirm") as HTMLInputElement).value;
-    if (password.length < 6) return setError("Le mot de passe doit contenir au moins 6 caractères.");
+    if (password.length < 8) return setError("Le mot de passe doit contenir au moins 8 caractères.");
     if (password !== confirm) return setError("Les deux mots de passe ne correspondent pas.");
 
     setLoading(true);
@@ -59,12 +59,12 @@ function ResetForm() {
       )}
       <form onSubmit={handleSubmit} style={{ width: "100%" }}>
         <div style={{ position: "relative", marginBottom: 12 }}>
-          <input name="password" type={show ? "text" : "password"} required minLength={6}
+          <input name="password" type={show ? "text" : "password"} required minLength={8}
             placeholder="Nouveau mot de passe" autoComplete="new-password" style={input} />
           <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? "Masquer" : "Afficher"}
             style={eyeBtn}>{show ? "🙈" : "👁"}</button>
         </div>
-        <input name="confirm" type={show ? "text" : "password"} required minLength={6}
+        <input name="confirm" type={show ? "text" : "password"} required minLength={8}
           placeholder="Confirmer le mot de passe" autoComplete="new-password" style={{ ...input, marginBottom: 12 }} />
         <button type="submit" disabled={loading} style={submitBtn}>
           {loading ? "Enregistrement…" : "Réinitialiser mon mot de passe"}

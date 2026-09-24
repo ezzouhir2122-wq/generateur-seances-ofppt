@@ -51,7 +51,11 @@ export default function LoginForm({ error }: { error?: string }) {
         return;
       }
     } catch {
-      /* si le pré-check échoue, on tente quand même signIn ci-dessous */
+      // Précheck indisponible (réseau) : ne pas tenter signIn, pour éviter d'afficher
+      // un message trompeur (« incorrect ») à un compte en réalité en attente.
+      setLocalError("Connexion momentanément indisponible. Veuillez réessayer.");
+      setIsLoading(false);
+      return;
     }
 
     const result = await signIn("credentials", {

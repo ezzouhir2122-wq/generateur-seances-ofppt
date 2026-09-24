@@ -5,8 +5,11 @@ import { hashToken } from "@/lib/reset-tokens";
 
 export async function POST(req: NextRequest) {
   const { token, password } = (await req.json()) as { token?: string; password?: string };
-  if (!token || !password || password.length < 6) {
-    return NextResponse.json({ error: "Requête invalide" }, { status: 400 });
+  if (!token || !password || password.length < 8) {
+    return NextResponse.json(
+      { error: "Le mot de passe doit contenir au moins 8 caractères" },
+      { status: 400 }
+    );
   }
 
   const record = await prisma.passwordResetToken.findUnique({ where: { tokenHash: hashToken(token) } });
@@ -17,7 +20,12 @@ export async function POST(req: NextRequest) {
   const hash = await bcrypt.hash(password, 10);
   await prisma.$transaction([
     prisma.user.update({ where: { id: record.userId }, data: { password: hash } }),
-    prisma.passwordResetToken.update({ where: { id: record.id }, data: { usedAt: new Date() } }),
+    // Invalide TOUS les jetons de réinitialisation encore actifs de ce compte
+    // (celui utilisé + d'éventuels autres émis auparavant).
+    prisma.passwordResetToken.updateMany({
+      where: { userId: record.userId, usedAt: null },
+      data: { usedAt: new Date() },
+    }),
   ]);
 
   return NextResponse.json({ ok: true });

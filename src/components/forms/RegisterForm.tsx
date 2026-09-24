@@ -135,9 +135,9 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
             type={showPassword ? "text" : "password"}
             className="w-full rounded-lg pl-10 pr-16 py-3 text-sm text-white placeholder-[#4B5563] transition-colors focus:outline-none focus:ring-2 focus:ring-[#0A4DA8]/30 focus:border-[#0A4DA8]"
             style={{ background: "#1A1A24", border: "1px solid #E2E8F0" }}
-            placeholder="Minimum 6 caractères"
+            placeholder="Minimum 8 caractères"
             required
-            minLength={6}
+            minLength={8}
             autoComplete="new-password"
           />
           <button

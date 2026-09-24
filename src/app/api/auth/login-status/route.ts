@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
+import { verifyPassword } from "@/lib/auth-timing";
 
 /**
  * Vérifie les identifiants côté serveur AVANT signIn, pour pouvoir afficher
@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
   if (!clean || !password) return NextResponse.json({ result: "INVALID" });
 
   const user = await prisma.user.findUnique({ where: { email: clean } });
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  const ok = await verifyPassword(password, user?.password);
+  if (!ok || !user) {
     return NextResponse.json({ result: "INVALID" });
   }
   // Identifiants corrects → on peut révéler le statut au propriétaire du compte

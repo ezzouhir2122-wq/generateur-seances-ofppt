@@ -14,8 +14,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Tous les champs sont obligatoires" }, { status: 400 });
   }
 
-  if (password.length < 6) {
-    return NextResponse.json({ error: "Le mot de passe doit contenir au moins 6 caractères" }, { status: 400 });
+  if (password.length < 8) {
+    return NextResponse.json({ error: "Le mot de passe doit contenir au moins 8 caractères" }, { status: 400 });
   }
 
   const existing = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });

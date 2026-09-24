@@ -1,8 +1,8 @@
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { authConfig } from "./auth.config";
+import { verifyPassword } from "@/lib/auth-timing";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -20,10 +20,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
-
-        const valid = await bcrypt.compare(password, user.password);
-        if (!valid) return null;
+        const valid = await verifyPassword(password, user?.password);
+        if (!user || !valid) return null;
 
         if (user.status !== "APPROVED") {
           throw new CredentialsSignin(user.status === "REJECTED" ? "AccountRejected" : "AccountPending");
