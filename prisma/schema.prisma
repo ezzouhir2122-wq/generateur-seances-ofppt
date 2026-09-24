@@ -24,6 +24,10 @@ model User {
   glmApiKey         String?
   mistralApiKey     String?
   preferredModel    String?  @default("claude-sonnet-4-6")
+  role          String        @default("FORMATEUR")
+  status        String        @default("PENDING")
+  approvedAt    DateTime?
+  resetTokens   PasswordResetToken[]
   seances       Seance[]
   modules       UserModule[]
   fiches        Fiche[]
@@ -389,4 +393,14 @@ model SimulationReport {
   note                   Int
   justification          String        @db.Text
   createdAt              DateTime      @default(now())
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
