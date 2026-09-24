@@ -186,6 +186,7 @@ export default function EvaluationsPage() {
                 onExportPDF={() => exportToPDF(contenu, titre, formateur, "Évaluation")}
                 onExportWord={() => exportToWord(contenu, titre)}
                 onReset={() => { setContenu(null); setError(null); }}
+                onEdit={(newContenu) => setContenu(newContenu)}
               />
             )}
 
