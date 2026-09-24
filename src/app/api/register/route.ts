@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
-import { sendWelcomeEmail } from "@/lib/email";
+import { sendAdminNewRequestEmail, APP_URL } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   const { name, email, password } = await req.json() as {
@@ -32,11 +32,21 @@ export async function POST(req: NextRequest) {
       name: cleanName,
       email: cleanEmail,
       password: hash,
+      status: "PENDING",
+      role: "FORMATEUR",
     },
   });
 
-  // Send welcome email with credentials (non-blocking)
-  sendWelcomeEmail({ to: cleanEmail, name: cleanName, password }).catch(() => {});
+  // Prévenir l'admin de la nouvelle demande (non bloquant)
+  const adminEmail = process.env.ADMIN_EMAIL;
+  if (adminEmail) {
+    sendAdminNewRequestEmail({
+      adminEmail,
+      formateurName: cleanName,
+      formateurEmail: cleanEmail,
+      adminUrl: `${APP_URL}/admin`,
+    }).catch(() => {});
+  }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, pending: true });
 }

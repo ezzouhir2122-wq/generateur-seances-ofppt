@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 
 export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () => void }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [done, setDone] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,19 +33,31 @@ export default function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () 
         return;
       }
 
-      // Auto-login after registration
-      const result = await signIn("credentials", { email, password, redirect: false });
-      if (result?.error) {
-        setError("Compte créé. Connectez-vous maintenant.");
-        setIsLoading(false);
-        onSwitchToLogin();
-      } else {
-        window.location.href = "/";
-      }
+      // Compte créé en attente d'approbation : pas d'auto-login
+      setIsLoading(false);
+      setDone(true);
     } catch {
       setError("Erreur réseau. Veuillez réessayer.");
       setIsLoading(false);
     }
+  }
+
+  if (done) {
+    return (
+      <div className="p-4 rounded-lg text-center" style={{ background: "#F0FDF4", border: "1px solid #BBF7D0" }}>
+        <p className="font-semibold" style={{ color: "#15803D" }}>Demande envoyée ✓</p>
+        <p className="text-sm mt-2" style={{ color: "#374151" }}>
+          Votre compte doit être approuvé par l&apos;administrateur. Vous recevrez un email dès son activation.
+        </p>
+        <button
+          onClick={onSwitchToLogin}
+          className="mt-4 text-sm font-semibold underline"
+          style={{ color: "#003087" }}
+        >
+          Retour à la connexion
+        </button>
+      </div>
+    );
   }
 
   return (
