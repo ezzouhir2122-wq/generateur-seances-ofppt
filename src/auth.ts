@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
@@ -25,12 +25,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) return null;
 
+        if (user.status !== "APPROVED") {
+          throw new CredentialsSignin(user.status === "REJECTED" ? "AccountRejected" : "AccountPending");
+        }
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           matricule: user.matricule ?? null,
           etablissement: user.etablissement ?? null,
+          role: user.role,
+          status: user.status,
         };
       },
     }),
@@ -42,6 +48,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.name = user.name;
         token.matricule = user.matricule ?? null;
         token.etablissement = user.etablissement ?? null;
+        token.role = user.role ?? token.role ?? "FORMATEUR";
+        token.status = user.status ?? token.status ?? "APPROVED";
       }
       if (trigger === "update" && session) {
         token.matricule = session.user?.matricule ?? token.matricule;
@@ -54,6 +62,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.name = token.name as string;
       session.user.matricule = token.matricule ?? null;
       session.user.etablissement = token.etablissement ?? null;
+      session.user.role = (token.role as string) ?? "FORMATEUR";
+      session.user.status = (token.status as string) ?? "APPROVED";
       return session;
     },
   },

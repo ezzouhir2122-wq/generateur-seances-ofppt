@@ -9,12 +9,16 @@ declare module "next-auth" {
       email?: string | null;
       matricule?: string | null;
       etablissement?: string | null;
+      role?: string | null;
+      status?: string | null;
     };
   }
 
   interface User {
     matricule?: string | null;
     etablissement?: string | null;
+    role?: string | null;
+    status?: string | null;
   }
 }
 
@@ -23,5 +27,7 @@ declare module "next-auth/jwt" {
     id?: string;
     matricule?: string | null;
     etablissement?: string | null;
+    role?: string | null;
+    status?: string | null;
   }
 }
