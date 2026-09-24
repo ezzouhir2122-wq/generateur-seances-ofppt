@@ -14,7 +14,8 @@ export const authConfig = {
 
       const isDebug = nextUrl.pathname.startsWith("/api/debug-login");
       const isRegister = nextUrl.pathname.startsWith("/api/register");
-      if (isApiAuth || isDebug || isRegister) return true;
+      const isBienvenue = nextUrl.pathname.startsWith("/bienvenue");
+      if (isApiAuth || isDebug || isRegister || isBienvenue) return true;
       if (isLoginPage) {
         if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
         return true;

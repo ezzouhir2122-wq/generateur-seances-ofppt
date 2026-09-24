@@ -355,7 +355,9 @@ function AssistantFAB() {
 }
 
 export default function AppShell({ children, user }: AppShellProps) {
-  if (!user) return <>{children}</>;
+  const shellPathname = usePathname();
+  // Page d'accueil d'installation (technique WAp) : toujours en plein écran, sans menu
+  if (!user || shellPathname?.startsWith("/bienvenue")) return <>{children}</>;
   return (
     <>
       <Toaster position="top-right" richColors />
