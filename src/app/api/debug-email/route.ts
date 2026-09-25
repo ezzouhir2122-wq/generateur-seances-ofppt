@@ -31,6 +31,18 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Déclenche la vérification d'un domaine : ?verify=<domainId>
+  let verifyResult: unknown = undefined;
+  const verifyId = url.searchParams.get("verify");
+  if (verifyId && process.env.RESEND_API_KEY) {
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      verifyResult = await resend.domains.verify(verifyId);
+    } catch (e) {
+      verifyResult = { thrown: e instanceof Error ? e.message : String(e) };
+    }
+  }
+
   const to = url.searchParams.get("to");
   let sendResult: unknown = "(pas de test d'envoi : ajoute &to=email)";
   if (to) {
@@ -52,5 +64,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ env, domains, sendResult });
+  return NextResponse.json({ env, domains, verifyResult, sendResult });
 }
