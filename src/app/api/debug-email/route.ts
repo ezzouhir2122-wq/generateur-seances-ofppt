@@ -19,6 +19,18 @@ export async function GET(req: NextRequest) {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL || "(non défini)",
   };
 
+  // Liste les domaines VISIBLES par cette clé API (= compte Resend de la clé)
+  let domains: unknown = "(clé absente)";
+  if (process.env.RESEND_API_KEY) {
+    try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const d = await resend.domains.list();
+      domains = d;
+    } catch (e) {
+      domains = { thrown: e instanceof Error ? e.message : String(e) };
+    }
+  }
+
   const to = url.searchParams.get("to");
   let sendResult: unknown = "(pas de test d'envoi : ajoute &to=email)";
   if (to) {
@@ -40,5 +52,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ env, sendResult });
+  return NextResponse.json({ env, domains, sendResult });
 }
