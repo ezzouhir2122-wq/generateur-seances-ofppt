@@ -371,9 +371,11 @@ export default function AppShell({ children, user }: AppShellProps) {
   const shellPathname = usePathname();
   // Page d'accueil d'installation (technique WAp) : toujours en plein écran, sans menu
   if (!user || shellPathname?.startsWith("/bienvenue")) return <>{children}</>;
+  const isAdmin = user.role === "ADMIN";
   return (
     <>
       <Toaster position="top-right" richColors />
+      {isAdmin && <AdminTopButton active={shellPathname?.startsWith("/admin") ?? false} />}
       <div className="flex h-screen overflow-hidden">
         <AppSidebar user={user} />
         <div className="flex-1 flex flex-col overflow-hidden relative">
@@ -384,5 +386,38 @@ export default function AppShell({ children, user }: AppShellProps) {
       </div>
       <AssistantFAB />
     </>
+  );
+}
+
+/* Bouton flottant "Espace admin" en haut à droite (ADMIN uniquement) */
+function AdminTopButton({ active }: { active: boolean }) {
+  return (
+    <Link
+      href={active ? "/" : "/admin"}
+      style={{
+        position: "fixed",
+        top: "14px",
+        right: "16px",
+        zIndex: 60,
+        display: "inline-flex",
+        alignItems: "center",
+        gap: "8px",
+        padding: "9px 16px",
+        borderRadius: "12px",
+        background: active ? "#16A34A" : "#003087",
+        color: "#FFFFFF",
+        fontSize: "13px",
+        fontWeight: 700,
+        textDecoration: "none",
+        boxShadow: "0 6px 18px rgba(0,48,135,0.35)",
+        border: "1px solid rgba(255,255,255,0.15)",
+      }}
+    >
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z" />
+        <path d="M9 12l2 2 4-4" />
+      </svg>
+      {active ? "← Tableau de bord" : "Espace admin"}
+    </Link>
   );
 }
