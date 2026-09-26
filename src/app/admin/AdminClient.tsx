@@ -68,6 +68,21 @@ export default function AdminClient() {
     }
   }
 
+  async function remove(id: string, name: string) {
+    if (!window.confirm(`Supprimer définitivement le compte de ${name} ?\n\nCette action est irréversible et efface toutes ses données.`)) return;
+    setBusy(id);
+    try {
+      const res = await fetch(`/api/admin/formateurs/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      toast.success(`Compte de ${name} supprimé`);
+      await load();
+    } catch {
+      toast.error("Suppression impossible. Réessayez.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   const fmt = (d: string | null) =>
     d ? new Date(d).toLocaleDateString("fr-FR", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
@@ -133,6 +148,7 @@ export default function AdminClient() {
             rejected.map((r) => (
               <RowLine key={r.id} r={r} sub={fmt(r.createdAt)}>
                 <Btn color="#16A34A" outline disabled={busy === r.id} onClick={() => act(r.id, "reactivate", r.name)}>Réactiver</Btn>
+                <Btn color="#B91C1C" disabled={busy === r.id} onClick={() => remove(r.id, r.name)}>Supprimer</Btn>
               </RowLine>
             ))}
         </Card>
