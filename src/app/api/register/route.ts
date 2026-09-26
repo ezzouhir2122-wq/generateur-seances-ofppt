@@ -40,16 +40,21 @@ export async function POST(req: NextRequest) {
   // Prévenir l'admin de la nouvelle demande.
   // On attend l'envoi : en serverless (Vercel) une promesse non-attendue après
   // la réponse peut être tuée avant que la requête HTTP vers Resend n'aboutisse.
-  const adminEmail = process.env.ADMIN_EMAIL;
-  if (adminEmail) {
+  // ADMIN_EMAIL peut contenir plusieurs adresses séparées par des virgules
+  // (ex. "admin@ofppt.ma, moi@gmail.com") — tous les admins sont notifiés.
+  const adminRecipients = (process.env.ADMIN_EMAIL ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (adminRecipients.length > 0) {
     try {
       await sendAdminNewRequestEmail({
-        adminEmail,
+        adminEmail: adminRecipients,
         formateurName: cleanName,
         formateurEmail: cleanEmail,
         adminUrl: `${APP_URL}/admin`,
       });
-      console.log("[register] notif admin envoyée →", adminEmail);
+      console.log("[register] notif admin envoyée →", adminRecipients.join(", "));
     } catch (e) {
       // Ne bloque pas l'inscription si l'email échoue, mais on trace l'erreur.
       console.error("[register] échec envoi notif admin:", e);

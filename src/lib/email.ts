@@ -2,14 +2,38 @@ import { Resend } from "resend";
 
 const FROM = process.env.EMAIL_FROM || "Competencia IA <onboarding@resend.dev>";
 export const APP_URL = process.env.APP_URL || "https://www.competencia.one";
+const REPLY_TO = process.env.EMAIL_REPLY_TO; // adresse réelle et surveillée (optionnel)
 
-async function send(to: string, subject: string, html: string) {
+// Version texte brut dérivée du HTML : améliore le score anti-spam
+// (Gmail pénalise les emails 100 % HTML sans alternative multipart/text).
+function htmlToText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<head[\s\S]*?<\/head>/gi, "")
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gi, "$2 ($1)")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/\s+\n/g, "\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+async function send(to: string | string[], subject: string, html: string) {
   if (!process.env.RESEND_API_KEY) {
     console.log("[email] RESEND_API_KEY absent, envoi ignoré:", subject, "→", to);
     return;
   }
   const resend = new Resend(process.env.RESEND_API_KEY);
-  await resend.emails.send({ from: FROM, to, subject, html });
+  await resend.emails.send({
+    from: FROM,
+    to,
+    subject,
+    html,
+    text: htmlToText(html),
+    ...(REPLY_TO ? { replyTo: REPLY_TO } : {}),
+  });
 }
 
 /* ─── Emails ─── */
@@ -46,7 +70,7 @@ export async function sendAdminNewRequestEmail({
   formateurEmail,
   adminUrl,
 }: {
-  adminEmail: string;
+  adminEmail: string | string[];
   formateurName: string;
   formateurEmail: string;
   adminUrl: string;
