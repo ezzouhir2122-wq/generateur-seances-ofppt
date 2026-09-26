@@ -24,7 +24,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!user || !valid) return null;
 
         if (user.status !== "APPROVED") {
-          throw new CredentialsSignin(user.status === "REJECTED" ? "AccountRejected" : "AccountPending");
+          throw new CredentialsSignin(
+            user.status === "REJECTED" ? "AccountRejected"
+            : user.status === "SUSPENDED" ? "AccountSuspended"
+            : "AccountPending"
+          );
         }
 
         return {

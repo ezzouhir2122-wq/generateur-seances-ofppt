@@ -11,13 +11,14 @@ interface Row {
   approvedAt: string | null;
 }
 interface Stats {
-  formateurs: { actifs: number; enAttente: number; rejetes: number };
+  formateurs: { actifs: number; enAttente: number; desactives: number; rejetes: number };
   contenu: { seances: number; fiches: number; simulations: number; stagiaires: number; groupes: number; chats: number };
 }
 
 export default function AdminClient() {
   const [pending, setPending] = useState<Row[]>([]);
   const [approved, setApproved] = useState<Row[]>([]);
+  const [suspended, setSuspended] = useState<Row[]>([]);
   const [rejected, setRejected] = useState<Row[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,6 +33,7 @@ export default function AdminClient() {
       ]);
       setPending(f.pending ?? []);
       setApproved(f.approved ?? []);
+      setSuspended(f.suspended ?? []);
       setRejected(f.rejected ?? []);
       setStats(s?.formateurs ? s : null);
     } catch {
@@ -45,7 +47,7 @@ export default function AdminClient() {
     load();
   }, [load]);
 
-  async function act(id: string, action: "approve" | "reject" | "revoke" | "reactivate", name: string) {
+  async function act(id: string, action: "approve" | "reject" | "revoke" | "reactivate" | "suspend" | "activate", name: string) {
     setBusy(id);
     try {
       const res = await fetch(`/api/admin/formateurs/${id}/${action}`, { method: "POST" });
@@ -54,6 +56,8 @@ export default function AdminClient() {
         action === "approve" ? `${name} approuvé · email envoyé`
         : action === "reject" ? `${name} rejeté`
         : action === "revoke" ? `Accès de ${name} révoqué`
+        : action === "suspend" ? `${name} désactivé`
+        : action === "activate" ? `${name} réactivé`
         : `${name} réactivé`
       );
       await load(); // recharge listes + stats
@@ -80,6 +84,7 @@ export default function AdminClient() {
         <div style={grid}>
           <Stat label="Formateurs actifs" value={stats?.formateurs.actifs} color="#16A34A" />
           <Stat label="En attente" value={stats?.formateurs.enAttente} color="#B45309" />
+          <Stat label="Désactivés" value={stats?.formateurs.desactives} color="#6B7280" />
           <Stat label="Rejetés" value={stats?.formateurs.rejetes} color="#B91C1C" />
           <Stat label="Séances générées" value={stats?.contenu.seances} color="#003087" />
           <Stat label="Fiches générées" value={stats?.contenu.fiches} color="#003087" />
@@ -108,7 +113,17 @@ export default function AdminClient() {
           {loading ? <Muted>Chargement…</Muted> : approved.length === 0 ? <Muted>Aucun formateur actif.</Muted> :
             approved.map((r) => (
               <RowLine key={r.id} r={r} sub={`Approuvé · ${fmt(r.approvedAt)}`}>
+                <Btn color="#6B7280" outline disabled={busy === r.id} onClick={() => act(r.id, "suspend", r.name)}>Désactiver</Btn>
                 <Btn color="#B91C1C" outline disabled={busy === r.id} onClick={() => act(r.id, "revoke", r.name)}>Révoquer l&apos;accès</Btn>
+              </RowLine>
+            ))}
+        </Card>
+
+        <Card title="Formateurs désactivés" count={suspended.length} badge="#F3F4F6" badgeText="#374151">
+          {loading ? <Muted>Chargement…</Muted> : suspended.length === 0 ? <Muted>Aucun formateur désactivé.</Muted> :
+            suspended.map((r) => (
+              <RowLine key={r.id} r={r} sub={`Désactivé · approuvé le ${fmt(r.approvedAt)}`}>
+                <Btn color="#16A34A" disabled={busy === r.id} onClick={() => act(r.id, "activate", r.name)}>Activer</Btn>
               </RowLine>
             ))}
         </Card>

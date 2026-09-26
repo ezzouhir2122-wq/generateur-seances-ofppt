@@ -7,10 +7,11 @@ export async function GET() {
     return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
   }
 
-  const [actifs, enAttente, rejetes, seances, fiches, simulations, stagiaires, groupes, chats] =
+  const [actifs, enAttente, desactives, rejetes, seances, fiches, simulations, stagiaires, groupes, chats] =
     await Promise.all([
       prisma.user.count({ where: { role: "FORMATEUR", status: "APPROVED" } }),
       prisma.user.count({ where: { status: "PENDING" } }),
+      prisma.user.count({ where: { role: "FORMATEUR", status: "SUSPENDED" } }),
       prisma.user.count({ where: { status: "REJECTED" } }),
       prisma.seance.count(),
       prisma.fiche.count(),
@@ -21,7 +22,7 @@ export async function GET() {
     ]);
 
   return NextResponse.json({
-    formateurs: { actifs, enAttente, rejetes },
+    formateurs: { actifs, enAttente, desactives, rejetes },
     contenu: { seances, fiches, simulations, stagiaires, groupes, chats },
   });
 }

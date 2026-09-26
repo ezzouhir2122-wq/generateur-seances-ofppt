@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react";
 const ERROR_MESSAGES: Record<string, string> = {
   AccountPending: "Votre compte est en attente d'approbation par l'administrateur.",
   AccountRejected: "Votre demande d'accès a été refusée.",
+  AccountSuspended: "Votre compte a été désactivé. Contactez l'administrateur.",
 };
 
 export default function LoginForm({ error }: { error?: string }) {
@@ -46,7 +47,7 @@ export default function LoginForm({ error }: { error?: string }) {
         return;
       }
       if (result !== "APPROVED") {
-        setLocalError(ERROR_MESSAGES[result === "REJECTED" ? "AccountRejected" : "AccountPending"]);
+        setLocalError(ERROR_MESSAGES[result === "REJECTED" ? "AccountRejected" : result === "SUSPENDED" ? "AccountSuspended" : "AccountPending"]);
         setIsLoading(false);
         return;
       }
