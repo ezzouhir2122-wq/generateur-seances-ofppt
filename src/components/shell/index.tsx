@@ -322,7 +322,7 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
           Paramètres
         </Link>
         <div className="mt-2 px-1 text-[9px] leading-snug text-center font-bold" style={{ color: "#16A34A" }}>
-          Développé par Ezzouhir Elmustapha<br />9998 · OFPPT / ISGI Marrakech<br />v2.1 — 28/08/2026
+          Développé par Ezzouhir Elmustapha<br />9998 · OFPPT / ISGI Marrakech<br />version 1.1 — Août 2026
         </div>
       </div>
     </aside>
