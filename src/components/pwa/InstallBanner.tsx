@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { usePWA } from "./PWAContext";
 
 export default function InstallBanner() {
   const { canInstall, isInstalled, isIOS, install } = usePWA();
+  const { data: session } = useSession();
   const [dismissed, setDismissed] = useState(false);
   const [installing, setInstalling] = useState(false);
   const [isMobileAndroid, setIsMobileAndroid] = useState(false);
@@ -30,8 +32,9 @@ export default function InstallBanner() {
     setInstalling(false);
   };
 
-  // Ne rien afficher si : déjà installé, déjà fermé
+  // Ne rien afficher si : déjà installé, déjà fermé, ou administrateur (pur superviseur)
   if (isInstalled || dismissed) return null;
+  if ((session?.user as { role?: string } | undefined)?.role === "ADMIN") return null;
 
   // Afficher si : iOS, Android (avec ou sans prompt natif)
   const shouldShow = isIOS || canInstall || isMobileAndroid;
