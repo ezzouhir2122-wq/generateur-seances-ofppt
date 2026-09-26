@@ -3,7 +3,47 @@ import { auth } from "@/auth";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { buildEvaluationPrompt } from "@/lib/prompts";
-import type { EvaluationFormData } from "@/types/seance";
+import { prisma } from "@/lib/db";
+import type { EvaluationFormData, EvaluationType } from "@/types/seance";
+
+const TYPE_LABELS: Record<EvaluationType, string> = {
+  cc: "Contrôle Continu (CC)",
+  efm: "Examen de Fin de Module (EFM)",
+  qcm: "QCM",
+  exercices: "Exercices pratiques",
+  controle: "Contrôle continu",
+  examen: "Examen fin de module",
+  rattrapage: "Session de rattrapage",
+};
+
+async function saveEvaluation(data: EvaluationFormData, contenu: string, userId: string): Promise<string | undefined> {
+  try {
+    const anneeLabels: Record<string, string> = {
+      "1ere-annee": "1ère Année",
+      "2eme-annee": "2ème Année",
+      "3eme-annee": "3ème Année",
+    };
+    const niveauLabel = data.niveau === "TS" ? "Technicien Spécialisé" : data.niveau === "T" ? "Technicien" : (data.niveau ?? "");
+    const anneeLabel = anneeLabels[data.annee ?? ""] ?? "";
+    const niveauDb = anneeLabel ? `${niveauLabel} - ${anneeLabel}` : niveauLabel;
+    const label = TYPE_LABELS[data.type] ?? data.type;
+    const saved = await prisma.evaluation.create({
+      data: {
+        titre: `${label} — ${data.filiere} — ${data.module}`,
+        filiere: data.filiere,
+        module: data.module,
+        niveau: niveauDb,
+        type: data.type,
+        theme: data.theme ?? data.themesCouverts ?? null,
+        contenu,
+        userId,
+      },
+    });
+    return saved.id;
+  } catch {
+    return undefined;
+  }
+}
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -43,5 +83,7 @@ export async function POST(req: Request) {
     }
   }
 
-  return NextResponse.json({ contenu });
+  const evaluationId = await saveEvaluation(data, contenu, session.user.id);
+
+  return NextResponse.json({ contenu, evaluationId });
 }

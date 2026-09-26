@@ -31,6 +31,7 @@ model User {
   seances       Seance[]
   modules       UserModule[]
   fiches        Fiche[]
+  evaluations   Evaluation[]
   chatSessions  ChatSession[]
   groupes       Groupe[]
   sharedResources  SharedResource[]
@@ -87,6 +88,23 @@ model Fiche {
   userId               String
   user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   seanceSourceId       String?   // loose ref to source Seance — no FK constraint intentional
+}
+
+model Evaluation {
+  id        String   @id @default(cuid())
+  titre     String
+  filiere   String
+  module    String
+  niveau    String
+  type      String
+  theme     String?
+  contenu   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model ChatSession {
