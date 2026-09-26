@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { Toaster } from "sonner";
 import { usePWA } from "@/components/pwa/PWAContext";
@@ -271,44 +271,36 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-1.5 space-y-1">
-        {NAV_SECTIONS.map((section) => (
-          <div key={section.id}>
-            <div className="flex items-center gap-2 px-2 mb-0.5 mt-1">
-              <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none whitespace-nowrap" style={{ color: "rgba(255,255,255,0.35)" }}>
-                {section.label}
-              </span>
-              <span className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+        {user.role === "ADMIN" ? (
+          <AdminNav isActive={isActive} />
+        ) : (
+          NAV_SECTIONS.map((section) => (
+            <div key={section.id}>
+              <div className="flex items-center gap-2 px-2 mb-0.5 mt-1">
+                <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none whitespace-nowrap" style={{ color: "rgba(255,255,255,0.35)" }}>
+                  {section.label}
+                </span>
+                <span className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+              </div>
+              <div className="space-y-0.5">
+                {section.items.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    active={isActive(item.href, item.exact)}
+                    keepIconColor={(item as { keepIconColor?: boolean }).keepIconColor}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="space-y-0.5">
-              {section.items.map((item) => (
-                <NavItem
-                  key={item.href}
-                  href={item.href}
-                  label={item.label}
-                  icon={item.icon}
-                  active={isActive(item.href, item.exact)}
-                  keepIconColor={(item as { keepIconColor?: boolean }).keepIconColor}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </nav>
 
       <div className="px-3 py-2" style={{ borderTop: "1px solid rgba(255,255,255,0.10)" }}>
-        <SidebarInstallButton />
-        {user.role === "ADMIN" && (
-          <Link
-            href="/admin"
-            className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-semibold transition-all duration-150 mb-0.5"
-            style={{ color: isActive("/admin", false) ? "#FFFFFF" : "#16A34A", background: isActive("/admin", false) ? "rgba(22,163,74,0.25)" : "rgba(22,163,74,0.12)" }}
-          >
-            <span style={{ flexShrink: 0 }}>
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
-            </span>
-            Administration
-          </Link>
-        )}
+        {user.role !== "ADMIN" && <SidebarInstallButton />}
         <Link
           href="/guide"
           className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
@@ -367,15 +359,59 @@ function AssistantFAB() {
   );
 }
 
+/* Navigation de l'espace admin (pur superviseur) */
+function AdminNav({ isActive }: { isActive: (href: string, exact: boolean) => boolean }) {
+  const items = [
+    { href: "/admin", label: "Tableau de bord", exact: true, icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    )},
+    { href: "/admin#formateurs", label: "Formateurs", exact: false, icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    )},
+    { href: "/admin#statistiques", label: "Statistiques", exact: false, icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    )},
+  ];
+  return (
+    <div>
+      <div className="flex items-center gap-2 px-2 mb-0.5 mt-1">
+        <span className="text-[9px] font-bold tracking-[0.12em] uppercase select-none whitespace-nowrap" style={{ color: "rgba(255,255,255,0.35)" }}>Administration</span>
+        <span className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+      </div>
+      <div className="space-y-0.5">
+        {items.map((it) => {
+          const active = it.exact ? isActive("/admin", true) : false;
+          return (
+            <Link key={it.href} href={it.href}
+              className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
+              style={{ color: active ? "#FFFFFF" : "rgba(255,255,255,0.70)", background: active ? "rgba(255,255,255,0.15)" : undefined }}
+              onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; } }}
+              onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; } }}
+            >
+              <span style={{ color: active ? "#16A34A" : "rgba(255,255,255,0.55)", flexShrink: 0 }}>{it.icon}</span>
+              {it.label}
+            </Link>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function AppShell({ children, user }: AppShellProps) {
   const shellPathname = usePathname();
   // Page d'accueil d'installation (technique WAp) : toujours en plein écran, sans menu
   if (!user || shellPathname?.startsWith("/bienvenue")) return <>{children}</>;
+  // Admin (pur superviseur) : on le renvoie vers son espace, jamais sur l'accueil formateur
+  const router = useRouter();
   const isAdmin = user.role === "ADMIN";
+  useEffect(() => {
+    if (isAdmin && shellPathname === "/") router.replace("/admin");
+  }, [isAdmin, shellPathname, router]);
+
   return (
     <>
       <Toaster position="top-right" richColors />
-      {isAdmin && <AdminTopButton active={shellPathname?.startsWith("/admin") ?? false} />}
       <div className="flex h-screen overflow-hidden">
         <AppSidebar user={user} />
         <div className="flex-1 flex flex-col overflow-hidden relative">
@@ -384,40 +420,7 @@ export default function AppShell({ children, user }: AppShellProps) {
           </main>
         </div>
       </div>
-      <AssistantFAB />
+      {!isAdmin && <AssistantFAB />}
     </>
-  );
-}
-
-/* Bouton flottant "Espace admin" en haut à droite (ADMIN uniquement) */
-function AdminTopButton({ active }: { active: boolean }) {
-  return (
-    <Link
-      href={active ? "/" : "/admin"}
-      style={{
-        position: "fixed",
-        top: "14px",
-        right: "16px",
-        zIndex: 60,
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "8px",
-        padding: "9px 16px",
-        borderRadius: "12px",
-        background: active ? "#16A34A" : "#003087",
-        color: "#FFFFFF",
-        fontSize: "13px",
-        fontWeight: 700,
-        textDecoration: "none",
-        boxShadow: "0 6px 18px rgba(0,48,135,0.35)",
-        border: "1px solid rgba(255,255,255,0.15)",
-      }}
-    >
-      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-      {active ? "← Tableau de bord" : "Espace admin"}
-    </Link>
   );
 }
