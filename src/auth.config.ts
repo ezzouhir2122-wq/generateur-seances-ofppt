@@ -37,16 +37,11 @@ export const authConfig = {
         return true;
       }
 
-      // Espace admin : réservé au rôle ADMIN
-      const isAdminArea =
-        nextUrl.pathname.startsWith("/admin") || nextUrl.pathname.startsWith("/api/admin");
-      if (isAdminArea) {
-        if (!isLoggedIn) return false;
-        const role = (auth?.user as { role?: string } | undefined)?.role;
-        if (role !== "ADMIN") return Response.redirect(new URL("/", nextUrl));
-        return true;
-      }
-
+      // Espace admin : le middleware Edge ne voit pas le rôle de façon fiable
+      // (callback session par défaut). On exige seulement d'être connecté ici ;
+      // le rôle ADMIN est vérifié côté serveur, garde autoritaire :
+      //  - page /admin : requireAdmin() → redirect("/") pour un non-admin
+      //  - routes /api/admin/* : requireAdmin() → 403
       return isLoggedIn;
     },
   },
