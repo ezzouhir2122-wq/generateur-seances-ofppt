@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import DashboardCharts from "@/components/dashboard/DashboardCharts";
+import DashboardCharts from "@/components/dashboard/DashboardChartsLazy";
 import PageShell from "@/components/ui/PageShell";
 
 /* ── Stat Card ── */
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  let seancesCount = 0, fichesCount = 0, modulesCount = 0, groupesCount = 0, stagiairesCount = 0;
+  let seancesCount = 0, fichesCount = 0, modulesCount = 0, groupesCount = 0;
   let seancesThisMonth = 0, fichesThisMonth = 0;
   let seancesParFiliere: { filiere: string; _count: { id: number } }[] = [];
   let recentSeances: { id: string; title: string; module: string; filiere: string; createdAt: Date }[] = [];
@@ -100,13 +100,12 @@ export default async function DashboardPage() {
   let monthlyData: { name: string; seances: number; fiches: number }[] = [];
 
   try {
-    [seancesCount, fichesCount, modulesCount, groupesCount, stagiairesCount, seancesThisMonth, fichesThisMonth] =
+    [seancesCount, fichesCount, modulesCount, groupesCount, seancesThisMonth, fichesThisMonth] =
       await Promise.all([
         prisma.seance.count({ where: { userId: uid } }),
         prisma.fiche.count({ where: { userId: uid } }),
         prisma.userModule.count({ where: { userId: uid } }),
         prisma.groupe.count({ where: { userId: uid } }),
-        prisma.stagiaire.count({ where: { groupe: { userId: uid } } }),
         prisma.seance.count({ where: { userId: uid, createdAt: { gte: startOfMonth } } }),
         prisma.fiche.count({ where: { userId: uid, createdAt: { gte: startOfMonth } } }),
       ]);
@@ -160,11 +159,14 @@ export default async function DashboardPage() {
     }
   } catch {}
 
+  const fmtDuree = (min: number) =>
+    min >= 60
+      ? `${Math.floor(min / 60)}h${min % 60 > 0 ? String(min % 60).padStart(2, "0") : ""}`
+      : `${min} min`;
+
   const tempsEconomiseMin = seancesCount * 45 + fichesCount * 30;
-  const tempsEconomiseLabel =
-    tempsEconomiseMin >= 60
-      ? `${Math.floor(tempsEconomiseMin / 60)}h${tempsEconomiseMin % 60 > 0 ? String(tempsEconomiseMin % 60).padStart(2, "0") : ""}`
-      : `${tempsEconomiseMin} min`;
+  const tempsEconomiseLabel = fmtDuree(tempsEconomiseMin);
+  const tempsEconomiseMoisMin = seancesThisMonth * 45 + fichesThisMonth * 30;
 
   const userName = session.user.name?.split(" ")[0] ?? "Formateur";
   const hour = now.getHours();
@@ -173,7 +175,7 @@ export default async function DashboardPage() {
   const todayLabel = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
 
   // suppress unused warning
-  void [modulesCount, allStagiaires, topCompetences, tempsEconomiseLabel];
+  void [allStagiaires, topCompetences];
 
   return (
     <PageShell
@@ -185,13 +187,6 @@ export default async function DashboardPage() {
       {/* ── 4 STAT CARDS ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "20px" }}>
         <StatCard
-          value={stagiairesCount}
-          label="Stagiaires"
-          trend={stagiairesCount > 0 ? `${groupesCount} groupe${groupesCount > 1 ? "s" : ""}` : undefined}
-          iconBg="#EFF6FF" iconColor="#3B82F6"
-          iconPath={<><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></>}
-        />
-        <StatCard
           value={seancesCount}
           label="Séances générées"
           trend={seancesThisMonth > 0 ? `+${seancesThisMonth} ce mois` : undefined}
@@ -199,18 +194,25 @@ export default async function DashboardPage() {
           iconPath={<><path d="M4 19.5A2.5 2.5 0 016.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" /></>}
         />
         <StatCard
-          value={groupesCount}
-          label="Groupes actifs"
-          trend={fichesThisMonth > 0 ? `+${fichesThisMonth} fiches ce mois` : undefined}
-          iconBg="#FAF5FF" iconColor="#A855F7"
-          iconPath={<><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></>}
-        />
-        <StatCard
           value={fichesCount}
           label="Fiches pédagogiques"
           trend={fichesThisMonth > 0 ? `+${fichesThisMonth} ce mois` : undefined}
           iconBg="#FFF7ED" iconColor="#F97316"
           iconPath={<><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" /><line x1="9" y1="12" x2="15" y2="12" /><line x1="9" y1="16" x2="13" y2="16" /></>}
+        />
+        <StatCard
+          value={modulesCount}
+          label="Modules importés"
+          trend={undefined}
+          iconBg="#FAF5FF" iconColor="#A855F7"
+          iconPath={<><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" /><path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" /></>}
+        />
+        <StatCard
+          value={tempsEconomiseLabel}
+          label="Temps économisé"
+          trend={tempsEconomiseMoisMin > 0 ? `+${fmtDuree(tempsEconomiseMoisMin)} ce mois` : undefined}
+          iconBg="#EFF6FF" iconColor="#3B82F6"
+          iconPath={<><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>}
         />
       </div>
 
