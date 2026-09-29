@@ -82,6 +82,7 @@ export default function EvaluationsPage() {
         { label: "Génération IA" },
         { label: "Évaluation" },
       ]}
+      action={{ label: "📂 Mes évaluations", href: "/evaluations/historique" }}
       noPadding
     >
       <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
