@@ -126,7 +126,7 @@ export default function SeancesPage() {
         { label: "Génération IA" },
         { label: "Séance pédagogique" },
       ]}
-      action={{ label: "📂 Historique", href: "/historique" }}
+      action={{ label: "📂 Mes séances", href: "/historique" }}
       noPadding
     >
       <div style={{ display: "flex", height: "100%", overflow: "hidden" }}>
