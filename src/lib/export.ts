@@ -1,6 +1,4 @@
-import { jsPDF } from "jspdf";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from "docx";
-import { getLogoBase64, stampAllPages, renderMarkdownBody, PdfFormateur } from "@/lib/pdf-helpers";
+import type { PdfFormateur } from "@/lib/pdf-helpers";
 
 export async function exportToPPT(contenu: string, titre: string): Promise<void> {
   const { default: PptxGenJS } = await import("pptxgenjs");
@@ -100,6 +98,8 @@ export async function exportToPDF(
   formateur?: PdfFormateur,
   type = "Séance Pédagogique"
 ) {
+  const { default: jsPDF } = await import("jspdf");
+  const { getLogoBase64, stampAllPages, renderMarkdownBody } = await import("@/lib/pdf-helpers");
   const logoBase64 = await getLogoBase64();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
 
@@ -113,6 +113,7 @@ export async function exportToPDF(
 }
 
 export async function exportToWord(contenu: string, titre: string) {
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import("docx");
   const lines = contenu.split("\n");
   const children = lines.map((line) => {
     if (line.startsWith("# ")) {
@@ -148,6 +149,7 @@ export async function exportFichePDF(
   formateur?: PdfFormateur
 ): Promise<void> {
   const { default: jsPDF } = await import("jspdf");
+  const { getLogoBase64, stampAllPages, renderMarkdownBody } = await import("@/lib/pdf-helpers");
   const logoBase64 = await getLogoBase64();
 
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -227,6 +229,7 @@ export function exportProgressionPDF(
   formateur?: PdfFormateur
 ): void {
   import("jspdf").then(async ({ default: jsPDF }) => {
+    const { getLogoBase64, stampAllPages } = await import("@/lib/pdf-helpers");
     const logoBase64 = await getLogoBase64();
     const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const W = doc.internal.pageSize.getWidth();
