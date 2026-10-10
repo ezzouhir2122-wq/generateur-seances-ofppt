@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { filiereScope } from "@/lib/referentiel-scope";
 
 export async function GET() {
   const session = await auth();
@@ -34,6 +35,14 @@ export async function POST(req: NextRequest) {
   if (!nom || !filiereId || !annee)
     return NextResponse.json({ error: "Champs requis manquants" }, { status: 400 });
 
+  // La filière doit être visible par ce formateur (catalogue officiel ou la sienne)
+  const filiereOk = await prisma.filiere.findFirst({
+    where: { id: filiereId, ...filiereScope(session.user.id) },
+    select: { id: true },
+  });
+  if (!filiereOk)
+    return NextResponse.json({ error: "Filière introuvable" }, { status: 404 });
+
   const groupe = await prisma.groupe.create({
     data: { nom, filiere: filiereId, annee, userId: session.user.id },
   });
@@ -42,7 +51,7 @@ export async function POST(req: NextRequest) {
   // On valide que les compétences appartiennent bien à la filière du groupe.
   if (Array.isArray(competenceIds) && competenceIds.length > 0) {
     const valides = await prisma.competence.findMany({
-      where: { id: { in: competenceIds }, module: { filiereId } },
+      where: { id: { in: competenceIds }, module: { filiereId, filiere: filiereScope(session.user.id) } },
       select: { id: true },
     });
     if (valides.length > 0) {

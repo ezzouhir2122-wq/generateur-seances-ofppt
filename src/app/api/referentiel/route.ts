@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { extractReferentielFromText, ExtractedReferentiel } from "@/lib/referentiel-extractor";
 import { read, utils, write } from "xlsx";
+import { filiereScope, importOwnerId, filiereWriteScope } from "@/lib/referentiel-scope";
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 
 export const maxDuration = 300;
 
@@ -241,13 +243,14 @@ async function extractTextFromBuffer(buffer: Buffer, mimeType: string, fileName:
 }
 
 // ── Fast batch save for template imports (no AI objectifs) ────────────────────
-async function saveReferentielBatch(extracted: ExtractedReferentiel) {
-  // Upsert filiere (secteur supprimé — stocké comme champ texte filiere)
+async function saveReferentielBatch(extracted: ExtractedReferentiel, ownerId: string | null) {
+  // Upsert filiere — scopée au propriétaire : un formateur n'écrase jamais
+  // le catalogue officiel, il crée sa propre copie privée.
   let filiere = await prisma.filiere.findFirst({
-    where: { nom: extracted.filiere, filiere: extracted.secteur || null },
+    where: { nom: extracted.filiere, filiere: extracted.secteur || null, userId: ownerId },
   });
   if (!filiere) filiere = await prisma.filiere.create({
-    data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, filiere: extracted.secteur || null },
+    data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, filiere: extracted.secteur || null, userId: ownerId },
   });
 
   // 3. Load all existing modules in one query
@@ -292,12 +295,12 @@ async function saveReferentielBatch(extracted: ExtractedReferentiel) {
 }
 
 // ── Sequential save for AI imports (has nested objectifs/criteres) ─────────────
-async function saveReferentielFull(extracted: ExtractedReferentiel) {
+async function saveReferentielFull(extracted: ExtractedReferentiel, ownerId: string | null) {
   let filiere = await prisma.filiere.findFirst({
-    where: { nom: extracted.filiere, filiere: extracted.secteur || null },
+    where: { nom: extracted.filiere, filiere: extracted.secteur || null, userId: ownerId },
   });
   if (!filiere) filiere = await prisma.filiere.create({
-    data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, filiere: extracted.secteur || null },
+    data: { nom: extracted.filiere, code: extracted.filiereCode ?? null, filiere: extracted.secteur || null, userId: ownerId },
   });
 
   let modulesCreated = 0, sequencesCreated = 0, competencesCreated = 0, objectifsCreated = 0, criteresCreated = 0;
@@ -511,6 +514,10 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
+  // Un ADMIN alimente le catalogue officiel (userId null) ; un formateur
+  // importe dans son référentiel privé.
+  const ownerId = importOwnerId(session);
+
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
@@ -543,7 +550,7 @@ export async function POST(req: NextRequest) {
         if (groups && groups.length > 0) {
           let modulesCreated = 0, competencesCreated = 0;
           for (const group of groups) {
-            const s = await saveReferentielBatch(group);
+            const s = await saveReferentielBatch(group, ownerId);
             modulesCreated += s.modulesCreated;
             competencesCreated += s.competencesCreated;
           }
@@ -566,7 +573,7 @@ export async function POST(req: NextRequest) {
         if (groups && groups.length > 0) {
           let modulesCreated = 0, competencesCreated = 0;
           for (const group of groups) {
-            const s = await saveReferentielBatch(group);
+            const s = await saveReferentielBatch(group, ownerId);
             modulesCreated += s.modulesCreated;
             competencesCreated += s.competencesCreated;
           }
@@ -583,12 +590,15 @@ export async function POST(req: NextRequest) {
     if (!extracted) {
       const text = await extractTextFromBuffer(buffer, file.type, file.name);
       if (!text || text.trim().length < 50) return NextResponse.json({ error: "Le fichier semble vide ou illisible" }, { status: 400 });
-      extracted = await extractReferentielFromText(text);
+      // L'extraction IA consomme la clé du formateur qui importe, pas celle du serveur.
+      const { claude } = await getUserAiKeys(session.user.id);
+      if (!claude) return NextResponse.json(missingKeyError("claude"), { status: 400 });
+      extracted = await extractReferentielFromText(text, claude);
     }
 
     const stats = importMode === "template"
-      ? await saveReferentielBatch(extracted)
-      : await saveReferentielFull(extracted);
+      ? await saveReferentielBatch(extracted, ownerId)
+      : await saveReferentielFull(extracted, ownerId);
 
     return NextResponse.json({ success: true, secteur: extracted.secteur, filiere: extracted.filiere, importMode, stats });
   } catch (err) {
@@ -628,6 +638,7 @@ export async function GET(req: NextRequest) {
   // Lightweight mode for the assistant — returns only filières + module names
   if (mode === "summary") {
     const filieres = await prisma.filiere.findMany({
+      where: filiereScope(session.user.id),
       select: {
         id: true,
         nom: true,
@@ -641,6 +652,7 @@ export async function GET(req: NextRequest) {
 
   if (mode === "cascade") {
     const filieres = await prisma.filiere.findMany({
+      where: filiereScope(session.user.id),
       select: {
         id: true,
         nom: true,
@@ -687,6 +699,7 @@ export async function GET(req: NextRequest) {
   // Lightweight list mode for sidebar — no competences/objectifs/criteres
   if (mode === "list") {
     const filieres = await prisma.filiere.findMany({
+      where: filiereScope(session.user.id),
       select: {
         id: true,
         nom: true,
@@ -704,6 +717,7 @@ export async function GET(req: NextRequest) {
 
   // Default GET — grouped filieres (used by GroupeForm and other clients)
   const filieres = await prisma.filiere.findMany({
+    where: filiereScope(session.user.id),
     select: { id: true, nom: true, code: true, filiere: true },
     orderBy: { nom: "asc" },
   });
@@ -733,13 +747,25 @@ export async function DELETE(req: NextRequest) {
   const secteurId = searchParams.get("secteurId");
   const filiereId = searchParams.get("filiereId");
 
+  // Un formateur ne peut supprimer que SES filières ; seul un ADMIN
+  // peut toucher au catalogue officiel.
+  const writeScope = filiereWriteScope(session);
+
+  let count: number;
   if (filiereId) {
-    await prisma.filiere.delete({ where: { id: filiereId } });
+    ({ count } = await prisma.filiere.deleteMany({ where: { id: filiereId, ...writeScope } }));
   } else if (secteurId) {
-    await prisma.filiere.deleteMany({ where: { filiere: secteurId } });
+    ({ count } = await prisma.filiere.deleteMany({ where: { filiere: secteurId, ...writeScope } }));
   } else {
-    await prisma.filiere.deleteMany({});
+    ({ count } = await prisma.filiere.deleteMany({ where: writeScope }));
   }
 
-  return NextResponse.json({ success: true });
+  if (count === 0) {
+    return NextResponse.json(
+      { error: "Aucun référentiel supprimé : le catalogue officiel OFPPT est en lecture seule." },
+      { status: 403 },
+    );
+  }
+
+  return NextResponse.json({ success: true, count });
 }

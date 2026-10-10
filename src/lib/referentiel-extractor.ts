@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Pas de client global : l'extraction IA utilise la clé du formateur qui importe.
 
 export interface ExtractedCompetence {
   titre: string;
@@ -140,7 +140,7 @@ function splitIntoChunks(text: string, size = 12000): string[] {
   return chunks;
 }
 
-async function extractChunk(chunk: string, isFirst: boolean): Promise<ExtractedReferentiel> {
+async function extractChunk(client: Anthropic, chunk: string, isFirst: boolean): Promise<ExtractedReferentiel> {
   const message = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 8000,
@@ -185,11 +185,12 @@ function mergeInto(base: ExtractedReferentiel, extra: ExtractedReferentiel) {
   }
 }
 
-export async function extractReferentielFromText(text: string): Promise<ExtractedReferentiel> {
+export async function extractReferentielFromText(text: string, apiKey: string): Promise<ExtractedReferentiel> {
+  const client = new Anthropic({ apiKey });
   const chunks = splitIntoChunks(text, 8000);
 
   // First chunk sequential — establishes secteur/filière
-  const first = await extractChunk(chunks[0], true);
+  const first = await extractChunk(client, chunks[0], true);
 
   if (chunks.length === 1) return first;
 
@@ -198,7 +199,7 @@ export async function extractReferentielFromText(text: string): Promise<Extracte
   for (let i = 1; i < chunks.length; i += CONCURRENCY) {
     const batch = chunks.slice(i, i + CONCURRENCY);
     const results = await Promise.allSettled(
-      batch.map((chunk) => extractChunk(chunk, false))
+      batch.map((chunk) => extractChunk(client, chunk, false))
     );
     for (const result of results) {
       if (result.status === "fulfilled" && result.value.modules?.length) {

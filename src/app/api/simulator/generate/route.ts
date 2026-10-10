@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import { streamGenerate } from '@/lib/simulator/generator';
 import type { EntrepriseVirtuelle } from '@/lib/simulator/types';
 
@@ -24,8 +25,8 @@ export async function POST(req: NextRequest) {
     where: { id: session.user.id },
     select: { claudeApiKey: true, preferredModel: true },
   });
-  const apiKey = userKeys?.claudeApiKey || process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: 'Clé Claude manquante' }, { status: 400 });
+  const apiKey = userKeys?.claudeApiKey;
+  if (!apiKey) return NextResponse.json(missingKeyError('claude'), { status: 400 });
 
   // Génération d'un gros JSON de fond (entreprise + scénarios) : on force Haiku,
   // bien plus rapide, pour rester sous la limite maxDuration de Vercel (120s).

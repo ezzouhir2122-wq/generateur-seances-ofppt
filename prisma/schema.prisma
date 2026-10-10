@@ -38,6 +38,7 @@ model User {
   resourceLikes    ResourceLike[]
   resourceComments ResourceComment[]
   simulations   Simulation[]
+  filieres      Filiere[]
 }
 
 model UserModule {
@@ -132,8 +133,15 @@ model Filiere {
   nom       String      // "Niveau de formation" (ex: "Technicien Spécialisé", "1ère Année")
   code      String?
   filiere   String?     // "Filière" label (ex: "TSC", "GEOCF") — remplace l'ancienne relation Secteur
+  // Propriétaire du référentiel.
+  // null = catalogue commun officiel OFPPT (visible par tous, géré par l'admin)
+  // sinon = référentiel privé importé par ce formateur (visible de lui seul)
+  userId    String?
+  user      User?       @relation(fields: [userId], references: [id], onDelete: Cascade)
   modules   RefModule[]
   createdAt DateTime    @default(now())
+
+  @@index([userId])
 }
 
 model RefModule {

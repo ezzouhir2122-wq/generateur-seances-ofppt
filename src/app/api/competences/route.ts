@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { filiereScope } from "@/lib/referentiel-scope";
 
 // GET /api/competences?filiereId=xxx
 // Renvoie les compétences d'une filière, groupées par module — pour le sélecteur.
@@ -12,7 +13,8 @@ export async function GET(req: NextRequest) {
   if (!filiereId) return NextResponse.json({ error: "filiereId requis" }, { status: 400 });
 
   const modules = await prisma.refModule.findMany({
-    where: { filiereId },
+    // filiereId vient du client : on vérifie qu'il est visible par ce formateur
+    where: { filiereId, filiere: filiereScope(session.user.id) },
     orderBy: { createdAt: "asc" },
     select: {
       id: true,

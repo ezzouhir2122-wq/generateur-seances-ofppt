@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { filiereScope } from "@/lib/referentiel-scope";
 
 /**
  * GET /api/referentiel/competences?code=M102
@@ -19,9 +20,12 @@ export async function GET(req: NextRequest) {
   if (!code && !nom) return NextResponse.json([]);
 
   const refModule = await prisma.refModule.findFirst({
-    where: code
-      ? { code: { equals: code, mode: "insensitive" } }
-      : { nom: { contains: nom!, mode: "insensitive" } },
+    where: {
+      filiere: filiereScope(session.user.id),
+      ...(code
+        ? { code: { equals: code, mode: "insensitive" } }
+        : { nom: { contains: nom!, mode: "insensitive" } }),
+    },
     include: {
       competences: {
         select: {

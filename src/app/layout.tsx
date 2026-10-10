@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, DM_Serif_Display } from "next/font/google";
+import { getUserAiKeys } from "@/lib/user-ai-key";
 import { auth } from "@/auth";
 import Providers from "@/components/ui/Providers";
 import AppShell from "@/components/shell";
 import InstallBanner from "@/components/pwa/InstallBanner";
 import "./globals.css";
 
+// Police variable : on omet `weight` → un seul fichier couvre toutes les graisses (200–800)
 const font = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-sans",
   display: "swap",
 });
@@ -16,7 +17,7 @@ const font = Plus_Jakarta_Sans({
 const fontSerif = DM_Serif_Display({
   subsets: ["latin"],
   weight: ["400"],
-  style: ["normal", "italic"],
+  style: ["normal"],
   variable: "--font-serif",
   display: "swap",
 });
@@ -44,8 +45,10 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
-  const claudeKey = !!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_API_KEY.includes("remplacer");
-  const openaiKey = !!process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY.includes("remplacer");
+  // L'indicateur reflète les clés DU FORMATEUR connecté, pas celles du serveur.
+  const keys = session?.user?.id ? await getUserAiKeys(session.user.id) : null;
+  const claudeKey = !!keys?.claude;
+  const openaiKey = !!keys?.openai;
 
   return (
     <html lang="fr">

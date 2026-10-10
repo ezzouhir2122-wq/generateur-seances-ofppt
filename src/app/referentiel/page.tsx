@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { filiereScope } from "@/lib/referentiel-scope";
 import { redirect } from "next/navigation";
 import ReferentielClient from "./ReferentielClient";
 import PageShell from "@/components/ui/PageShell";
@@ -12,6 +13,7 @@ export default async function ReferentielPage() {
 
   // Filiere.filiere = libellé "Filière" (ex: "TSC") — regroupement côté serveur
   const filieres = await prisma.filiere.findMany({
+    where: filiereScope(session.user.id),
     include: {
       modules: {
         include: {

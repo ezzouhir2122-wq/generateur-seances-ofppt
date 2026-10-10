@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import type { CorrectionFormData } from "@/types/correction";
@@ -168,11 +169,18 @@ export async function POST(req: Request) {
     );
   }
 
+  // Clés du formateur connecté — aucun repli sur la clé serveur.
+  const keys = await getUserAiKeys(session.user.id);
+  if (!keys.claude && !keys.openai) {
+    return NextResponse.json(missingKeyError("claude", "openai"), { status: 400 });
+  }
+
   const content = buildAnthropicContent(data);
   let contenu = "";
 
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    if (!keys.claude) throw new Error("no-claude-key");
+    const anthropic = new Anthropic({ apiKey: keys.claude });
     const msg = await anthropic.messages.create({
       model: "claude-opus-4-8",
       max_tokens: 5000,
@@ -183,7 +191,8 @@ export async function POST(req: Request) {
     contenu = block.type === "text" ? block.text : "";
   } catch {
     try {
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      if (!keys.openai) throw new Error("no-openai-key");
+      const openai = new OpenAI({ apiKey: keys.openai });
       const textPrompt = isFileMode
         ? buildFilePrompt(data) + "\n\n⚠️ Note : le fichier n'a pu être transmis au modèle de secours. Indique que la copie était illisible et invite le formateur à réessayer avec Claude."
         : buildTextPrompt(data);

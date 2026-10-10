@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { filiereScope } from "@/lib/referentiel-scope";
 
 /**
  * GET /api/referentiel/structure
@@ -16,6 +17,7 @@ export async function GET() {
     return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const filieres = await prisma.filiere.findMany({
+    where: filiereScope(session.user.id),
     orderBy: { nom: "asc" },
     select: {
       id: true,

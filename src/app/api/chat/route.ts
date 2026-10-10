@@ -1,11 +1,21 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import Anthropic from "@anthropic-ai/sdk";
 import { buildChatSystemPrompt } from "@/lib/prompts";
 
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) return new Response("Non autorisé", { status: 401 });
+
+  // Clé du formateur connecté — aucun repli sur la clé serveur.
+  const keys = await getUserAiKeys(session.user.id);
+  if (!keys.claude) {
+    return new Response(JSON.stringify(missingKeyError("claude")), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const { message, sessionId, domaine, module: moduleName, modulesContext } = await req.json();
 
@@ -27,7 +37,7 @@ export async function POST(req: Request) {
   }));
   history.push({ role: "user", content: message });
 
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  const anthropic = new Anthropic({ apiKey: keys.claude });
 
   let fullResponse = "";
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import { generateReport } from '@/lib/simulator/report';
 import type { EntrepriseVirtuelle } from '@/lib/simulator/types';
 
@@ -36,8 +37,8 @@ export async function POST(
     where: { id: session.user.id },
     select: { claudeApiKey: true, preferredModel: true },
   });
-  const apiKey = userKeys?.claudeApiKey || process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: 'Clé Claude manquante' }, { status: 400 });
+  const apiKey = userKeys?.claudeApiKey;
+  if (!apiKey) return NextResponse.json(missingKeyError('claude'), { status: 400 });
 
   const model = userKeys?.preferredModel?.startsWith('claude') ? userKeys.preferredModel : 'claude-sonnet-4-6';
   const entreprise = simulation.company as unknown as EntrepriseVirtuelle;

@@ -6,7 +6,9 @@ import { generateWithGoogle } from "@/lib/google";
 import { generateWithGrok } from "@/lib/grok";
 import { generateWithOpenRouter } from "@/lib/openrouter";
 import { generateWithGLM } from "@/lib/glm";
+import { generateWithMistral } from "@/lib/mistral";
 import { prisma } from "@/lib/db";
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import { SeanceParams } from "../../../../equipment/generate-seance";
 
 export const maxDuration = 60;
@@ -66,6 +68,7 @@ export async function POST(req: NextRequest) {
   let userOpenrouterKey: string | null = null;
   let userGrokKey: string | null = null;
   let userGlmKey: string | null = null;
+  let userMistralKey: string | null = null;
   let preferredModel = "claude-opus-4-8";
 
   if (session?.user?.id) {
@@ -79,6 +82,7 @@ export async function POST(req: NextRequest) {
           openrouterApiKey: true,
           grokApiKey: true,
           glmApiKey: true,
+          mistralApiKey: true,
           preferredModel: true,
         },
       });
@@ -88,6 +92,7 @@ export async function POST(req: NextRequest) {
       if (userSettings?.openrouterApiKey) userOpenrouterKey = userSettings.openrouterApiKey;
       if (userSettings?.grokApiKey) userGrokKey = userSettings.grokApiKey;
       if (userSettings?.glmApiKey) userGlmKey = userSettings.glmApiKey;
+      if (userSettings?.mistralApiKey) userMistralKey = userSettings.mistralApiKey;
       if (userSettings?.preferredModel) preferredModel = userSettings.preferredModel;
     } catch {}
   }
@@ -122,6 +127,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ contenu, source: "grok", seanceId });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Erreur Grok";
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  }
+
+  // ─── Mistral AI ──────────────────────────────────────────────────────────
+  if (preferredModel.startsWith("mistral-") || preferredModel.startsWith("codestral")) {
+    try {
+      const contenu = await withTimeout(
+        generateWithMistral(params, { apiKey: userMistralKey ?? undefined, model: preferredModel }),
+        55_000,
+        "Mistral"
+      );
+      const seanceId = userId ? await saveSeance(params, contenu, userId) : undefined;
+      return NextResponse.json({ contenu, source: "mistral", seanceId });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erreur Mistral";
       return NextResponse.json({ error: msg }, { status: 500 });
     }
   }
@@ -184,12 +205,10 @@ export async function POST(req: NextRequest) {
   }
 
   // ─── Claude — streaming ──────────────────────────────────────────────────
-  const claudeKey = userClaudeKey || process.env.ANTHROPIC_API_KEY;
+  // Pas de repli sur process.env : chaque formateur utilise SA clé.
+  const claudeKey = userClaudeKey;
   if (!claudeKey) {
-    return NextResponse.json(
-      { error: "Clé Claude manquante — configurez votre clé API dans les paramètres ⚙" },
-      { status: 400 }
-    );
+    return NextResponse.json(missingKeyError("claude"), { status: 400 });
   }
 
   const encoder = new TextEncoder();

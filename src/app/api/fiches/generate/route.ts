@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { buildFichePrompt } from "@/lib/prompts";
@@ -18,11 +19,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Champs obligatoires manquants" }, { status: 400 });
   }
 
+  // Clés du formateur connecté — aucun repli sur la clé serveur.
+  const keys = await getUserAiKeys(session.user.id);
+  if (!keys.claude && !keys.openai) {
+    return NextResponse.json(missingKeyError("claude", "openai"), { status: 400 });
+  }
+
   const prompt = buildFichePrompt(data);
   let contenu = "";
 
   try {
-    const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+    if (!keys.claude) throw new Error("no-claude-key");
+    const anthropic = new Anthropic({ apiKey: keys.claude });
     const msg = await anthropic.messages.create({
       model: "claude-opus-4-8",
       max_tokens: 4096,
@@ -32,7 +40,8 @@ export async function POST(req: Request) {
     contenu = block.type === "text" ? block.text : "";
   } catch {
     try {
-      const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+      if (!keys.openai) throw new Error("no-openai-key");
+      const openai = new OpenAI({ apiKey: keys.openai });
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [{ role: "user", content: prompt }],
