@@ -97,7 +97,7 @@ export default function ApiTab() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res  = await fetch("/api/user/api-settings");
+      const res  = await fetch("/api/user/api-settings", { cache: "no-store" });
       const data = await res.json();
       setPreferredModel(data.preferredModel ?? "claude-sonnet-4-6");
       setHasKeys({

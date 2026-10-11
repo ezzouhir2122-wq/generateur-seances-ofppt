@@ -11,6 +11,9 @@ export async function GET() {
     select: { claudeApiKey: true, openaiApiKey: true, openrouterApiKey: true, googleApiKey: true, grokApiKey: true, glmApiKey: true, mistralApiKey: true, preferredModel: true },
   });
 
+  // Réponse propre à un compte : interdire tout cache (navigateur, CDN,
+  // service worker). Sans cela, un second formateur sur le même navigateur
+  // peut se voir servir la réponse du premier.
   return NextResponse.json({
     claudeApiKey: user?.claudeApiKey ? maskKey(user.claudeApiKey) : "",
     openaiApiKey: user?.openaiApiKey ? maskKey(user.openaiApiKey) : "",
@@ -27,7 +30,7 @@ export async function GET() {
     hasGrokKey: !!user?.grokApiKey,
     hasGlmKey: !!user?.glmApiKey,
     hasMistralKey: !!user?.mistralApiKey,
-  });
+  }, { headers: { "Cache-Control": "no-store, max-age=0" } });
 }
 
 export async function PATCH(req: NextRequest) {
