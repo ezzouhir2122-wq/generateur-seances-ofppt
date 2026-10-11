@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import EvaluationDetailClient from "@/components/ui/EvaluationDetailClient";
+import PartagerButton from "@/components/bibliotheque/PartagerButton";
 
 export default async function EvaluationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -38,6 +39,13 @@ export default async function EvaluationDetailPage({ params }: { params: Promise
         <span className="text-sm text-gray-700 font-medium truncate max-w-xs">
           {evaluation.titre}
         </span>
+        <div className="ml-auto">
+          <PartagerButton
+            type="EVALUATION"
+            sourceId={evaluation.id}
+            etablissement={session.user.etablissement ?? null}
+          />
+        </div>
       </div>
 
       <EvaluationDetailClient evaluation={evaluation} />

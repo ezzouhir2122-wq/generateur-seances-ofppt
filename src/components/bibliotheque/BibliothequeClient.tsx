@@ -7,7 +7,13 @@ import ResourceCard from "./ResourceCard";
 import PublishModal from "./PublishModal";
 import ResourceDetailModal from "./ResourceDetailModal";
 
-export default function BibliothequeClient() {
+interface BibliothequeClientProps {
+  /** Établissement du formateur connecté, pour la portée de publication.
+   *  À ne pas confondre avec l'état `etablissement`, qui est un filtre. */
+  monEtablissement?: string | null;
+}
+
+export default function BibliothequeClient({ monEtablissement = null }: BibliothequeClientProps) {
   const [resources, setResources] = useState<ResourceListItem[]>([]);
   const [filters, setFilters] = useState<{ filieres: string[]; modules: string[]; etablissements: string[] }>({ filieres: [], modules: [], etablissements: [] });
   const [loading, setLoading] = useState(true);
@@ -343,6 +349,7 @@ export default function BibliothequeClient() {
           }}
           defaultSourceId={publishDefaults.sourceId}
           defaultType={publishDefaults.type}
+          etablissement={monEtablissement}
         />
       )}
       {detailId && (

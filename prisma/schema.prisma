@@ -279,6 +279,12 @@ model SharedResource {
   author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorName    String
   etablissement String?
+  // Portée choisie par l'auteur à la publication.
+  // PUBLIC = tous les formateurs ; ETABLISSEMENT = seulement le même etablissement.
+  visibilite    String   @default("PUBLIC")
+  // Identifiant de la Seance / Fiche / Evaluation d'origine.
+  // Sert à savoir si une ressource est déjà publiée, par id et non par titre.
+  sourceId      String?
   createdAt     DateTime @default(now())
   likes       ResourceLike[]
   comments    ResourceComment[]
@@ -286,6 +292,8 @@ model SharedResource {
   @@index([type])
   @@index([filiere])
   @@index([createdAt])
+  @@index([visibilite])
+  @@index([authorId, sourceId])
 }
 
 model ResourceLike {

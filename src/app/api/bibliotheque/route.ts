@@ -20,18 +20,37 @@ export async function GET(req: NextRequest) {
   const sort = sp.get("sort") === "popular" ? "popular" : "recent";
   const etablissementQ = sp.get("etablissement");
 
-  const where: Prisma.SharedResourceWhereInput = {};
+  // Portée : le public pour tout le monde, plus les ressources reservees a
+  // mon etablissement. Un formateur sans etablissement renseigne ne voit
+  // que le public — moins de resultats, jamais d'erreur.
+  const monEtablissement = session.user.etablissement ?? null;
+  const where: Prisma.SharedResourceWhereInput = {
+    AND: [
+      {
+        OR: [
+          { visibilite: "PUBLIC" },
+          ...(monEtablissement
+            ? [{ visibilite: "ETABLISSEMENT", etablissement: monEtablissement }]
+            : []),
+        ],
+      },
+    ],
+  };
   if (type && TYPES.includes(type as ResourceType)) where.type = type;
   if (filiere) where.filiere = filiere;
   if (moduleQ) where.module = moduleQ;
   if (etablissementQ) where.etablissement = etablissementQ;
   if (q) {
-    where.OR = [
-      { titre: { contains: q, mode: "insensitive" } },
-      { description: { contains: q, mode: "insensitive" } },
-      { authorName: { contains: q, mode: "insensitive" } },
-      { module: { contains: q, mode: "insensitive" } },
-    ];
+    // where.OR sert deja a la visibilite : on ajoute la recherche comme
+    // seconde condition du AND, sinon elle ecraserait le filtre de portee.
+    (where.AND as Prisma.SharedResourceWhereInput[]).push({
+      OR: [
+        { titre: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
+        { authorName: { contains: q, mode: "insensitive" } },
+        { module: { contains: q, mode: "insensitive" } },
+      ],
+    });
   }
 
   const orderBy: Prisma.SharedResourceOrderByWithRelationInput =
@@ -61,7 +80,17 @@ export async function GET(req: NextRequest) {
   });
 
   // Options de filtre (valeurs distinctes présentes)
-  const all = await prisma.sharedResource.findMany({ select: { filiere: true, module: true, etablissement: true } });
+  const all = await prisma.sharedResource.findMany({
+    where: {
+      OR: [
+        { visibilite: "PUBLIC" },
+        ...(monEtablissement
+          ? [{ visibilite: "ETABLISSEMENT", etablissement: monEtablissement }]
+          : []),
+      ],
+    },
+    select: { filiere: true, module: true, etablissement: true },
+  });
   const filieres = [...new Set(all.map((r) => r.filiere).filter(Boolean))].sort();
   const modules = [...new Set(all.map((r) => r.module).filter(Boolean))].sort();
   const etablissements = [...new Set(all.map((r) => r.etablissement).filter(Boolean))].sort() as string[];
@@ -102,8 +131,15 @@ export async function POST(req: NextRequest) {
   if (!TYPES.includes(type as ResourceType))
     return NextResponse.json({ error: "Type invalide" }, { status: 400 });
 
+  // L'auteur choisit la portee. "ETABLISSEMENT" n'a de sens que si son
+  // profil en mentionne un : sinon on retombe sur PUBLIC plutot que de
+  // publier dans le vide.
+  const visibilite =
+    body.visibilite === "ETABLISSEMENT" && etablissement ? "ETABLISSEMENT" : "PUBLIC";
+
   const data: Prisma.SharedResourceCreateInput = {
     type,
+    visibilite,
     titre: (body.titre ?? "").trim(),
     description: body.description?.trim() || null,
     filiere: body.filiere?.trim() || null,
@@ -114,10 +150,12 @@ export async function POST(req: NextRequest) {
     author: { connect: { id: userId } },
   };
 
-  if (type === "SEANCE" || type === "FICHE") {
+  if (type === "SEANCE" || type === "FICHE" || type === "EVALUATION") {
     const sourceId = body.sourceId as string | undefined;
     if (!sourceId) return NextResponse.json({ error: "Ressource source requise" }, { status: 400 });
 
+    // On relit la source en base en exigeant userId : un formateur ne peut
+    // publier que ce qui lui appartient, meme en forgeant la requete.
     if (type === "SEANCE") {
       const s = await prisma.seance.findFirst({ where: { id: sourceId, userId } });
       if (!s) return NextResponse.json({ error: "Séance introuvable" }, { status: 404 });
@@ -126,7 +164,7 @@ export async function POST(req: NextRequest) {
       data.module = data.module ?? s.module;
       data.niveau = data.niveau ?? s.niveau;
       data.contenu = s.contenu;
-    } else {
+    } else if (type === "FICHE") {
       const f = await prisma.fiche.findFirst({ where: { id: sourceId, userId } });
       if (!f) return NextResponse.json({ error: "Fiche introuvable" }, { status: 404 });
       data.titre = data.titre || f.titre;
@@ -134,10 +172,28 @@ export async function POST(req: NextRequest) {
       data.module = data.module ?? f.module;
       data.niveau = data.niveau ?? f.niveau;
       data.contenu = f.contenu;
+    } else {
+      const e = await prisma.evaluation.findFirst({ where: { id: sourceId, userId } });
+      if (!e) return NextResponse.json({ error: "Évaluation introuvable" }, { status: 404 });
+      data.titre = data.titre || e.titre;
+      data.filiere = data.filiere ?? e.filiere;
+      data.module = data.module ?? e.module;
+      data.niveau = data.niveau ?? e.niveau;
+      data.contenu = e.contenu;
     }
-  } else if (type === "EVALUATION") {
-    if (!body.contenu?.trim()) return NextResponse.json({ error: "Contenu requis" }, { status: 400 });
-    data.contenu = body.contenu;
+
+    // Lien vers l'origine : sert a savoir si c'est deja publie, par id.
+    data.sourceId = sourceId;
+
+    const deja = await prisma.sharedResource.findFirst({
+      where: { authorId: userId, sourceId, type },
+      select: { id: true },
+    });
+    if (deja)
+      return NextResponse.json(
+        { error: "Cette ressource est déjà publiée dans la bibliothèque." },
+        { status: 409 },
+      );
   } else if (type === "FICHIER") {
     if (!body.fileUrl) return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
     data.fileUrl = body.fileUrl;

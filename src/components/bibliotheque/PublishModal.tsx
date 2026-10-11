@@ -12,7 +12,14 @@ interface Props {
   onPublished: () => void;
   defaultSourceId?: string;
   defaultType?: ResourceType;
+  /** Établissement du formateur, pour proposer la portée restreinte. */
+  etablissement?: string | null;
 }
+
+type Visibilite = "PUBLIC" | "ETABLISSEMENT";
+
+/** Les trois types qui se publient depuis une ressource existante. */
+const TYPES_AVEC_SOURCE: ResourceType[] = ["SEANCE", "FICHE", "EVALUATION"];
 
 const inputStyle: React.CSSProperties = {
   background: "#FFFFFF",
@@ -25,17 +32,19 @@ const inputStyle: React.CSSProperties = {
   outline: "none",
 };
 
-export default function PublishModal({ onClose, onPublished, defaultSourceId, defaultType }: Props) {
+export default function PublishModal({ onClose, onPublished, defaultSourceId, defaultType, etablissement }: Props) {
   const [type, setType] = useState<ResourceType>(defaultType ?? "SEANCE");
-  const [mes, setMes] = useState<{ seances: MyResource[]; fiches: MyResource[] }>({ seances: [], fiches: [] });
+  const [mes, setMes] = useState<{ seances: MyResource[]; fiches: MyResource[]; evaluations: MyResource[] }>({
+    seances: [], fiches: [], evaluations: [],
+  });
   const [sourceId, setSourceId] = useState(defaultSourceId ?? "");
+  const [visibilite, setVisibilite] = useState<Visibilite>("PUBLIC");
 
   const [titre, setTitre] = useState("");
   const [description, setDescription] = useState("");
   const [filiere, setFiliere] = useState("");
   const [moduleNom, setModuleNom] = useState("");
   const [niveau, setNiveau] = useState("");
-  const [contenu, setContenu] = useState("");
 
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -44,14 +53,14 @@ export default function PublishModal({ onClose, onPublished, defaultSourceId, de
   useEffect(() => {
     fetch("/api/bibliotheque/mes-ressources")
       .then((r) => r.json())
-      .then((d) => setMes(d))
+      .then((d) => setMes({ seances: d.seances ?? [], fiches: d.fiches ?? [], evaluations: d.evaluations ?? [] }))
       .catch(() => {});
   }, []);
 
   // Préremplir depuis la ressource source choisie
   useEffect(() => {
     if (!sourceId) return;
-    const list = type === "SEANCE" ? mes.seances : mes.fiches;
+    const list = type === "SEANCE" ? mes.seances : type === "FICHE" ? mes.fiches : mes.evaluations;
     const r = list.find((x) => x.id === sourceId);
     if (r) {
       setTitre(r.titre);
@@ -64,26 +73,23 @@ export default function PublishModal({ onClose, onPublished, defaultSourceId, de
   const switchType = (t: ResourceType) => {
     setType(t);
     setSourceId("");
-    setTitre(""); setDescription(""); setFiliere(""); setModuleNom(""); setNiveau(""); setContenu("");
+    setTitre(""); setDescription(""); setFiliere(""); setModuleNom(""); setNiveau("");
     setFile(null);
   };
 
   const submit = async () => {
     if (!titre.trim() && type !== "FICHIER") { toast.error("Titre requis"); return; }
-    if ((type === "SEANCE" || type === "FICHE") && !sourceId) { toast.error("Choisis une ressource"); return; }
-    if (type === "EVALUATION" && !contenu.trim()) { toast.error("Contenu requis"); return; }
+    if (TYPES_AVEC_SOURCE.includes(type) && !sourceId) { toast.error("Choisis une ressource"); return; }
     if (type === "FICHIER" && !file) { toast.error("Choisis un fichier"); return; }
 
     setSubmitting(true);
     try {
       const payload: Record<string, unknown> = {
-        type, titre: titre.trim(), description, filiere, module: moduleNom, niveau,
+        type, titre: titre.trim(), description, filiere, module: moduleNom, niveau, visibilite,
       };
 
-      if (type === "SEANCE" || type === "FICHE") {
+      if (TYPES_AVEC_SOURCE.includes(type)) {
         payload.sourceId = sourceId;
-      } else if (type === "EVALUATION") {
-        payload.contenu = contenu;
       } else if (type === "FICHIER" && file) {
         setUploading(true);
         const blob = await upload(file.name, file, {
@@ -117,7 +123,10 @@ export default function PublishModal({ onClose, onPublished, defaultSourceId, de
     }
   };
 
-  const sourceList = type === "SEANCE" ? mes.seances : mes.fiches;
+  const sourceList =
+    type === "SEANCE" ? mes.seances : type === "FICHE" ? mes.fiches : mes.evaluations;
+  const sourceLabel =
+    type === "SEANCE" ? "séances" : type === "FICHE" ? "fiches" : "évaluations";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.45)" }} onClick={onClose}>
@@ -156,14 +165,16 @@ export default function PublishModal({ onClose, onPublished, defaultSourceId, de
             })}
           </div>
 
-          {/* Source selon le type */}
-          {(type === "SEANCE" || type === "FICHE") && (
+          {/* Source : séance, fiche ou évaluation déjà enregistrée */}
+          {TYPES_AVEC_SOURCE.includes(type) && (
             <div>
               <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
-                Choisir parmi mes {type === "SEANCE" ? "séances" : "fiches"}
+                Choisir parmi mes {sourceLabel}
               </label>
               {sourceList.length === 0 ? (
-                <p className="text-xs" style={{ color: "#EF4444" }}>Aucune {type === "SEANCE" ? "séance" : "fiche"} disponible.</p>
+                <p className="text-xs" style={{ color: "#EF4444" }}>
+                  Aucune ressource disponible dans vos {sourceLabel}.
+                </p>
               ) : (
                 <select value={sourceId} onChange={(e) => setSourceId(e.target.value)} style={{ ...inputStyle, appearance: "none" }}>
                   <option value="">— Sélectionner —</option>
@@ -173,18 +184,46 @@ export default function PublishModal({ onClose, onPublished, defaultSourceId, de
             </div>
           )}
 
-          {type === "EVALUATION" && (
-            <div>
-              <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>Contenu (markdown)</label>
-              <textarea
-                value={contenu}
-                onChange={(e) => setContenu(e.target.value)}
-                rows={6}
-                placeholder="Colle ici le contenu de l'évaluation…"
-                style={{ ...inputStyle, resize: "vertical", fontFamily: "inherit" }}
-              />
+          {/* Portée de la publication */}
+          <div>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
+              Qui peut voir cette ressource ?
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {([
+                { v: "PUBLIC" as Visibilite, icon: "🌍", titre: "Tous les formateurs", sous: "Partout dans l'OFPPT" },
+                { v: "ETABLISSEMENT" as Visibilite, icon: "🏛", titre: "Mon établissement", sous: etablissement ?? "Non renseigné" },
+              ]).map((opt) => {
+                const indisponible = opt.v === "ETABLISSEMENT" && !etablissement;
+                const active = visibilite === opt.v && !indisponible;
+                return (
+                  <button
+                    key={opt.v}
+                    type="button"
+                    disabled={indisponible}
+                    onClick={() => setVisibilite(opt.v)}
+                    className="text-left px-3 py-2.5 rounded-xl transition-colors"
+                    style={{
+                      background: active ? "#FFF7ED" : "#F8FAFC",
+                      border: `1px solid ${active ? "#FB923C" : "#E2E8F0"}`,
+                      opacity: indisponible ? 0.55 : 1,
+                      cursor: indisponible ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    <span className="block text-[12px] font-semibold" style={{ color: "#111827" }}>
+                      {opt.icon} {opt.titre}
+                    </span>
+                    <span className="block text-[11px] mt-0.5" style={{ color: "#9CA3AF" }}>{opt.sous}</span>
+                  </button>
+                );
+              })}
             </div>
-          )}
+            {!etablissement && (
+              <p className="text-[11px] mt-1.5" style={{ color: "#9CA3AF" }}>
+                Renseignez votre établissement dans Paramètres → Profil pour activer la portée restreinte.
+              </p>
+            )}
+          </div>
 
           {type === "FICHIER" && (
             <div>

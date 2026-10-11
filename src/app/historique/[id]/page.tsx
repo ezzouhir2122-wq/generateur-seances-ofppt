@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import SeanceDetailClient from "@/components/ui/SeanceDetailClient";
+import PartagerButton from "@/components/bibliotheque/PartagerButton";
 
 export default async function SeanceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -38,6 +39,13 @@ export default async function SeanceDetailPage({ params }: { params: Promise<{ i
         <span className="text-sm text-gray-700 font-medium truncate max-w-xs">
           {seance.title}
         </span>
+        <div className="ml-auto">
+          <PartagerButton
+            type="SEANCE"
+            sourceId={seance.id}
+            etablissement={session.user.etablissement ?? null}
+          />
+        </div>
       </div>
 
       <SeanceDetailClient seance={seance} />

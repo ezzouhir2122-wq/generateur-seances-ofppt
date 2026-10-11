@@ -18,7 +18,7 @@ export default async function BibliothequePage() {
         { label: "Bibliothèque" },
       ]}
     >
-      <BibliothequeClient />
+      <BibliothequeClient monEtablissement={session.user.etablissement ?? null} />
     </PageShell>
   );
 }
