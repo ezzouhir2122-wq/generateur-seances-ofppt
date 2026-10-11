@@ -27,7 +27,10 @@ export default function BibliothequeClient({ monEtablissement = null }: Biblioth
   const [showPublish, setShowPublish] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<"communaute" | "mes-ressources">("mes-ressources");
+  // La page s'ouvre sur la Communauté : c'est sa raison d'etre, la
+  // capitalisation entre formateurs. S'ouvrir sur ses propres ressources
+  // donnait l'impression que les partages des autres n'arrivaient pas.
+  const [activeTab, setActiveTab] = useState<"communaute" | "mes-ressources">("communaute");
   const [etablissement, setEtablissement] = useState("");
   const [myResources, setMyResources] = useState<MyOwnResources>({ seances: [], fiches: [] });
   const [myLoading, setMyLoading] = useState(false);
