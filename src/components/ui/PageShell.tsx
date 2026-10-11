@@ -37,6 +37,7 @@ export default function PageShell({
     >
       {/* ── Bande header ── */}
       <div
+        className="page-shell-header"
         style={{
           background: "#003087",
           backgroundImage:
@@ -122,6 +123,7 @@ export default function PageShell({
       {/* ── Fil d'Ariane ── */}
       {breadcrumb && breadcrumb.length > 0 && (
         <div
+          className="page-shell-crumb"
           style={{
             background: "#FFFFFF",
             borderBottom: "1px solid #E5E7EB",
@@ -167,6 +169,7 @@ export default function PageShell({
 
       {/* ── Zone contenu ── */}
       <div
+        className={noPadding ? undefined : "page-shell-body"}
         style={
           noPadding
             ? { flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }

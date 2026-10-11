@@ -166,7 +166,7 @@ function NavItem({ href, label, icon, active, keepIconColor }: { href: string; l
   return (
     <Link
       href={href}
-      className="group flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
+      className="nav-link group flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 relative"
       style={active
         ? { background: "rgba(255,255,255,0.15)", color: "#FFFFFF" }
         : { color: "rgba(255,255,255,0.60)" }
@@ -231,7 +231,7 @@ function SidebarInstallButton() {
   );
 }
 
-function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
+function AppSidebar({ user, mobileOpen, onNavigate }: { user: NonNullable<AppShellProps["user"]>; mobileOpen: boolean; onNavigate: () => void }) {
   const pathname = usePathname();
   const isActive = useCallback((href: string, exact: boolean) => {
     if (exact) return pathname === href;
@@ -242,9 +242,23 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
 
   return (
     <aside
-      className="w-[240px] flex-shrink-0 flex flex-col h-screen sticky top-0"
+      onClick={(e) => { if ((e.target as HTMLElement).closest("a")) onNavigate(); }}
+      className={`app-sidebar w-[260px] lg:w-[240px] flex-shrink-0 flex flex-col fixed inset-y-0 left-0 z-50 transform transition-transform duration-200 ease-out lg:static lg:h-screen lg:sticky lg:top-0 lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}
       style={{ background: "#003087", borderRight: "1px solid rgba(255,255,255,0.08)" }}
     >
+      {/* Fermeture du tiroir sur mobile */}
+      <button
+        type="button"
+        onClick={onNavigate}
+        aria-label="Fermer le menu"
+        className="lg:hidden absolute top-3 right-3 z-10 p-1.5 rounded-lg"
+        style={{ color: "rgba(255,255,255,0.65)", background: "rgba(255,255,255,0.10)" }}
+      >
+        <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.10)" }}>
         <div className="flex items-center gap-3 px-4 pt-3 pb-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -312,7 +326,7 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
         {user.role !== "ADMIN" && <SidebarInstallButton />}
         <Link
           href="/guide"
-          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
+          className="nav-link flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150 mb-0.5"
           style={{ color: isActive("/guide", false) ? "#FFFFFF" : "rgba(255,255,255,0.60)", background: isActive("/guide", false) ? "rgba(255,255,255,0.15)" : undefined }}
           onMouseEnter={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.90)"; } }}
           onMouseLeave={e => { if (!isActive("/guide", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.60)"; } }}
@@ -322,7 +336,7 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
         </Link>
         <Link
           href="/parametres"
-          className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
+          className="nav-link flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
           style={{ color: isActive("/parametres", false) ? "#FFFFFF" : "rgba(255,255,255,0.60)", background: isActive("/parametres", false) ? "rgba(255,255,255,0.15)" : undefined }}
           onMouseEnter={e => { if (!isActive("/parametres", false)) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.90)"; } }}
           onMouseLeave={e => { if (!isActive("/parametres", false)) { (e.currentTarget as HTMLAnchorElement).style.background = ""; (e.currentTarget as HTMLAnchorElement).style.color = "rgba(255,255,255,0.60)"; } }}
@@ -330,11 +344,49 @@ function AppSidebar({ user }: { user: NonNullable<AppShellProps["user"]> }) {
           <span style={{ color: isActive("/parametres", false) ? "#16A34A" : "rgba(255,255,255,0.50)", flexShrink: 0 }}><GearIcon /></span>
           Paramètres
         </Link>
-        <div className="mt-2 px-1 text-[9px] leading-snug text-center font-bold" style={{ color: "#16A34A" }}>
+        <div className="sidebar-credit mt-2 px-1 text-[9px] leading-snug text-center font-bold" style={{ color: "#16A34A" }}>
           Développé par Ezzouhir Elmustapha<br />9998 · OFPPT / ISGI Marrakech<br />version 1.1 — Août 2026
         </div>
       </div>
     </aside>
+  );
+}
+
+/* Barre supérieure — visible uniquement sur mobile / tablette */
+function MobileTopBar({ user, onOpen }: { user: NonNullable<AppShellProps["user"]>; onOpen: () => void }) {
+  const initials = (user.name ?? user.email ?? "F").charAt(0).toUpperCase();
+  return (
+    <header
+      className="lg:hidden flex items-center gap-3 px-3 flex-shrink-0"
+      style={{ height: "56px", background: "#003087", borderBottom: "2px solid #16A34A" }}
+    >
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-label="Ouvrir le menu"
+        className="flex items-center justify-center rounded-lg"
+        style={{ width: "40px", height: "40px", color: "#FFFFFF", background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)", flexShrink: 0 }}
+      >
+        <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" viewBox="0 0 24 24">
+          <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/logo-ofppt.jpg" alt="OFPPT" style={{ width: "30px", height: "30px", borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "1.5px solid rgba(255,255,255,0.40)" }} />
+      <div className="min-w-0 flex-1">
+        <div className="truncate" style={{ color: "#FFFFFF", fontWeight: 700, fontSize: "13px", lineHeight: 1.15 }}>OFPPT · Compétencia</div>
+        <div className="truncate" style={{ color: "#16A34A", fontSize: "9.5px", fontWeight: 500 }}>Génération pédagogique</div>
+      </div>
+
+      <div
+        className="rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 select-none"
+        style={{ width: "30px", height: "30px", background: "#16A34A" }}
+        title={user.name ?? user.email ?? "Formateur"}
+      >
+        {initials}
+      </div>
+    </header>
   );
 }
 
@@ -343,7 +395,7 @@ function AssistantFAB() {
   const [hovered, setHovered] = useState(false);
   if (pathname?.startsWith("/assistant")) return null;
   return (
-    <div style={{ position: "fixed", bottom: "28px", right: "28px", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px", pointerEvents: "none" }}>
+    <div className="assistant-fab" style={{ position: "fixed", bottom: "28px", right: "28px", zIndex: 9999, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "10px", pointerEvents: "none" }}>
       <div style={{ pointerEvents: "none", userSelect: "none", opacity: hovered ? 1 : 0, transform: hovered ? "translateY(0) scale(1)" : "translateY(8px) scale(0.95)", transition: "opacity 0.18s ease, transform 0.18s ease" }}>
         <div style={{ background: "#F8FAFC", border: "1px solid #E8651A40", borderRadius: "10px", padding: "8px 14px", whiteSpace: "nowrap", boxShadow: "0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px rgba(232,101,26,0.12)" }}>
           <p style={{ color: "#111827", fontSize: "12px", fontWeight: 600, margin: 0 }}>Assistant IA</p>
@@ -392,7 +444,7 @@ function AdminNav({ isActive }: { isActive: (href: string, exact: boolean) => bo
           const active = it.exact ? isActive("/admin", true) : false;
           return (
             <Link key={it.href} href={it.href}
-              className="flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
+              className="nav-link flex items-center gap-3 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-all duration-150"
               style={{ color: active ? "#FFFFFF" : "rgba(255,255,255,0.70)", background: active ? "rgba(255,255,255,0.15)" : undefined }}
               onMouseEnter={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.08)"; } }}
               onMouseLeave={e => { if (!active) { (e.currentTarget as HTMLAnchorElement).style.background = ""; } }}
@@ -409,21 +461,43 @@ function AdminNav({ isActive }: { isActive: (href: string, exact: boolean) => bo
 
 export default function AppShell({ children, user }: AppShellProps) {
   const shellPathname = usePathname();
-  // Page d'accueil d'installation (technique WAp) : toujours en plein écran, sans menu
-  if (!user || shellPathname?.startsWith("/bienvenue")) return <>{children}</>;
-  // Admin (pur superviseur) : on le renvoie vers son espace, jamais sur l'accueil formateur
   const router = useRouter();
-  const isAdmin = user.role === "ADMIN";
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Page d'accueil d'installation (technique WAp) : toujours en plein écran, sans menu
+  const bare = !user || !!shellPathname?.startsWith("/bienvenue");
+  // Admin (pur superviseur) : on le renvoie vers son espace, jamais sur l'accueil formateur
+  const isAdmin = user?.role === "ADMIN";
+
   useEffect(() => {
-    if (isAdmin && shellPathname === "/") router.replace("/admin");
-  }, [isAdmin, shellPathname, router]);
+    if (!bare && isAdmin && shellPathname === "/") router.replace("/admin");
+  }, [bare, isAdmin, shellPathname, router]);
+
+  // Le tiroir se referme dès qu'on change de page
+  useEffect(() => { setMenuOpen(false); }, [shellPathname]);
+
+  // Pas de défilement du contenu derrière le tiroir ouvert
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
+  if (bare || !user) return <>{children}</>;
 
   return (
     <>
       <Toaster position="top-right" richColors />
       <div className="flex h-screen overflow-hidden">
-        <AppSidebar user={user} />
-        <div className="flex-1 flex flex-col overflow-hidden relative">
+        {menuOpen && (
+          <div
+            className="lg:hidden fixed inset-0 z-40"
+            style={{ background: "rgba(0,12,40,0.55)", backdropFilter: "blur(2px)" }}
+            onClick={() => setMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+        <AppSidebar user={user} mobileOpen={menuOpen} onNavigate={() => setMenuOpen(false)} />
+        <div className="flex-1 min-w-0 flex flex-col overflow-hidden relative">
+          <MobileTopBar user={user} onOpen={() => setMenuOpen(true)} />
           <main className="flex-1 overflow-y-auto" style={{ background: "transparent" }}>
             {children}
           </main>

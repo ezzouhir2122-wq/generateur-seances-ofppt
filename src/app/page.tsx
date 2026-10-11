@@ -185,7 +185,7 @@ export default async function DashboardPage() {
       breadcrumb={[{ label: "Accueil" }]}
     >
       {/* ── 4 STAT CARDS ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "16px", marginBottom: "20px" }}>
         <StatCard
           value={seancesCount}
           label="Séances générées"
@@ -222,7 +222,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* ── RECENT ROW ── */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)", gap: "20px" }}>
 
         {/* Séances récentes */}
         <div style={{ background: "white", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>

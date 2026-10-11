@@ -401,3 +401,61 @@
     margin-bottom: 1em;
   }
 }
+
+/* ───────────────────────────────────────────────
+   Adaptation mobile / tablette
+   ─────────────────────────────────────────────── */
+
+/* Jamais de défilement horizontal sur téléphone */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 1023px) {
+  /* Tiroir de navigation : ombre portée quand il est ouvert */
+  .app-sidebar {
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.45);
+  }
+  /* Cibles tactiles confortables dans le menu */
+  .nav-link {
+    min-height: 40px;
+    font-size: 14px;
+  }
+  /* Le tiroir doit afficher tous les liens : on masque la mention de bas de page */
+  .sidebar-credit { display: none; }
+}
+
+/* Tablette : les grilles larges passent à deux colonnes */
+@media (min-width: 769px) and (max-width: 1100px) {
+  main [style*="repeat(4"],
+  main [style*="repeat(3"],
+  main [style*="repeat(5"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* En-tête de page et zone de contenu : marges resserrées */
+  .page-shell-header { padding: 14px 16px 12px !important; flex-wrap: wrap; }
+  .page-shell-crumb  { padding: 8px 16px !important; }
+  .page-shell-body   { padding: 18px 16px 48px !important; }
+  .page-shell-header h1 { font-size: 17px !important; }
+
+  /* Toute grille multi-colonnes passe en une seule colonne */
+  main [style*="grid-template-columns"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* Les cartes ne doivent pas élargir la colonne (texte long, tableau…) */
+  main [style*="grid-template-columns"] > * { min-width: 0; }
+
+  /* Tableaux larges : défilement horizontal interne plutôt que page cassée */
+  main table { display: block; overflow-x: auto; max-width: 100%; }
+
+  /* Bouton flottant Assistant IA : plus compact, hors du pouce */
+  .assistant-fab { bottom: 16px !important; right: 16px !important; }
+  .assistant-fab > a { width: 50px !important; height: 50px !important; }
+
+  /* Images et médias ne débordent jamais */
+  img, svg, video, canvas { max-width: 100%; }
+}
