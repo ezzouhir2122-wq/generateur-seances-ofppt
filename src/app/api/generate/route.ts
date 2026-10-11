@@ -37,7 +37,10 @@ async function saveSeance(params: SeanceParams, contenu: string, userId: string)
       },
     });
     return saved.id;
-  } catch {
+  } catch (err) {
+    // Ne jamais avaler cet echec en silence : c'est lui qui faisait
+    // disparaitre les seances de l'historique sans aucune trace.
+    console.error("[saveSeance] echec de l'enregistrement", { userId, err });
     return undefined;
   }
 }

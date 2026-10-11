@@ -45,7 +45,7 @@ export async function POST(req: Request) {
     async start(controller) {
       try {
         const response = anthropic.messages.stream({
-          model: "claude-opus-4-8",
+          model: keys.preferredModel.startsWith("claude") ? keys.preferredModel : "claude-sonnet-4-6",
           max_tokens: 2048,
           system: buildChatSystemPrompt(domaine ?? "Général", moduleName, modulesContext),
           messages: history,

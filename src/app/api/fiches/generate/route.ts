@@ -7,6 +7,13 @@ import OpenAI from "openai";
 import { buildFichePrompt } from "@/lib/prompts";
 import type { FicheFormData } from "@/types/seance";
 
+// Ces routes appellent Claude sans streaming : la reponse complete doit tenir
+// dans la duree de la fonction. Sans maxDuration explicite, Vercel appliquait
+// son defaut (quelques secondes) et tuait la fonction AVANT le prisma.create
+// — la generation semblait marcher puis disparaissait de l'historique.
+export const maxDuration = 300;
+
+
 export async function POST(req: Request) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -25,6 +32,12 @@ export async function POST(req: Request) {
     return NextResponse.json(missingKeyError("claude", "openai"), { status: 400 });
   }
 
+  // Respecte le modele choisi par le formateur. L'ancien code forcait
+  // claude-opus-4-8, le plus lent, ce qui garantissait le depassement.
+  const claudeModel = keys.preferredModel.startsWith("claude")
+    ? keys.preferredModel
+    : "claude-sonnet-4-6";
+
   const prompt = buildFichePrompt(data);
   let contenu = "";
 
@@ -32,7 +45,7 @@ export async function POST(req: Request) {
     if (!keys.claude) throw new Error("no-claude-key");
     const anthropic = new Anthropic({ apiKey: keys.claude });
     const msg = await anthropic.messages.create({
-      model: "claude-opus-4-8",
+      model: claudeModel,
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });
