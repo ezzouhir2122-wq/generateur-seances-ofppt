@@ -95,42 +95,40 @@ export default async function DashboardPage() {
   let seancesParFiliere: { filiere: string; _count: { id: number } }[] = [];
   let recentSeances: { id: string; title: string; module: string; filiere: string; createdAt: Date }[] = [];
   let recentFiches: { id: string; titre: string; module: string; createdAt: Date }[] = [];
-  let allStagiaires: { id: string; nom: string; prenom: string; cne: string | null; createdAt: string; progressions: { competenceId: string; pourcentage: number; source: string }[] }[] = [];
-  let topCompetences: { id: string; titre: string; moduleNom: string }[] = [];
   let monthlyData: { name: string; seances: number; fiches: number }[] = [];
 
+  // 6 derniers mois : bornes calculées une fois, réutilisées pour le bucketing JS.
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    return { start: d, end: new Date(d.getFullYear(), d.getMonth() + 1, 1), label: d.toLocaleDateString("fr-FR", { month: "short" }) };
+  });
+  const sixMonthsAgo = months[0].start;
+
   try {
-    [seancesCount, fichesCount, modulesCount, groupesCount, seancesThisMonth, fichesThisMonth] =
-      await Promise.all([
+    // UNE SEULE vague de requêtes parallèles (la DB est en eu-west-1 : on minimise
+    // le nombre d'allers-retours). L'activité mensuelle est calculée côté JS à
+    // partir des dates de création plutôt qu'avec 12 count() séparés.
+    const [
+      counts,
+      filiereGroups,
+      recS,
+      recF,
+      seanceDates,
+      ficheDates,
+    ] = await Promise.all([
+      Promise.all([
         prisma.seance.count({ where: { userId: uid } }),
         prisma.fiche.count({ where: { userId: uid } }),
         prisma.userModule.count({ where: { userId: uid } }),
         prisma.groupe.count({ where: { userId: uid } }),
         prisma.seance.count({ where: { userId: uid, createdAt: { gte: startOfMonth } } }),
         prisma.fiche.count({ where: { userId: uid, createdAt: { gte: startOfMonth } } }),
-      ]);
-
-    const filiereGroups = await prisma.seance.groupBy({
-      by: ["filiere"],
-      where: { userId: uid },
-      _count: { id: true },
-    });
-    seancesParFiliere = filiereGroups.sort((a, b) => b._count.id - a._count.id).slice(0, 5);
-
-    // Last 6 months activity
-    const months = Array.from({ length: 6 }, (_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
-      return { start: d, end: new Date(d.getFullYear(), d.getMonth() + 1, 1), label: d.toLocaleDateString("fr-FR", { month: "short" }) };
-    });
-    monthlyData = await Promise.all(
-      months.map(async (m) => ({
-        name: m.label.charAt(0).toUpperCase() + m.label.slice(1).replace(".", ""),
-        seances: await prisma.seance.count({ where: { userId: uid, createdAt: { gte: m.start, lt: m.end } } }),
-        fiches: await prisma.fiche.count({ where: { userId: uid, createdAt: { gte: m.start, lt: m.end } } }),
-      }))
-    );
-
-    [recentSeances, recentFiches] = await Promise.all([
+      ]),
+      prisma.seance.groupBy({
+        by: ["filiere"],
+        where: { userId: uid },
+        _count: { id: true },
+      }),
       prisma.seance.findMany({
         where: { userId: uid }, orderBy: { createdAt: "desc" }, take: 5,
         select: { id: true, title: true, module: true, filiere: true, createdAt: true },
@@ -139,24 +137,29 @@ export default async function DashboardPage() {
         where: { userId: uid }, orderBy: { createdAt: "desc" }, take: 5,
         select: { id: true, titre: true, module: true, createdAt: true },
       }),
+      prisma.seance.findMany({
+        where: { userId: uid, createdAt: { gte: sixMonthsAgo } },
+        select: { createdAt: true },
+      }),
+      prisma.fiche.findMany({
+        where: { userId: uid, createdAt: { gte: sixMonthsAgo } },
+        select: { createdAt: true },
+      }),
     ]);
 
-    if (groupesCount > 0) {
-      const groupesData = await prisma.groupe.findMany({
-        where: { userId: uid },
-        include: { stagiaires: { include: { progressions: { select: { competenceId: true, pourcentage: true, source: true } } } } },
-        take: 3,
-      });
-      allStagiaires = groupesData.flatMap((g) => g.stagiaires.map((s) => ({ ...s, createdAt: s.createdAt.toISOString() })));
-      if (groupesData[0]) {
-        const comps = await prisma.competence.findMany({
-          where: { module: { filiereId: groupesData[0].filiere } },
-          include: { module: { select: { nom: true } } },
-          take: 6, orderBy: { createdAt: "asc" },
-        });
-        topCompetences = comps.map((c) => ({ id: c.id, titre: c.titre, moduleNom: c.module.nom }));
-      }
-    }
+    [seancesCount, fichesCount, modulesCount, groupesCount, seancesThisMonth, fichesThisMonth] = counts;
+    seancesParFiliere = filiereGroups.sort((a, b) => b._count.id - a._count.id).slice(0, 5);
+    recentSeances = recS;
+    recentFiches = recF;
+
+    // Bucketing des 6 mois en mémoire (aucun aller-retour DB supplémentaire).
+    const inBucket = (dates: { createdAt: Date }[], m: { start: Date; end: Date }) =>
+      dates.reduce((n, d) => (d.createdAt >= m.start && d.createdAt < m.end ? n + 1 : n), 0);
+    monthlyData = months.map((m) => ({
+      name: m.label.charAt(0).toUpperCase() + m.label.slice(1).replace(".", ""),
+      seances: inBucket(seanceDates, m),
+      fiches: inBucket(ficheDates, m),
+    }));
   } catch {}
 
   const fmtDuree = (min: number) =>
@@ -173,9 +176,6 @@ export default async function DashboardPage() {
   const greeting = hour < 12 ? "Bonjour" : hour < 18 ? "Bon après-midi" : "Bonsoir";
   const fmt = (d: Date) => d.toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" });
   const todayLabel = now.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-
-  // suppress unused warning
-  void [allStagiaires, topCompetences];
 
   return (
     <PageShell
