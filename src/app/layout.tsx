@@ -29,6 +29,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.competencia.one"),
   title: "Competencia IA",
   description: "Générez des séances pédagogiques OFPPT en quelques secondes avec l'IA",
   manifest: "/manifest.webmanifest",
@@ -38,8 +39,30 @@ export const metadata: Metadata = {
     title: "Competencia IA",
   },
   icons: {
-    apple: "/logo-ofppt.jpg",
-    icon: "/icon.svg",
+    apple: "/apple-touch-icon.png",
+    icon: "/icon-192.png",
+  },
+  // Aperçu affiché quand le lien est partagé sur WhatsApp / réseaux sociaux
+  openGraph: {
+    type: "website",
+    siteName: "Competencia IA",
+    title: "Competencia IA",
+    description: "Générez des séances pédagogiques OFPPT en quelques secondes avec l'IA",
+    url: "https://www.competencia.one",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 1200,
+        alt: "Competencia IA — OFPPT",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Competencia IA",
+    description: "Générez des séances pédagogiques OFPPT en quelques secondes avec l'IA",
+    images: ["/og-image.png"],
   },
 };
 
