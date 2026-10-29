@@ -102,11 +102,10 @@ export function pdfFooter(
   doc.setFontSize(7);
   doc.setTextColor(107, 114, 128);
 
-  const mat = formateur.matricule ?? "-";
   const etab = formateur.etablissement ?? "-";
 
-  doc.text(`Formateur : ${formateur.name}   |   Mat. : ${mat}`, 10, footerY + 5);
-  doc.text(`Etablissement : ${etab}`, 10, footerY + 9);
+  // Pied de page sur UNE seule ligne : nom du formateur + établissement (sans matricule).
+  doc.text(`Formateur : ${formateur.name}   |   Établissement : ${etab}`, 10, footerY + 7);
   doc.text(`Page ${pageNum} / ${totalPages}`, W - 10, footerY + 7, { align: "right" });
 }
 
