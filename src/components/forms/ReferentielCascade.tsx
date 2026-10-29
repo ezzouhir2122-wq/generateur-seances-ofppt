@@ -83,10 +83,18 @@ export default function ReferentielCascade({ onChange, initial }: Props) {
   }, []);
 
   useEffect(() => {
+    // Résolution par l'id unique du module quand il est sélectionné (les codes OFPPT
+    // ne sont pas uniques entre filières → un code seul renvoie le mauvais module).
+    // code/nom ne servent qu'en repli (édition d'une séance où seul le libellé est connu).
+    const id = selectedModuleId?.trim();
     const code = sel.codeModule?.trim();
     const nom = sel.module?.trim();
-    if (!code && !nom) { setRefCompetences([]); setSelectedCompetences([]); return; }
-    const param = code ? `code=${encodeURIComponent(code)}` : `nom=${encodeURIComponent(nom!)}`;
+    if (!id && !code && !nom) { setRefCompetences([]); setSelectedCompetences([]); return; }
+    const param = id
+      ? `moduleId=${encodeURIComponent(id)}`
+      : code
+        ? `code=${encodeURIComponent(code)}`
+        : `nom=${encodeURIComponent(nom!)}`;
     fetch(`/api/referentiel/competences?${param}`)
       .then((r) => r.json())
       .then((data) => {
@@ -94,7 +102,7 @@ export default function ReferentielCascade({ onChange, initial }: Props) {
         setSelectedCompetences([]);
       })
       .catch(() => setRefCompetences([]));
-  }, [sel.codeModule, sel.module]);
+  }, [selectedModuleId, sel.codeModule, sel.module]);
 
   const emit = (next: ReferentielSelection) => {
     setSel(next);
