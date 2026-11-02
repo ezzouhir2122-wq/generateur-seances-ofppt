@@ -270,6 +270,7 @@ export default function GamePage() {
                       </button>
                     </div>
                     <div className="text-gray-500 text-xs">Saisissez un nombre (ex : 54000). Ouvrez le document si besoin.</div>
+                    <div className="text-gray-500 text-[11px] italic">📘 Plan comptable marocain (CGNC)</div>
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -355,10 +356,11 @@ export default function GamePage() {
             className="bg-white rounded-xl p-6 max-w-lg w-full max-h-[70vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center mb-4">
+            <div className="flex justify-between items-center mb-1">
               <div className="font-bold text-gray-900">Document</div>
               <button onClick={() => setShowDoc(false)} className="text-gray-400 hover:text-gray-700">✕</button>
             </div>
+            <div className="text-[11px] text-gray-400 italic mb-3">Plan comptable marocain (CGNC)</div>
             <pre className="text-sm text-gray-700 whitespace-pre-wrap">{currentEvent.documentAttache}</pre>
           </div>
         </div>

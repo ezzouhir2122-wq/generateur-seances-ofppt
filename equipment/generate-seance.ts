@@ -2,6 +2,7 @@
 // Usage : appelé depuis /api/generate/route.ts
 
 import Anthropic from "@anthropic-ai/sdk";
+import { CGNC_RULE } from "@/lib/prompts";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -89,5 +90,5 @@ ${develSection}
 ## Synthèse — points clés à retenir
 ...
 
-Génère un cours réaliste, riche et directement utilisable en formation OFPPT.`;
+Génère un cours réaliste, riche et directement utilisable en formation OFPPT.${CGNC_RULE}`;
 }

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
-import { buildEvaluationPrompt } from "@/lib/prompts";
+import { buildEvaluationPrompt, CGNC_RULE } from "@/lib/prompts";
 import { prisma } from "@/lib/db";
 import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import type { EvaluationFormData, EvaluationType } from "@/types/seance";
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
     ? keys.preferredModel
     : "claude-sonnet-4-6";
 
-  const prompt = buildEvaluationPrompt(data);
+  const prompt = buildEvaluationPrompt(data) + CGNC_RULE;
   let contenu = "";
 
   try {

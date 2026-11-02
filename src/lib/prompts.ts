@@ -1,6 +1,15 @@
 import type { SeanceFormData } from "@/types/seance";
 import type { FicheFormData } from "@/types/seance";
 
+/**
+ * Contrainte plan comptable marocain (CGNC), à ajouter aux prompts des générateurs
+ * pédagogiques. Conditionnelle : ne s'applique QUE si le contenu touche à la comptabilité,
+ * pour ne pas polluer les filières non comptables.
+ */
+export const CGNC_RULE = `
+
+PLAN COMPTABLE — Si (et seulement si) le contenu comporte de la comptabilité (écritures, journaux, comptes, bilan, CPC, facturation, TVA), utilise EXCLUSIVEMENT le plan comptable marocain CGNC, JAMAIS la numérotation française (PCG). Numéros corrects au Maroc : Clients 3421 (pas 411/4111), Fournisseurs 4411 (pas 401), Banque 5141, Caisse 5161, État TVA facturée 4455, État TVA récupérable sur charges 34552, État TVA due 4456, Ventes de marchandises 7111, Achats de marchandises 6111, Rémunérations dues au personnel 4432, CNSS 4441. TVA taux normal 20 % (14/10/7 % selon le cas). Montants en dirhams (MAD/DH). Toute écriture doit être équilibrée (total débit = total crédit).`;
+
 export function buildSeancePrompt(data: SeanceFormData): string {
   const comps = (data.competences && data.competences.length > 0)
     ? data.competences
@@ -489,5 +498,5 @@ Tes réponses sont orientées formateurs OFPPT :
 - Tu donnes des exemples concrets adaptés au contexte marocain et au secteur "${domaine}"
 - Tu suggests des approches pédagogiques adaptées au niveau OFPPT (séances, fiches, évaluations)
 - Tu restes factuel et précis sur les aspects techniques du domaine
-- Quand tu proposes des activités ou exercices, tu les adaptes aux compétences${module ? ` du module "${module}"` : " de la filière"}`;
+- Quand tu proposes des activités ou exercices, tu les adaptes aux compétences${module ? ` du module "${module}"` : " de la filière"}${CGNC_RULE}`;
 }

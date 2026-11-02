@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
-import { buildFichePrompt } from "@/lib/prompts";
+import { buildFichePrompt, CGNC_RULE } from "@/lib/prompts";
 import type { FicheFormData } from "@/types/seance";
 
 // Ces routes appellent Claude sans streaming : la reponse complete doit tenir
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     ? keys.preferredModel
     : "claude-sonnet-4-6";
 
-  const prompt = buildFichePrompt(data);
+  const prompt = buildFichePrompt(data) + CGNC_RULE;
   let contenu = "";
 
   try {

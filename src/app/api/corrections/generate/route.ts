@@ -4,6 +4,7 @@ import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import type { CorrectionFormData } from "@/types/correction";
+import { CGNC_RULE } from "@/lib/prompts";
 
 // Ces routes appellent Claude sans streaming : la reponse complete doit tenir
 // dans la duree de la fonction. Sans maxDuration explicite, Vercel appliquait
@@ -142,7 +143,7 @@ function buildAnthropicContent(data: CorrectionFormData): AnthropicContent[] {
     return [{ type: "text", text: buildTextPrompt(data) }];
   }
 
-  const promptText = buildFilePrompt(data);
+  const promptText = buildFilePrompt(data) + CGNC_RULE;
 
   if (data.inputMode === "image") {
     return [
