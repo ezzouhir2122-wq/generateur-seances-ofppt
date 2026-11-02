@@ -52,9 +52,10 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
       contexte: ev.contexte,
       personnageImplique: ev.personnageImplique,
       documentAttache: ev.documentAttache ?? null,
-      choixA: ev.choixA as object,
-      choixB: ev.choixB as object,
-      choixC: ev.choixC as object,
+      choixA: (ev.choixA ?? null) as object,
+      choixB: (ev.choixB ?? null) as object,
+      choixC: (ev.choixC ?? null) as object,
+      exercice: (ev.exercice ?? null) as object,
     })),
   });
 

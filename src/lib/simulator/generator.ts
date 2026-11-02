@@ -26,6 +26,27 @@ ANCRAGE OBLIGATOIRE (priorité absolue, avant toute autre règle) :
 Types d'événements à intégrer (dans cet ordre dans arcNarratif) :
 ${templateList}
 
+EXERCICES CHIFFRÉS À SAISIE LIBRE (quand le module ou le thème s'y prête : comptabilité, fiscalité, finance, gestion, facturation, paie, trésorerie) :
+- Les événements de type CONTROLE_MONTANT, VERIF_ECRITURE_COMPTABLE, CONTROLE_FACTURE, CALCUL_TVA, RAPPROCHEMENT_BANCAIRE (et tout événement FINANCIER pertinent) deviennent de VRAIS exercices que le stagiaire RÉSOUT en SAISISSANT un nombre (pas de QCM).
+- Pour ces événements : NE METS PAS choixA/choixB/choixC. Mets à la place un objet "exercice" (voir schéma ci-dessous) et OMETS les choix.
+- "documentAttache" OBLIGATOIRE = un document comptable réaliste AVEC des montants chiffrés en MAD (lignes détaillées, taux de TVA 20 %, totaux, dates, références). Glisse PARFOIS une erreur à détecter : TVA oubliée ou mauvais taux, total faux, écriture déséquilibrée, débit/crédit inversés, arrondi erroné.
+- "enonce" = la consigne précise et la question chiffrée unique (ex : « Calculez le montant TTC de la facture », « Quel est le solde du compte 514 après rapprochement ? »). La réponse doit être UN SEUL nombre.
+- "reponseAttendue" = la valeur numérique exacte (nombre, sans séparateur de milliers, point décimal si besoin). "unite" = "MAD" ou "%" selon le cas. "tolerance" = écart absolu toléré (0 pour un montant exact, sinon petit, ex 1).
+- "explication" = correction détaillée pas à pas pour apprendre (ex : « HT 45 000 + TVA 20 % = 9 000 → TTC 54 000 MAD »).
+- impacts de l'exercice = valeurs POSITIVES (gain si le stagiaire trouve la bonne réponse), ±10 à ±20 selon la difficulté.
+- Chiffres crédibles pour une PME marocaine ; cohérence absolue entre le document, l'énoncé et la reponseAttendue.
+- Vise au moins 2 exercices à saisie libre quand la filière/le module est comptable ou financier. Les autres événements restent en QCM (choixA/B/C).
+
+Schéma d'un événement EXERCICE (à la place des choix) :
+  "exercice": {
+    "enonce": "Consigne + question chiffrée unique",
+    "reponseAttendue": 54000,
+    "unite": "MAD",
+    "tolerance": 0,
+    "explication": "Correction détaillée du calcul",
+    "impactScore": 15, "impactSatisfaction": 8, "impactFinancier": 10, "impactMoral": 6
+  }
+
 Réponds UNIQUEMENT avec un objet JSON valide (pas de markdown, pas de texte avant/après) :
 
 {
@@ -67,6 +88,7 @@ Réponds UNIQUEMENT avec un objet JSON valide (pas de markdown, pas de texte ava
 Règles :
 - 5-6 personnages ; 3-4 clients ; 2-3 fournisseurs ; 2-3 documents
 - ${templates.length} événements dans arcNarratif
+- Un événement a SOIT choixA/B/C (QCM décisionnel) SOIT "exercice" (saisie libre chiffrée), jamais les deux
 - choixA = meilleure décision (+), choixB = neutre (0±3), choixC = mauvaise décision (-)
 - Impacts : ±5 à ±20 selon gravité
 - Noms marocains réalistes (entreprises, personnes, villes)

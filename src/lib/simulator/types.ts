@@ -30,6 +30,18 @@ export interface DocumentVirtuel {
   contenu: string;
 }
 
+export interface ExerciceChiffre {
+  enonce: string;            // Consigne : ce que le stagiaire doit calculer / contrôler
+  reponseAttendue: number;   // Valeur numérique exacte attendue
+  unite?: string;            // Ex : "MAD", "%", "" (sans unité)
+  tolerance?: number;        // Écart absolu toléré (défaut 0)
+  explication: string;       // Correction détaillée affichée après validation
+  impactScore: number;       // Gain si correct (positif)
+  impactSatisfaction: number;
+  impactFinancier: number;
+  impactMoral: number;
+}
+
 export interface EvenementNarratif {
   ordre: number;
   templateType: string;
@@ -38,9 +50,12 @@ export interface EvenementNarratif {
   contexte: string;
   personnageImplique: string;
   documentAttache?: string;
-  choixA: Choix;
-  choixB: Choix;
-  choixC: Choix;
+  // Variante QCM (décision) : choixA/B/C présents.
+  choixA?: Choix;
+  choixB?: Choix;
+  choixC?: Choix;
+  // Variante exercice chiffré (saisie libre) : exercice présent à la place des choix.
+  exercice?: ExerciceChiffre;
 }
 
 export interface EntrepriseVirtuelle {

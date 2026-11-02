@@ -14,8 +14,18 @@ interface Choix {
   impactMoral: number;
 }
 
+interface Exercice {
+  enonce: string;
+  reponseAttendue: number;
+  unite?: string;
+  tolerance?: number;
+  explication: string;
+}
+
 interface Decision {
   choixSelectionne: string;
+  reponseSaisie: string | null;
+  correct: boolean | null;
   consequences: string;
   impactScore: number;
 }
@@ -29,9 +39,10 @@ interface RunEvent {
   contexte: string;
   personnageImplique: string;
   documentAttache: string | null;
-  choixA: Choix;
-  choixB: Choix;
-  choixC: Choix;
+  choixA: Choix | null;
+  choixB: Choix | null;
+  choixC: Choix | null;
+  exercice: Exercice | null;
   decision: Decision | null;
 }
 
@@ -74,6 +85,7 @@ export default function GamePage() {
   const [lastConsequence, setLastConsequence] = useState('');
   const [showDoc, setShowDoc] = useState(false);
   const [eventStartTime, setEventStartTime] = useState(Date.now());
+  const [exerciceInput, setExerciceInput] = useState('');
 
   const currentEvent = run?.events[run.evenementCourant] ?? null;
   const totalEvents = run?.events.length ?? 0;
@@ -105,6 +117,30 @@ export default function GamePage() {
     const data = await res.json();
 
     setLastConsequence(data.decision.consequences);
+    await fetchRun();
+    setDeciding(false);
+    setEventStartTime(Date.now());
+  }
+
+  async function handleValidateExercice() {
+    if (!currentEvent || deciding || exerciceInput.trim() === '') return;
+    setDeciding(true);
+    const tempsReponse = Math.round((Date.now() - eventStartTime) / 1000);
+
+    const res = await fetch(`/api/simulator/${id}/runs/${runId}/decide`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ eventId: currentEvent.id, reponseSaisie: exerciceInput, tempsReponse }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      setDeciding(false);
+      setLastConsequence(data?.error ?? 'Réponse invalide.');
+      return;
+    }
+
+    setLastConsequence(data.decision.consequences);
+    setExerciceInput('');
     await fetchRun();
     setDeciding(false);
     setEventStartTime(Date.now());
@@ -206,38 +242,74 @@ export default function GamePage() {
               </div>
 
               {!currentEvent.decision ? (
-                <div className="space-y-3">
-                  <div className="text-gray-400 text-sm font-medium">Quelle décision prenez-vous ?</div>
-                  {(['A', 'B', 'C'] as const).map(letter => {
-                    const choix = currentEvent[`choix${letter}` as 'choixA' | 'choixB' | 'choixC'];
-                    return (
-                      <button
-                        key={letter}
-                        onClick={() => handleDecide(letter)}
+                currentEvent.exercice ? (
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+                    <div className="text-xs font-bold text-amber-300 uppercase tracking-wider">✏️ Exercice chiffré à résoudre</div>
+                    <p className="text-gray-200 text-sm leading-relaxed whitespace-pre-line">{currentEvent.exercice.enonce}</p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        value={exerciceInput}
+                        onChange={e => setExerciceInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') handleValidateExercice(); }}
                         disabled={deciding}
-                        className="w-full text-left p-5 rounded-xl border-2 transition-all disabled:opacity-50 hover:border-blue-500 hover:bg-blue-900/20"
-                        style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}
+                        placeholder="Votre réponse"
+                        className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-3 text-white text-lg font-semibold focus:outline-none focus:border-amber-400 disabled:opacity-50"
+                      />
+                      {currentEvent.exercice.unite && (
+                        <span className="text-gray-300 text-sm font-medium">{currentEvent.exercice.unite}</span>
+                      )}
+                      <button
+                        onClick={handleValidateExercice}
+                        disabled={deciding || exerciceInput.trim() === ''}
+                        className="px-5 py-3 rounded-lg font-semibold text-sm text-white disabled:opacity-50"
+                        style={{ background: '#0A4DA8' }}
                       >
-                        <div className="flex items-center gap-3">
-                          <span
-                            className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0 text-white"
-                            style={{ background: '#0A4DA8' }}
-                          >
-                            {letter}
-                          </span>
-                          <div>
-                            <div className="text-white font-semibold text-sm">{choix.label}</div>
-                            <div className="text-gray-400 text-xs mt-0.5">{choix.description}</div>
-                          </div>
-                        </div>
+                        Valider
                       </button>
-                    );
-                  })}
-                </div>
+                    </div>
+                    <div className="text-gray-500 text-xs">Saisissez un nombre (ex : 54000). Ouvrez le document si besoin.</div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="text-gray-400 text-sm font-medium">Quelle décision prenez-vous ?</div>
+                    {(['A', 'B', 'C'] as const).map(letter => {
+                      const choix = currentEvent[`choix${letter}` as 'choixA' | 'choixB' | 'choixC'];
+                      if (!choix) return null;
+                      return (
+                        <button
+                          key={letter}
+                          onClick={() => handleDecide(letter)}
+                          disabled={deciding}
+                          className="w-full text-left p-5 rounded-xl border-2 transition-all disabled:opacity-50 hover:border-blue-500 hover:bg-blue-900/20"
+                          style={{ borderColor: 'rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.03)' }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span
+                              className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0 text-white"
+                              style={{ background: '#0A4DA8' }}
+                            >
+                              {letter}
+                            </span>
+                            <div>
+                              <div className="text-white font-semibold text-sm">{choix.label}</div>
+                              <div className="text-gray-400 text-xs mt-0.5">{choix.description}</div>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )
               ) : (
-                <div className="bg-green-900/20 border border-green-500/30 rounded-xl p-4">
-                  <div className="text-green-300 text-sm font-semibold mb-1">
-                    Choix {currentEvent.decision.choixSelectionne} sélectionné
+                <div
+                  className={`border rounded-xl p-4 ${currentEvent.decision.correct === false ? 'bg-red-900/20 border-red-500/30' : 'bg-green-900/20 border-green-500/30'}`}
+                >
+                  <div className={`text-sm font-semibold mb-1 ${currentEvent.decision.correct === false ? 'text-red-300' : 'text-green-300'}`}>
+                    {currentEvent.decision.choixSelectionne === 'EX'
+                      ? (currentEvent.decision.correct ? '✅ Bonne réponse' : '❌ Réponse incorrecte')
+                      : `Choix ${currentEvent.decision.choixSelectionne} sélectionné`}
                   </div>
                   <div className="text-gray-300 text-sm">{currentEvent.decision.consequences}</div>
                 </div>
@@ -255,7 +327,11 @@ export default function GamePage() {
                       <div key={ev.id} className="text-xs border-b border-white/5 pb-2">
                         <div className="text-gray-300 font-medium truncate">{ev.titre}</div>
                         <div className="flex items-center gap-1 mt-0.5">
-                          <span className="text-gray-500">Choix {ev.decision!.choixSelectionne}</span>
+                          <span className="text-gray-500">
+                            {ev.decision!.choixSelectionne === 'EX'
+                              ? `Rép. ${ev.decision!.reponseSaisie ?? ''} ${ev.decision!.correct ? '✓' : '✗'}`
+                              : `Choix ${ev.decision!.choixSelectionne}`}
+                          </span>
                           <span className={ev.decision!.impactScore >= 0 ? 'text-green-400' : 'text-red-400'}>
                             {ev.decision!.impactScore > 0 ? '+' : ''}{ev.decision!.impactScore}
                           </span>

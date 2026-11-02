@@ -120,4 +120,48 @@ export const SCENARIO_TEMPLATES: ScenarioTemplate[] = [
     document_type: "Rapport d'incident",
     niveaux: ['INTERMEDIAIRE', 'AVANCE'],
   },
+
+  // ── EXERCICES CHIFFRÉS / CONTRÔLE COMPTABLE ──────────────────────────────
+  // Événements à traiter comme de vrais exercices : document comptable chiffré
+  // en MAD + 3 réponses chiffrées dont une seule exacte (cf. prompt générateur).
+  {
+    type: 'CONTROLE_MONTANT',
+    categorie: 'FINANCIER',
+    titre_generique: 'Contrôle et vérification de montants',
+    personnage_type: 'Chef comptable',
+    document_type: 'Tableau de montants à contrôler',
+    niveaux: ['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'],
+  },
+  {
+    type: 'VERIF_ECRITURE_COMPTABLE',
+    categorie: 'FINANCIER',
+    titre_generique: "Vérification d'écritures comptables (débit/crédit)",
+    personnage_type: 'Comptable',
+    document_type: 'Extrait du journal / écriture comptable',
+    niveaux: ['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'],
+  },
+  {
+    type: 'CONTROLE_FACTURE',
+    categorie: 'FINANCIER',
+    titre_generique: 'Contrôle de facture (HT / TVA / TTC)',
+    personnage_type: 'Responsable facturation',
+    document_type: 'Facture à vérifier',
+    niveaux: ['DEBUTANT', 'INTERMEDIAIRE', 'AVANCE'],
+  },
+  {
+    type: 'CALCUL_TVA',
+    categorie: 'FINANCIER',
+    titre_generique: 'Calcul et contrôle de la TVA',
+    personnage_type: 'Comptable fiscaliste',
+    document_type: 'Déclaration / tableau de TVA',
+    niveaux: ['INTERMEDIAIRE', 'AVANCE'],
+  },
+  {
+    type: 'RAPPROCHEMENT_BANCAIRE',
+    categorie: 'FINANCIER',
+    titre_generique: 'Rapprochement bancaire',
+    personnage_type: 'Trésorier / Comptable',
+    document_type: 'Relevé bancaire + extrait du compte 514',
+    niveaux: ['INTERMEDIAIRE', 'AVANCE'],
+  },
 ];

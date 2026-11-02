@@ -51,11 +51,15 @@ export async function POST(
         B: ev.choixB as unknown as { label: string },
         C: ev.choixC as unknown as { label: string },
       };
+      const estExercice = ev.decision!.choixSelectionne === 'EX';
+      const choixLabel = estExercice
+        ? `Exercice chiffré — réponse ${ev.decision!.reponseSaisie ?? '?'} (${ev.decision!.correct ? 'correcte' : 'incorrecte'})`
+        : choixMap[ev.decision!.choixSelectionne]?.label ?? '';
       return {
         ordre: ev.ordre,
         titre: ev.titre,
         choixSelectionne: ev.decision!.choixSelectionne,
-        choixLabel: choixMap[ev.decision!.choixSelectionne]?.label ?? '',
+        choixLabel,
         consequences: ev.decision!.consequences,
         impactScore: ev.decision!.impactScore,
       };

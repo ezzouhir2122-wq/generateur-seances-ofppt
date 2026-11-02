@@ -391,9 +391,10 @@ model RunEvent {
   contexte           String        @db.Text
   personnageImplique String
   documentAttache    String?       @db.Text
-  choixA             Json
-  choixB             Json
-  choixC             Json
+  choixA             Json?
+  choixB             Json?
+  choixC             Json?
+  exercice           Json?         // Exercice chiffré à saisie libre (si présent, remplace choixA/B/C)
   decision           RunDecision?
   createdAt          DateTime      @default(now())
 
@@ -404,7 +405,9 @@ model RunDecision {
   id                 String   @id @default(cuid())
   eventId            String   @unique
   event              RunEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  choixSelectionne   String
+  choixSelectionne   String   // 'A' | 'B' | 'C' pour un QCM, 'EX' pour un exercice chiffré
+  reponseSaisie      String?  // Valeur saisie par le stagiaire pour un exercice chiffré
+  correct            Boolean? // Résultat de la validation d'un exercice chiffré
   consequences       String   @db.Text
   impactScore        Int
   impactSatisfaction Int
