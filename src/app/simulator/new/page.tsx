@@ -96,6 +96,7 @@ export default function NewSimulationPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         simulationId: sim.id,
+        titre: form.titre,
         filiere: form.filiere,
         module: form.module,
         niveau: form.niveau,

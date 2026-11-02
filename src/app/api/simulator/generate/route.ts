@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { prisma } from '@/lib/db';
 import { getUserAiKeys, missingKeyError } from "@/lib/user-ai-key";
 import { streamGenerate } from '@/lib/simulator/generator';
-import type { EntrepriseVirtuelle } from '@/lib/simulator/types';
+import type { EntrepriseVirtuelle, SimulatorConfig } from '@/lib/simulator/types';
 
 export const maxDuration = 120;
 
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
 
   const body = await req.json();
-  const { simulationId, filiere, module, niveau, duree, nbStagiaires, difficulte, competencesCiblees } = body;
+  const { simulationId, titre, filiere, module, niveau, duree, nbStagiaires, difficulte, competencesCiblees } = body;
 
   if (!simulationId) return NextResponse.json({ error: 'simulationId manquant' }, { status: 400 });
 
@@ -38,8 +38,18 @@ export async function POST(req: NextRequest) {
     async start(controller) {
       try {
         let fullText = '';
+        // La fiche Simulation sauvegardée fait foi (titre inclus) ; le body ne sert que de repli.
         for await (const chunk of streamGenerate(
-          { filiere, module, niveau, duree, nbStagiaires, difficulte, competencesCiblees },
+          {
+            titre: simulation.titre ?? titre ?? '',
+            filiere: simulation.filiere ?? filiere,
+            module: simulation.module ?? module,
+            niveau: simulation.niveau ?? niveau,
+            duree: simulation.duree ?? duree,
+            nbStagiaires: simulation.nbStagiaires ?? nbStagiaires,
+            difficulte: (simulation.difficulte ?? difficulte) as SimulatorConfig['difficulte'],
+            competencesCiblees: simulation.competencesCiblees ?? competencesCiblees ?? [],
+          },
           apiKey,
           model
         )) {

@@ -9,12 +9,19 @@ function buildPrompt(config: SimulatorConfig): string {
   return `Tu es un générateur d'entreprises virtuelles pour des simulations pédagogiques OFPPT au Maroc.
 
 Génère une entreprise fictive COMPLÈTE pour :
+- Problématique / thème à traiter : « ${config.titre} »
 - Filière : ${config.filiere}
 - Module : ${config.module}
 - Niveau : ${config.niveau}
 - Durée simulation : ${config.duree}
 - Difficulté : ${config.difficulte}
 - Stagiaires : ${config.nbStagiaires}
+
+ANCRAGE OBLIGATOIRE (priorité absolue, avant toute autre règle) :
+1. CONTEXTE DU TITRE — Toute la simulation (description de l'entreprise, personnages, documents, problemesCles et chaque événement de arcNarratif) doit tourner autour de la problématique « ${config.titre} ». Ne t'en écarte jamais : c'est le fil conducteur du début à la fin.
+2. PÉRIMÈTRE DU MODULE — Chaque situation et chaque choix doivent rester STRICTEMENT dans le périmètre du module « ${config.module} » : les tâches, décisions, documents et compétences mobilisées relèvent de ce module précis, pas d'un autre domaine. Si un événement sort du module, reformule-le pour y revenir.
+3. SITUATIONS PRESQUE RÉELLES — Place le stagiaire dans des cas d'usage concrets et crédibles du métier : vraies tâches, incidents, échéances, contraintes et dilemmes qu'il rencontrera réellement en entreprise au Maroc. Bannis l'abstrait et le scolaire ; privilégie le terrain.
+4. DOCUMENTS AUTHENTIQUES — Les documents joints imitent de vrais documents professionnels du module (montants en MAD, dates, références, interlocuteurs plausibles).
 
 Types d'événements à intégrer (dans cet ordre dans arcNarratif) :
 ${templateList}
@@ -63,7 +70,8 @@ Règles :
 - choixA = meilleure décision (+), choixB = neutre (0±3), choixC = mauvaise décision (-)
 - Impacts : ±5 à ±20 selon gravité
 - Noms marocains réalistes (entreprises, personnes, villes)
-- Filière et module intégrés dans le contexte
+- Reste collé à la problématique « ${config.titre} » et au module « ${config.module} » du premier au dernier événement
+- problemesCles = déclinaisons concrètes de la problématique « ${config.titre} »
 - Langue française
 - Sois concis : descriptions courtes et efficaces, pas de remplissage. Le JSON DOIT être complet et se terminer correctement.`;
 }

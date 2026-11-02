@@ -62,6 +62,7 @@ export type RunStatus = 'EN_COURS' | 'PAUSE' | 'TERMINE';
 export type ChoixLettre = 'A' | 'B' | 'C';
 
 export interface SimulatorConfig {
+  titre: string;
   filiere: string;
   module: string;
   niveau: string;
