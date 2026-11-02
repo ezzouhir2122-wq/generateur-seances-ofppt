@@ -30,12 +30,27 @@ EXERCICES CHIFFRÉS À SAISIE LIBRE (quand le module ou le thème s'y prête : c
 - Les événements de type CONTROLE_MONTANT, VERIF_ECRITURE_COMPTABLE, CONTROLE_FACTURE, CALCUL_TVA, RAPPROCHEMENT_BANCAIRE (et tout événement FINANCIER pertinent) deviennent de VRAIS exercices que le stagiaire RÉSOUT en SAISISSANT un nombre (pas de QCM).
 - Pour ces événements : NE METS PAS choixA/choixB/choixC. Mets à la place un objet "exercice" (voir schéma ci-dessous) et OMETS les choix.
 - "documentAttache" OBLIGATOIRE = un document comptable réaliste AVEC des montants chiffrés en MAD (lignes détaillées, taux de TVA 20 %, totaux, dates, références). Glisse PARFOIS une erreur à détecter : TVA oubliée ou mauvais taux, total faux, écriture déséquilibrée, débit/crédit inversés, arrondi erroné.
-- "enonce" = la consigne précise et la question chiffrée unique (ex : « Calculez le montant TTC de la facture », « Quel est le solde du compte 514 après rapprochement ? »). La réponse doit être UN SEUL nombre.
+- "enonce" = la consigne précise et la question chiffrée unique (ex : « Calculez le montant TTC de la facture », « Quel est le solde du compte 5141 Banque après rapprochement ? »). La réponse doit être UN SEUL nombre.
 - "reponseAttendue" = la valeur numérique exacte (nombre, sans séparateur de milliers, point décimal si besoin). "unite" = "MAD" ou "%" selon le cas. "tolerance" = écart absolu toléré (0 pour un montant exact, sinon petit, ex 1).
 - "explication" = correction détaillée pas à pas pour apprendre (ex : « HT 45 000 + TVA 20 % = 9 000 → TTC 54 000 MAD »).
 - impacts de l'exercice = valeurs POSITIVES (gain si le stagiaire trouve la bonne réponse), ±10 à ±20 selon la difficulté.
 - Chiffres crédibles pour une PME marocaine ; cohérence absolue entre le document, l'énoncé et la reponseAttendue.
 - Vise au moins 2 exercices à saisie libre quand la filière/le module est comptable ou financier. Les autres événements restent en QCM (choixA/B/C).
+
+PLAN COMPTABLE MAROCAIN (CGNC) — OBLIGATOIRE pour toute écriture ou numéro de compte :
+- Utilise EXCLUSIVEMENT le Code Général de Normalisation Comptable marocain (CGNC). N'utilise JAMAIS la numérotation française (PCG) : interdits 411, 401, 512, 530, 707, 445...
+- Numéros de compte corrects au Maroc :
+  • Clients : 3421 (et NON 411/4111) — Clients douteux : 3424
+  • Fournisseurs : 4411 (et NON 401)
+  • Banque : 5141 — Caisse : 5161 — Chèques postaux : 5146
+  • État, TVA facturée (collectée sur ventes) : 4455
+  • État, TVA récupérable sur charges : 34552 — sur immobilisations : 34551
+  • État, TVA due : 4456 — crédit de TVA : 3456
+  • Ventes de marchandises (au Maroc) : 7111 — Ventes de biens et services produits : 7121/7124
+  • Achats de marchandises : 6111 — Achats consommés de matières : 6121
+  • Rémunérations dues au personnel : 4432 — CNSS : 4441
+- Terminologie marocaine : « bilan », « CPC (Compte de Produits et Charges) », « TVA » au taux normal 20 % (14 %, 10 %, 7 % selon le cas), montants en dirhams (MAD / DH).
+- Toute écriture doit être équilibrée (total débit = total crédit) avec ces numéros CGNC.
 
 Schéma d'un événement EXERCICE (à la place des choix) :
   "exercice": {
