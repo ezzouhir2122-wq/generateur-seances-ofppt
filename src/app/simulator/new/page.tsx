@@ -10,7 +10,12 @@ interface Filiere {
   modules: Array<{ id: string; nom: string; code: string | null }>;
 }
 
-const NIVEAUX = ['1ère Année', '2ème Année', 'Technicien', 'Technicien Spécialisé'];
+interface Secteur {
+  id: string;
+  nom: string;
+  filieres: Filiere[];
+}
+
 const DUREES = ['1h', '2h', '3h', '4h+'];
 const DIFFICULTES = [
   { value: 'DEBUTANT', label: 'Débutant', color: '#22C55E' },
@@ -22,14 +27,15 @@ export default function NewSimulationPage() {
   const router = useRouter();
   const streamRef = useRef<HTMLDivElement>(null);
 
-  const [filieres, setFilieres] = useState<Filiere[]>([]);
+  const [secteurs, setSecteurs] = useState<Secteur[]>([]);
   const [form, setForm] = useState({
     titre: '',
+    secteurId: '',
     filiere: '',
     filiereId: '',
     module: '',
     moduleId: '',
-    niveau: NIVEAUX[0],
+    niveau: '',
     duree: '2h',
     nbStagiaires: 20,
     difficulte: 'INTERMEDIAIRE',
@@ -44,17 +50,18 @@ export default function NewSimulationPage() {
     fetch('/api/referentiel/structure')
       .then(r => r.json())
       .then((data) => {
-        // L'API renvoie { secteurs: [{ filieres: [{ id, nom, filiere, modules }] }] }
-        // On aplatit en liste plate de filières pour le dropdown.
-        const flat: Filiere[] = Array.isArray(data)
-          ? data
-          : (data?.secteurs ?? []).flatMap((s: { filieres?: Filiere[] }) => s.filieres ?? []);
-        setFilieres(flat);
+        // L'API renvoie { secteurs: [{ id, nom, filieres: [{ id, nom, filiere, modules }] }] }
+        // "secteurs" = filières (GEOCF, GEOGRH…) ; "filieres" = niveaux de formation.
+        // On garde l'arbre pour une cascade Filière → Niveau → Module.
+        const arbre: Secteur[] = Array.isArray(data) ? [] : (data?.secteurs ?? []);
+        setSecteurs(arbre);
       })
-      .catch(() => setFilieres([]));
+      .catch(() => setSecteurs([]));
   }, []);
 
-  const selectedFiliere = filieres.find(f => f.id === form.filiereId);
+  const selectedSecteur = secteurs.find(s => s.id === form.secteurId);
+  const niveauOptions = selectedSecteur?.filieres ?? [];
+  const selectedFiliere = niveauOptions.find(f => f.id === form.filiereId);
 
   async function handleGenerate() {
     if (!form.titre || !form.filiere) { setError('Titre et filière requis'); return; }
@@ -165,16 +172,50 @@ export default function NewSimulationPage() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Filière</label>
             <select
-              value={form.filiereId}
+              value={form.secteurId}
               onChange={e => {
-                const f = filieres.find(x => x.id === e.target.value);
-                setForm(p => ({ ...p, filiereId: e.target.value, filiere: f ? `${f.filiere ?? f.nom}` : '', module: '', moduleId: '' }));
+                const s = secteurs.find(x => x.id === e.target.value);
+                setForm(p => ({
+                  ...p,
+                  secteurId: e.target.value,
+                  filiere: s?.nom ?? '',
+                  filiereId: '',
+                  niveau: '',
+                  module: '',
+                  moduleId: '',
+                }));
               }}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
             >
               <option value="">Sélectionner une filière</option>
-              {filieres.map(f => (
-                <option key={f.id} value={f.id}>{f.filiere ?? f.nom}</option>
+              {secteurs.map(s => (
+                <option key={s.id} value={s.id}>{s.nom}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Niveau</label>
+            <select
+              value={form.filiereId}
+              disabled={!form.secteurId}
+              onChange={e => {
+                const f = niveauOptions.find(x => x.id === e.target.value);
+                setForm(p => ({
+                  ...p,
+                  filiereId: e.target.value,
+                  niveau: f?.nom ?? '',
+                  module: '',
+                  moduleId: '',
+                }));
+              }}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400 disabled:bg-gray-100 disabled:text-gray-400"
+            >
+              <option value="">
+                {form.secteurId ? 'Sélectionner un niveau' : 'Choisissez d’abord une filière'}
+              </option>
+              {niveauOptions.map(f => (
+                <option key={f.id} value={f.id}>{f.nom}</option>
               ))}
             </select>
           </div>
@@ -198,27 +239,15 @@ export default function NewSimulationPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Niveau</label>
-              <select
-                value={form.niveau}
-                onChange={e => setForm(p => ({ ...p, niveau: e.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-              >
-                {NIVEAUX.map(n => <option key={n}>{n}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Durée</label>
-              <select
-                value={form.duree}
-                onChange={e => setForm(p => ({ ...p, duree: e.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
-              >
-                {DUREES.map(d => <option key={d}>{d}</option>)}
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Durée</label>
+            <select
+              value={form.duree}
+              onChange={e => setForm(p => ({ ...p, duree: e.target.value }))}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm"
+            >
+              {DUREES.map(d => <option key={d}>{d}</option>)}
+            </select>
           </div>
 
           <div>
